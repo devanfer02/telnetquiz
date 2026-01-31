@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.litecartesnative.data.local.TokenManager
 import com.example.litecartesnative.data.remote.api.TelNetQuizApi
 import com.example.litecartesnative.BuildConfig
 import dagger.Module
@@ -19,6 +20,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "telnetquiz_prefs")
@@ -35,6 +37,13 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideTokenManager(dataStore: DataStore<Preferences>): TokenManager {
+        return TokenManager(dataStore)
+    }
+
+    @Provides
+    @Singleton
+    @Named("apiKey")
     fun provideApiKeyInterceptor(): Interceptor {
         return Interceptor { chain ->
             val original = chain.request()
@@ -43,6 +52,30 @@ object NetworkModule {
                 .header("Content-Type", "application/json")
                 .build()
             chain.proceed(request)
+        }
+    }
+
+    @Provides
+    @Singleton
+    @Named("auth")
+    fun provideAuthInterceptor(tokenManager: TokenManager): Interceptor {
+        return Interceptor { chain ->
+            val token = runBlocking { tokenManager.authToken.first() }
+            val original = chain.request()
+            val requestBuilder = original.newBuilder()
+
+            if (!token.isNullOrEmpty()) {
+                requestBuilder.header("Authorization", "Bearer $token")
+            }
+
+            val response = chain.proceed(requestBuilder.build())
+
+            // Handle 401 Unauthorized - token expired
+            if (response.code == 401) {
+                runBlocking { tokenManager.onSessionExpired() }
+            }
+
+            response
         }
     }
 
@@ -57,11 +90,13 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        apiKeyInterceptor: Interceptor,
+        @Named("apiKey") apiKeyInterceptor: Interceptor,
+        @Named("auth") authInterceptor: Interceptor,
         loggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(apiKeyInterceptor)
+            .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)

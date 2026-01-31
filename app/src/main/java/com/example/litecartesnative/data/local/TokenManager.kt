@@ -5,6 +5,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,6 +21,9 @@ class TokenManager @Inject constructor(
         private val USER_EMAIL_KEY = stringPreferencesKey("user_email")
         private val USER_NAME_KEY = stringPreferencesKey("user_name")
     }
+
+    private val _sessionExpired = MutableSharedFlow<Unit>(replay = 0)
+    val sessionExpired: SharedFlow<Unit> = _sessionExpired.asSharedFlow()
 
     val authToken: Flow<String?> = dataStore.data.map { preferences ->
         preferences[AUTH_TOKEN_KEY]
@@ -50,5 +56,10 @@ class TokenManager @Inject constructor(
             preferences.remove(USER_EMAIL_KEY)
             preferences.remove(USER_NAME_KEY)
         }
+    }
+
+    suspend fun onSessionExpired() {
+        clearSession()
+        _sessionExpired.emit(Unit)
     }
 }
