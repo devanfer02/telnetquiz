@@ -32,7 +32,7 @@ class QuizRepository @Inject constructor(
 
     suspend fun submitQuizAnswers(quizId: Int, answers: List<QuizAnswerDto>): Result<QuizResultDto> {
         return try {
-            val response = api.submitQuizAnswers(quizId, SubmitQuizRequest(answers))
+            val response = api.submitQuizAnswers(quizId, SubmitQuizRequest(quizSubmissions = answers))
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null && body.data != null) {
