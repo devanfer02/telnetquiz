@@ -7,7 +7,7 @@ import retrofit2.http.*
 interface TelNetQuizApi {
 
     // Auth endpoints
-    @POST("api/register")
+    @POST("api/auth/register")
     suspend fun register(
         @Body request: RegisterRequest
     ): Response<AuthResponse>
