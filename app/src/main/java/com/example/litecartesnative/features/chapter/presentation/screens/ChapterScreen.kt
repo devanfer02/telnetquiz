@@ -1,5 +1,6 @@
 package com.example.litecartesnative.features.chapter.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,6 +44,16 @@ fun ChapterScreen(
 
     LaunchedEffect(Unit) {
         viewModel.loadChapters()
+    }
+
+    // Redirect to pretest if user hasn't taken it
+    LaunchedEffect(state.hasTakenPretest) {
+        Log.d("CHAPTER", state.hasTakenPretest.toString())
+        if (state.hasTakenPretest == false) {
+            navController.navigate(Screen.QuickCheckScren.route) {
+                popUpTo(Screen.HomeScreen.route) { inclusive = true }
+            }
+        }
     }
     Scaffold(
         topBar = {

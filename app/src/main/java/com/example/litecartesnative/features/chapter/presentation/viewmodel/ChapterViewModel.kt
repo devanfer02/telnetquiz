@@ -16,6 +16,7 @@ import javax.inject.Inject
 data class ChapterListState(
     val isLoading: Boolean = false,
     val chapters: List<ChapterDto> = emptyList(),
+    val hasTakenPretest: Boolean? = null,
     val error: String? = null
 )
 
@@ -43,7 +44,8 @@ class ChapterViewModel @Inject constructor(
                 is Result.Success -> {
                     _listState.value = _listState.value.copy(
                         isLoading = false,
-                        chapters = result.data
+                        chapters = result.data.chapters,
+                        hasTakenPretest = result.data.hasTakenPretest
                     )
                 }
                 is Result.Error -> {

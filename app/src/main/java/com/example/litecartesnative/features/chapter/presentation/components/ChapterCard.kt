@@ -106,6 +106,10 @@ fun ChapterCardFromApi(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
+    val progress = if (chapter.quizCount > 0) {
+        (chapter.completedQuizzes * 100) / chapter.quizCount
+    } else 0
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -130,7 +134,7 @@ fun ChapterCardFromApi(
                     .weight(1f)
             ) {
                 Text(
-                    text = chapter.name,
+                    text = chapter.title,
                     color = LitecartesColor.Secondary,
                     fontFamily = nunitosFontFamily,
                     fontWeight = FontWeight.ExtraBold,
@@ -144,9 +148,9 @@ fun ChapterCardFromApi(
                     fontWeight = FontWeight.SemiBold,
                     lineHeight = 14.sp
                 )
-                if (chapter.progress > 0) {
+                if (progress > 0) {
                     Text(
-                        text = "Progress: ${chapter.progress}%",
+                        text = "Progress: $progress%",
                         color = LitecartesColor.Secondary.copy(alpha = 0.7f),
                         fontFamily = nunitosFontFamily,
                         fontSize = 12.sp,
@@ -155,13 +159,13 @@ fun ChapterCardFromApi(
                     )
                 }
                 Button(
-                    text = if (chapter.isUnlocked) "Yuk Main".uppercase() else "Terkunci".uppercase(),
+                    text = "Yuk Main".uppercase(),
                     color = LitecartesColor.Secondary,
-                    backgroundColor = if (chapter.isUnlocked) LitecartesColor.Surface else LitecartesColor.Surface.copy(alpha = 0.5f),
+                    backgroundColor = LitecartesColor.Surface,
                     borderColor = LitecartesColor.DarkBrown,
-                    shadowEnabled = chapter.isUnlocked,
+                    shadowEnabled = true,
                     shadowColor = LitecartesColor.DarkBrown,
-                    onClick = { if (chapter.isUnlocked) onClick() },
+                    onClick = onClick,
                     shadowHeight = 5.dp
                 )
             }
@@ -175,7 +179,7 @@ fun ChapterCardFromApi(
                         .heightIn(min = 150.dp)
                         .fillMaxWidth(),
                     painter = painterResource(id = R.drawable.chap1), // Default image for API chapters
-                    contentDescription = chapter.name
+                    contentDescription = chapter.title
                 )
             }
         }
