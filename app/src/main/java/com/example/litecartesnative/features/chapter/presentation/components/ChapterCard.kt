@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.litecartesnative.R
 import com.example.litecartesnative.components.Button
+import com.example.litecartesnative.data.remote.dto.ChapterDto
 import com.example.litecartesnative.features.quiz.domain.model.Chapter
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
@@ -93,6 +94,88 @@ fun ChapterCard(
                         .fillMaxWidth(),
                     painter = painterResource(id = chapter.imageLink),
                     contentDescription = chapter.title
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ChapterCardFromApi(
+    chapter: ChapterDto,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(16.dp),
+                clip = false
+            )
+            .clip(RoundedCornerShape(16.dp))
+            .background(LitecartesColor.DarkerSurface)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 20.dp,
+                    vertical = 10.dp
+                )
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                Text(
+                    text = chapter.name,
+                    color = LitecartesColor.Secondary,
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 22.sp
+                )
+                Text(
+                    text = chapter.description,
+                    color = LitecartesColor.Secondary,
+                    fontFamily = nunitosFontFamily,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = 14.sp
+                )
+                if (chapter.progress > 0) {
+                    Text(
+                        text = "Progress: ${chapter.progress}%",
+                        color = LitecartesColor.Secondary.copy(alpha = 0.7f),
+                        fontFamily = nunitosFontFamily,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+                Button(
+                    text = if (chapter.isUnlocked) "Yuk Main".uppercase() else "Terkunci".uppercase(),
+                    color = LitecartesColor.Secondary,
+                    backgroundColor = if (chapter.isUnlocked) LitecartesColor.Surface else LitecartesColor.Surface.copy(alpha = 0.5f),
+                    borderColor = LitecartesColor.DarkBrown,
+                    shadowEnabled = chapter.isUnlocked,
+                    shadowColor = LitecartesColor.DarkBrown,
+                    onClick = { if (chapter.isUnlocked) onClick() },
+                    shadowHeight = 5.dp
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .weight(0.5f),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    modifier = Modifier
+                        .heightIn(min = 150.dp)
+                        .fillMaxWidth(),
+                    painter = painterResource(id = R.drawable.chap1), // Default image for API chapters
+                    contentDescription = chapter.name
                 )
             }
         }

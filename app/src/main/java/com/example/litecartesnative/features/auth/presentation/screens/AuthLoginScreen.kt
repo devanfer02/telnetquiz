@@ -3,17 +3,24 @@ package com.example.litecartesnative.features.auth.presentation.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.litecartesnative.R
@@ -34,13 +42,18 @@ import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.features.auth.presentation.components.AuthTopBar
 import com.example.litecartesnative.components.Button
 import com.example.litecartesnative.features.auth.presentation.components.Input
+import com.example.litecartesnative.features.auth.presentation.viewmodel.AuthViewModel
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
 @Composable
 fun AuthLoginScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
     var email by remember {
         mutableStateOf("")
     }
@@ -49,12 +62,28 @@ fun AuthLoginScreen(
         mutableStateOf("")
     }
 
+    LaunchedEffect(state.isLoggedIn) {
+        if (state.isLoggedIn) {
+            navController.navigate(Screen.HomeScreen.route) {
+                popUpTo(Screen.AuthLoginScreen.route) { inclusive = true }
+            }
+        }
+    }
+
+    LaunchedEffect(state.error) {
+        state.error?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearError()
+        }
+    }
+
     Scaffold(
         topBar = {
             AuthTopBar(
                 painter = painterResource(id = R.drawable.login_screen)
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = Modifier.systemBarsPadding()
 
     ) { innerPadding ->
@@ -132,20 +161,33 @@ fun AuthLoginScreen(
                             )
                     )
                 }
-                Button(
-                    text = "masuk".uppercase(),
-                    borderColor = LitecartesColor.Secondary,
-                    color = LitecartesColor.Surface,
-                    backgroundColor = LitecartesColor.Secondary,
-                    shadowEnabled = true,
-                    shadowHeight = 55.dp,
-                    shadowColor = LitecartesColor.DarkBrown,
+                Box(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        navController.navigate(Screen.HomeScreen.route)
-                    },
-                    textModifier = Modifier.padding(8.dp)
-                )
+                    contentAlignment = Alignment.Center
+                ) {
+                    Button(
+                        text = if (state.isLoading) "" else "masuk".uppercase(),
+                        borderColor = LitecartesColor.Secondary,
+                        color = LitecartesColor.Surface,
+                        backgroundColor = LitecartesColor.Secondary,
+                        shadowEnabled = !state.isLoading,
+                        shadowHeight = 55.dp,
+                        shadowColor = LitecartesColor.DarkBrown,
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            if (!state.isLoading && email.isNotBlank() && password.isNotBlank()) {
+                                viewModel.login(email, password)
+                            }
+                        },
+                        textModifier = Modifier.padding(8.dp)
+                    )
+                    if (state.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = LitecartesColor.Surface
+                        )
+                    }
+                }
                 Text(
                     text = "atau".uppercase(),
                     color = LitecartesColor.Secondary,

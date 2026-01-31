@@ -16,7 +16,9 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.litecartesnative.components.Navigation
 import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
