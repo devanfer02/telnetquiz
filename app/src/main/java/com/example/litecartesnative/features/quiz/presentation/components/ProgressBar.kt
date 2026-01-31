@@ -130,6 +130,53 @@ fun ProgressBar(
     }
 }
 
+@Composable
+fun ProgressBarFromApi(
+    current: Int,
+    total: Int
+) {
+    val progress = if (total > 0) current.toFloat() / total.toFloat() else 0f
+
+    Column {
+        Row(
+            modifier = Modifier
+                .background(LitecartesColor.Primary)
+                .fillMaxWidth()
+                .padding(vertical = 14.dp, horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(30.dp)
+                    .background(LitecartesColor.Primary)
+                    .drawBehind {
+                        drawRoundRect(
+                            color = LitecartesColor.Surface,
+                            cornerRadius = CornerRadius(40.dp.toPx()),
+                            style = Stroke(
+                                width = 2f,
+                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+                            )
+                        )
+                    }
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(fraction = progress)
+                        .background(LitecartesColor.Surface, RoundedCornerShape(40))
+                )
+            }
+        }
+        Divider(
+            color = Color(0xFFFFD4B8).copy(alpha = 0.25f),
+            thickness = 0.5.dp,
+        )
+    }
+}
+
 @Preview
 @Composable
 fun PreviewProgressBar() {
@@ -139,5 +186,14 @@ fun PreviewProgressBar() {
         level = 1,
         current = 1,
         length = 2
+    )
+}
+
+@Preview
+@Composable
+fun PreviewProgressBarFromApi() {
+    ProgressBarFromApi(
+        current = 3,
+        total = 6
     )
 }

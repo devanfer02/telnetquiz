@@ -10,14 +10,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.litecartesnative.R
@@ -25,17 +30,23 @@ import com.example.litecartesnative.components.Navbar
 import com.example.litecartesnative.features.quiz.presentation.components.LevelButton
 import com.example.litecartesnative.features.quiz.presentation.components.ProfileTopBar
 import com.example.litecartesnative.constants.Screen
-import com.example.litecartesnative.constants.chaptersData
 import com.example.litecartesnative.constants.levelsData
+import com.example.litecartesnative.features.chapter.presentation.viewmodel.ChapterViewModel
 import com.example.litecartesnative.features.quiz.presentation.singletons.MarkAsDoneManager
 import com.example.litecartesnative.ui.theme.LitecartesColor
 
 @Composable
 fun LevelScreen(
     navController: NavController,
-    chapterId: Int
+    chapterId: Int,
+    viewModel: ChapterViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
+    val detailState by viewModel.detailState.collectAsState()
+
+    LaunchedEffect(chapterId) {
+        viewModel.loadChapterById(chapterId)
+    }
 
     Scaffold(
         topBar = {
@@ -55,39 +66,68 @@ fun LevelScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
-                    .verticalScroll(
-                        scrollState
-                    )
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.level_background),
-                    contentDescription = "bg",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-                levelsData.forEachIndexed { index, level ->
-                    if (index >= chaptersData[chapterId].levels.size) {
-                        return@forEachIndexed
+                when {
+                    detailState.isLoading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = LitecartesColor.Secondary)
+                        }
                     }
-
-                    Box(
-                        modifier = Modifier
-                            .offset(
-                                x = level.x,
-                                y = level.y
+                    detailState.error != null -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = detailState.error ?: "An error occurred",
+                                color = LitecartesColor.Secondary
                             )
-                    ) {
-                        val level = index + 1
-                        LevelButton(
-                            level = level,
-                            onClick = {
-                                navController.navigate(
-                                    "${Screen.QuestionScreen.route}/$chapterId/levels/$level/questions/1"
-                                )
-                            },
-                            done =MarkAsDoneManager.levels[chapterId][level-1]
-                        )
+                        }
+                    }
+                    detailState.chapter != null -> {
+                        val chapter = detailState.chapter!!
+                        val quizzes = chapter.quizzes
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(scrollState)
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.level_background),
+                                contentDescription = "bg",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+
+                            quizzes.forEachIndexed { index, quiz ->
+                                if (index >= levelsData.size) {
+                                    return@forEachIndexed
+                                }
+
+                                val levelPosition = levelsData[index]
+                                Box(
+                                    modifier = Modifier
+                                        .offset(
+                                            x = levelPosition.x,
+                                            y = levelPosition.y
+                                        )
+                                ) {
+                                    LevelButton(
+                                        level = quiz.level,
+                                        onClick = {
+                                            navController.navigate(
+                                                "${Screen.QuestionScreen.route}/${quiz.id}"
+                                            )
+                                        },
+                                        done = MarkAsDoneManager.levels.getOrNull(chapterId)?.getOrNull(quiz.level - 1) ?: false
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -101,6 +141,6 @@ fun LevelScreen(
 fun PreviewLevelScreen() {
     LevelScreen(
         navController = rememberNavController(),
-        chapterId = 0
+        chapterId = 1
     )
 }
