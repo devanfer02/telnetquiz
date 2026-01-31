@@ -7,11 +7,13 @@ import retrofit2.http.*
 interface TelNetQuizApi {
 
     // Auth endpoints
+    @Headers("Content-Type: application/json")
     @POST("api/auth/register")
     suspend fun register(
         @Body request: RegisterRequest
     ): Response<AuthResponse>
 
+    @Headers("Content-Type: application/json")
     @POST("api/auth/login")
     suspend fun login(
         @Body request: LoginRequest
@@ -21,6 +23,7 @@ interface TelNetQuizApi {
     @GET("api/pretest")
     suspend fun getPretestQuestions(): Response<ApiResponse<PretestQuestionsResponse>>
 
+    @Headers("Content-Type: application/json")
     @POST("api/pretest")
     suspend fun submitPretestAnswers(
         @Body request: SubmitPretestRequest
@@ -28,7 +31,7 @@ interface TelNetQuizApi {
 
     // Chapter endpoints
     @GET("api/chapters")
-    suspend fun getChapters(): Response<ApiResponse<List<ChapterDto>>>
+    suspend fun getChapters(): Response<ApiResponse<ChaptersResponse>>
 
     @GET("api/chapters/{id}")
     suspend fun getChapterById(
@@ -41,6 +44,7 @@ interface TelNetQuizApi {
         @Path("id") id: Int
     ): Response<ApiResponse<QuizDto>>
 
+    @Headers("Content-Type: application/json")
     @POST("api/quiz/{id}")
     suspend fun submitQuizAnswers(
         @Path("id") id: Int,
