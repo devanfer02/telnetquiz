@@ -3,16 +3,23 @@ package com.example.litecartesnative.features.auth.presentation.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.litecartesnative.R
@@ -34,13 +42,18 @@ import com.example.litecartesnative.features.auth.presentation.components.AuthTo
 import com.example.litecartesnative.components.Button
 import com.example.litecartesnative.features.auth.presentation.components.Input
 import com.example.litecartesnative.features.auth.presentation.components.PasswordInput
+import com.example.litecartesnative.features.auth.presentation.viewmodel.AuthViewModel
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
 @Composable
 fun AuthRegisterScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
     var fullname by remember {
         mutableStateOf("")
     }
@@ -53,6 +66,24 @@ fun AuthRegisterScreen(
         mutableStateOf("")
     }
 
+    // Navigate to QuickCheckScreen on successful registration
+    LaunchedEffect(state.successMessage) {
+        state.successMessage?.let {
+            viewModel.clearSuccessMessage()
+            navController.navigate(Screen.QuickCheckScren.route) {
+                popUpTo(Screen.AuthRegisterScreen.route) { inclusive = true }
+            }
+        }
+    }
+
+    // Show error in snackbar
+    LaunchedEffect(state.error) {
+        state.error?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearError()
+        }
+    }
+
     Scaffold(
         topBar = {
             AuthTopBar(
@@ -60,6 +91,7 @@ fun AuthRegisterScreen(
                 contentAlignment = Alignment.TopEnd
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = Modifier.systemBarsPadding()
     ) { innerPadding ->
         Column(
@@ -138,20 +170,33 @@ fun AuthRegisterScreen(
                 Spacer(
                     modifier = Modifier.padding(2.dp)
                 )
-                Button(
-                    text = "daftar".uppercase(),
-                    borderColor = LitecartesColor.Secondary,
-                    color = LitecartesColor.Surface,
-                    backgroundColor = LitecartesColor.Secondary,
-                    shadowEnabled = true,
-                    shadowHeight = 55.dp,
-                    shadowColor = LitecartesColor.DarkBrown,
+                Box(
                     modifier = Modifier.fillMaxWidth(),
-                    textModifier = Modifier.padding(8.dp),
-                    onClick = {
-                        navController.navigate(Screen.QuickCheckScren.route)
+                    contentAlignment = Alignment.Center
+                ) {
+                    Button(
+                        text = if (state.isLoading) "" else "daftar".uppercase(),
+                        borderColor = LitecartesColor.Secondary,
+                        color = LitecartesColor.Surface,
+                        backgroundColor = LitecartesColor.Secondary,
+                        shadowEnabled = !state.isLoading,
+                        shadowHeight = 55.dp,
+                        shadowColor = LitecartesColor.DarkBrown,
+                        modifier = Modifier.fillMaxWidth(),
+                        textModifier = Modifier.padding(8.dp),
+                        onClick = {
+                            if (!state.isLoading && fullname.isNotBlank() && email.isNotBlank() && password.isNotBlank()) {
+                                viewModel.register(fullname, email, password)
+                            }
+                        }
+                    )
+                    if (state.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = LitecartesColor.Surface
+                        )
                     }
-                )
+                }
                 Text(
                     text = "atau".uppercase(),
                     color = LitecartesColor.Secondary,
@@ -164,15 +209,15 @@ fun AuthRegisterScreen(
                 Spacer(
                     modifier = Modifier.padding()
                 )
-                Button(
-                    text = "Sign up with Google",
-                    borderColor = Color.White,
-                    color = Color.Black,
-                    backgroundColor = Color.White,
-                    icon = painterResource(id = R.drawable.google_icon),
-                    modifier = Modifier.fillMaxWidth(),
-                    textModifier = Modifier.padding(8.dp)
-                )
+//                Button(
+//                    text = "Sign up with Google",
+//                    borderColor = Color.White,
+//                    color = Color.Black,
+//                    backgroundColor = Color.White,
+//                    icon = painterResource(id = R.drawable.google_icon),
+//                    modifier = Modifier.fillMaxWidth(),
+//                    textModifier = Modifier.padding(8.dp)
+//                )
             }
         }
     }
