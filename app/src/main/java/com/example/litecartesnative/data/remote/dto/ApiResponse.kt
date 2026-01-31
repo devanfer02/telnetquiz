@@ -15,3 +15,10 @@ data class AuthResponse(
     @SerializedName("token")
     val token: String? = null
 )
+
+data class ValidationErrorResponse(
+    @SerializedName("message")
+    val message: String,
+    @SerializedName("errors")
+    val errors: Map<String, List<String>>? = null
+)

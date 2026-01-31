@@ -7,8 +7,16 @@ data class QuizDto(
     val id: Int,
     @SerializedName("chapterId")
     val chapterId: Int,
-    @SerializedName("name")
-    val name: String,
+    @SerializedName("title")
+    val title: String,
+    @SerializedName("level")
+    val level: Int,
+    @SerializedName("difficulty")
+    val difficulty: String,
+    @SerializedName("createdAt")
+    val createdAt: String,
+    @SerializedName("updatedAt")
+    val updatedAt: String,
     @SerializedName("questions")
     val questions: List<QuizQuestionDto>
 )
@@ -16,10 +24,24 @@ data class QuizDto(
 data class QuizQuestionDto(
     @SerializedName("id")
     val id: Int,
-    @SerializedName("text")
-    val text: String,
+    @SerializedName("type")
+    val type: String,
+    @SerializedName("chapterId")
+    val chapterId: Int,
     @SerializedName("quizId")
     val quizId: Int,
+    @SerializedName("materialId")
+    val materialId: Int?,
+    @SerializedName("imageLink")
+    val imageLink: String?,
+    @SerializedName("description")
+    val description: String,
+    @SerializedName("question")
+    val question: String,
+    @SerializedName("createdAt")
+    val createdAt: String,
+    @SerializedName("updatedAt")
+    val updatedAt: String,
     @SerializedName("options")
     val options: List<QuizOptionDto>
 )
@@ -27,15 +49,19 @@ data class QuizQuestionDto(
 data class QuizOptionDto(
     @SerializedName("id")
     val id: Int,
+    @SerializedName("questionId")
+    val questionId: Int,
     @SerializedName("text")
     val text: String,
-    @SerializedName("questionId")
-    val questionId: Int
+    @SerializedName("createdAt")
+    val createdAt: String,
+    @SerializedName("updatedAt")
+    val updatedAt: String
 )
 
 data class SubmitQuizRequest(
-    @SerializedName("answers")
-    val answers: List<QuizAnswerDto>
+    @SerializedName("quiz_submissions")
+    val quizSubmissions: List<QuizAnswerDto>
 )
 
 data class QuizAnswerDto(
