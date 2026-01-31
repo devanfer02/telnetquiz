@@ -33,6 +33,7 @@ import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.features.auth.presentation.components.AuthTopBar
 import com.example.litecartesnative.components.Button
 import com.example.litecartesnative.features.auth.presentation.components.Input
+import com.example.litecartesnative.features.auth.presentation.components.PasswordInput
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
@@ -96,7 +97,7 @@ fun AuthRegisterScreen(
                 Spacer(
                     modifier = Modifier.padding(2.dp)
                 )
-                Input(
+                PasswordInput(
                     value = password,
                     label = "Password",
                     onValueChange = {
