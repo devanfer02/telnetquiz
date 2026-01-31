@@ -1,8 +1,20 @@
+import com.android.tools.build.jetifier.core.utils.Log
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+}
+
+val apiProperties = Properties().apply {
+    val propsFile = rootProject.file("api.properties")
+    if (propsFile.exists()) {
+        load(propsFile.inputStream())
+    } else {
+        Log.e("[API PROP FILE]", "failed to load api.properties file. Cant find the specified file")
+    }
 }
 
 android {
@@ -24,17 +36,22 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "BASE_URL", "\"http://localhost:3000\"")
-            buildConfigField("String", "API_KEY", "dkajsdkasjdoajsdoiajdoia")
+            val baseUrl = apiProperties.getProperty("DEBUG_API_URL", "http://localhost:3000")
+            val apiKey = apiProperties.getProperty("DEBUG_API_KEY", "")
+            buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
+            buildConfigField("String", "API_KEY", "\"$apiKey\"")
         }
         release {
+            val baseUrl = apiProperties.getProperty("PROD_API_URL", "http://localhost:3000")
+            val apiKey = apiProperties.getProperty("PROD_API_KEY", "")
+            buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
+            buildConfigField("String", "API_KEY", "\"$apiKey\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
-
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -72,8 +89,8 @@ dependencies {
     implementation("androidx.compose.material:material:1.0.0")
     implementation("androidx.core:core-splashscreen:1.0.0")
     implementation("io.coil-kt:coil-compose:2.1.0")
-    implementation("com.google.dagger:hilt-android:2.44")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("com.google.dagger:hilt-android:2.51")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("io.arrow-kt:arrow-core:1.2.0")
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0")
 
@@ -93,7 +110,7 @@ dependencies {
     // DataStore for token storage
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
-    kapt("com.google.dagger:hilt-compiler:2.52")
+    ksp("com.google.dagger:hilt-compiler:2.51")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

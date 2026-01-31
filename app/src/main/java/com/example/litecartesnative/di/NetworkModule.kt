@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.litecartesnative.data.remote.api.TelNetQuizApi
+import com.example.litecartesnative.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,9 +27,6 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = BuildConfig.BASE_URL
-    private const val API_KEY = "your-api-key"
-
     @Provides
     @Singleton
     fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
@@ -41,7 +39,7 @@ object NetworkModule {
         return Interceptor { chain ->
             val original = chain.request()
             val request = original.newBuilder()
-                .header("x-api-key", API_KEY)
+                .header("x-api-key", BuildConfig.API_KEY)
                 .header("Content-Type", "application/json")
                 .build()
             chain.proceed(request)
@@ -75,7 +73,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
