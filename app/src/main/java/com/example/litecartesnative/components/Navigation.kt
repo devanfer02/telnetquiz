@@ -3,6 +3,7 @@ package com.example.litecartesnative.components
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,6 +12,7 @@ import androidx.navigation.navArgument
 import com.example.litecartesnative.features.auth.presentation.screens.AuthLoginScreen
 import com.example.litecartesnative.features.auth.presentation.screens.AuthRegisterScreen
 import com.example.litecartesnative.features.auth.presentation.screens.AuthStartScreen
+import com.example.litecartesnative.features.auth.presentation.viewmodel.AuthViewModel
 import com.example.litecartesnative.features.pretest.presentation.screens.PretestScreen
 import com.example.litecartesnative.features.pretest.presentation.screens.QuickCheckScreen
 import com.example.litecartesnative.features.user.presentations.screens.LeaderboardScreen
@@ -25,11 +27,23 @@ import com.example.litecartesnative.features.auth.presentation.screens.FeedbackS
 import com.example.litecartesnative.features.quiz.presentation.screens.ResultScreen
 import com.example.litecartesnative.features.quiz.presentation.singletons.MarkAsDoneManager
 import com.example.litecartesnative.features.quiz.presentation.singletons.WrongQuizManager
+import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
+    val authViewModel: AuthViewModel = hiltViewModel()
+
+    // Handle session expiration - redirect to login
+    LaunchedEffect(Unit) {
+        authViewModel.sessionExpiredEvent.collectLatest {
+            Log.d("Navigation", "Session expired, redirecting to login")
+            navController.navigate(Screen.AuthLoginScreen.route) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
 
     NavHost(
         navController = navController,
@@ -72,18 +86,10 @@ fun Navigation() {
             )
         }
         composable(
-            route = "${Screen.PretestScreen.route}/{id}",
-            arguments = listOf(
-                navArgument("id") {
-                    type = NavType.IntType
-                }
-            )
+            route = Screen.PretestScreen.route
         ) {
-            val id = it.arguments?.getInt("id") ?: 1
-
             PretestScreen(
-                navController = navController,
-                pretestId = id
+                navController = navController
             )
         }
         composable(
@@ -107,45 +113,17 @@ fun Navigation() {
             )
         }
         composable(
-            route = "${Screen.QuestionScreen.route}/{chapterId}/levels/{level}/questions/{id}?toresult={toresult}&toquestion={toquestion}",
+            route = "${Screen.QuestionScreen.route}/{quizId}",
             arguments = listOf(
-                navArgument("chapterId") {
+                navArgument("quizId") {
                     type = NavType.IntType
-                },
-                navArgument("level") {
-                    type = NavType.IntType
-                },
-                navArgument("id") {
-                    type = NavType.IntType
-                },
-                navArgument("toresult") {
-                    type = NavType.BoolType
-                    defaultValue = false
-                },
-                navArgument("toquestion") {
-                    type = NavType.BoolType
-                    defaultValue = false
                 }
             )
         ) {
-            val chapterId = it.arguments?.getInt("chapterId") ?: 1
-            val level = it.arguments?.getInt("level") ?: 1
-            val id = it.arguments?.getInt("id") ?: 1
-
-            val toresult = it.arguments?.getBoolean("toresult") ?: false
-            val toquestion = it.arguments?.getBoolean("toquestion") ?: false
-
-            if (toresult) {
-                navController.navigate(
-                    "${Screen.ResultScreen.route}/${chapterId}/levels/${level}"
-                )
-            }
+            val quizId = it.arguments?.getInt("quizId") ?: 1
 
             QuestionScreen(
-                chapterId = chapterId,
-                level = level,
-                id = id,
-                toquestion = toquestion,
+                quizId = quizId,
                 navController = navController
             )
         }
