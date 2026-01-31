@@ -120,7 +120,7 @@ fun QuickCheckScreen(
                             modifier = Modifier.fillMaxWidth(),
                             textModifier = Modifier.padding(8.dp),
                             onClick = {
-                                navController.navigate("${Screen.PretestScreen.route}/${1}")
+                                navController.navigate(Screen.PretestScreen.route)
                             }
                         )
                     }

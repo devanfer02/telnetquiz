@@ -79,11 +79,64 @@ fun ProgressBar(
     }
 }
 
+@Composable
+fun ProgressBarFromApi(
+    current: Int,
+    total: Int
+) {
+    val progress = if (total > 0) current.toFloat() / total.toFloat() else 0f
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(LitecartesColor.Surface)
+            .padding(
+                horizontal = 20.dp,
+                vertical = 40.dp
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .height(30.dp)
+                .background(LitecartesColor.Surface)
+                .border(
+                    BorderStroke(2.dp, LitecartesColor.Secondary),
+                    RoundedCornerShape(40)
+                )
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(fraction = progress)
+                    .background(LitecartesColor.Primary, RoundedCornerShape(40))
+            )
+        }
+        Spacer(modifier = Modifier.padding(10.dp))
+        Text(
+            text = "${current}/${total}",
+            fontFamily = nunitosFontFamily,
+            fontWeight = FontWeight.Bold,
+            color = LitecartesColor.DarkBrown
+        )
+    }
+}
+
 @Preview
 @Composable
 fun PreviewProgressBar() {
     ProgressBar(
         navController = rememberNavController(),
         1
+    )
+}
+
+@Preview
+@Composable
+fun PreviewProgressBarFromApi() {
+    ProgressBarFromApi(
+        current = 1,
+        total = 10
     )
 }
