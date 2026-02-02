@@ -1,89 +1,60 @@
 package com.example.litecartesnative.constants
 
-import androidx.compose.ui.unit.dp
 import com.example.litecartesnative.R
 import com.example.litecartesnative.features.quiz.domain.model.Chapter
 import com.example.litecartesnative.features.quiz.domain.model.LevelData
 
+// Fractions calculated based on Pixel 8 dimensions (~412dp width, ~800dp content height)
+// Original values converted: x/412 for xFraction, y/800 for yFraction
 val levelsData = listOf(
     LevelData(
         level = 1,
-        onClick = {
-
-        },
-        x = 30.dp,
-        y = 40.dp
+        xFraction = 0.073f,   // was 30.dp
+        yFraction = 0.05f     // was 40.dp
     ),
     LevelData(
         level = 2,
-        onClick = {
-
-        },
-        x = 170.dp,
-        y = 110.dp
+        xFraction = 0.413f,   // was 170.dp
+        yFraction = 0.137f    // was 110.dp
     ),
     LevelData(
         level = 3,
-        onClick = {
-
-        },
-        x = 340.dp,
-        y = 160.dp
+        xFraction = 0.825f,   // was 340.dp
+        yFraction = 0.20f     // was 160.dp
     ),
     LevelData(
         level = 4,
-        onClick = {
-
-        },
-        x = 300.dp,
-        y = 320.dp
+        xFraction = 0.728f,   // was 300.dp
+        yFraction = 0.40f     // was 320.dp
     ),
     LevelData(
         level = 5,
-        onClick = {
-
-        },
-        x = 160.dp,
-        y = 320.dp
+        xFraction = 0.388f,   // was 160.dp
+        yFraction = 0.40f     // was 320.dp
     ),
     LevelData(
         level = 6,
-        onClick = {
-
-        },
-        x = 50.dp,
-        y = 400.dp
+        xFraction = 0.121f,   // was 50.dp
+        yFraction = 0.50f     // was 400.dp
     ),
     LevelData(
         level = 7,
-        onClick = {
-
-        },
-        x = 180.dp,
-        y = 490.dp
+        xFraction = 0.437f,   // was 180.dp
+        yFraction = 0.612f    // was 490.dp
     ),
     LevelData(
         level = 8,
-        onClick = {
-
-        },
-        x = 330.dp,
-        y = 540.dp
+        xFraction = 0.801f,   // was 330.dp
+        yFraction = 0.675f    // was 540.dp
     ),
     LevelData(
         level = 9,
-        onClick = {
-
-        },
-        x = 200.dp,
-        y = 680.dp
+        xFraction = 0.485f,   // was 200.dp
+        yFraction = 0.85f     // was 680.dp
     ),
     LevelData(
         level = 10,
-        onClick = {
-
-        },
-        x = 40.dp,
-        y = 710.dp
+        xFraction = 0.097f,   // was 40.dp
+        yFraction = 0.887f    // was 710.dp
     )
 )
