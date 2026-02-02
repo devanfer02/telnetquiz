@@ -53,6 +53,7 @@ class AuthViewModel @Inject constructor(
     private fun validateSession() {
         viewModelScope.launch {
             val token = authRepository.authToken.first()
+            Log.d("SESSION_TOKEN", token.toString())
             if (token == null) {
                 _sessionState.value = SessionState.Unauthenticated
                 _state.value = _state.value.copy(isLoggedIn = false)

@@ -105,6 +105,7 @@ class AuthRepository @Inject constructor(
         return try {
             val response = api.getUserProfile()
             if (response.isSuccessful) {
+                Log.d("SESSION", response.body().toString())
                 val profile = response.body()?.data
                 if (profile != null) {
                     tokenManager.saveUserInfo(profile.email, profile.fullname)

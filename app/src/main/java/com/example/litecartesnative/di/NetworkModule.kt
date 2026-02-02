@@ -1,6 +1,7 @@
 package com.example.litecartesnative.di
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -81,6 +82,23 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @Named("tokenLogging")
+    fun provideTokenLoggingInterceptor(tokenManager: TokenManager): Interceptor {
+        return Interceptor { chain ->
+            val token = runBlocking { tokenManager.authToken.first() }
+            val request = chain.request()
+
+            Log.d(
+                "TokenLoggingInterceptor",
+                "Request: ${request.method} ${request.url} | Session Token: ${token ?: "null"}"
+            )
+
+            chain.proceed(request)
+        }
+    }
+
+    @Provides
+    @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
@@ -92,9 +110,11 @@ object NetworkModule {
     fun provideOkHttpClient(
         @Named("apiKey") apiKeyInterceptor: Interceptor,
         @Named("auth") authInterceptor: Interceptor,
+        @Named("tokenLogging") tokenLoggingInterceptor: Interceptor,
         loggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor(tokenLoggingInterceptor)
             .addInterceptor(apiKeyInterceptor)
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)

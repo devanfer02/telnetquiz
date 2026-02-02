@@ -58,6 +58,7 @@ fun Navigation() {
     }
 
     // Conditional rendering based on session state
+    Log.d("SESSION", sessionState.toString())
     when (sessionState) {
         SessionState.Loading -> {
             SplashLoadingScreen()
