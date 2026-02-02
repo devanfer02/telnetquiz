@@ -28,6 +28,7 @@ import com.example.litecartesnative.features.user.presentations.screens.Leaderbo
 import com.example.litecartesnative.features.chapter.presentation.screens.ChapterScreen
 import com.example.litecartesnative.features.quiz.presentation.screens.LevelScreen
 import com.example.litecartesnative.features.quiz.presentation.screens.QuestionScreen
+import com.example.litecartesnative.features.user.presentations.screens.EditProfileScreen
 import com.example.litecartesnative.features.user.presentations.screens.FriendScreen
 import com.example.litecartesnative.features.user.presentations.screens.ProfileScreen
 import com.example.litecartesnative.constants.Screen
@@ -95,10 +96,15 @@ private fun MainNavHost(
     navController: NavHostController,
     startDestination: String
 ) {
-    NavHost(
-        navController = navController,
-        startDestination = startDestination
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(LitecartesColor.Surface)
     ) {
+        NavHost(
+            navController = navController,
+            startDestination = startDestination
+        ) {
         composable(
             route = Screen.AuthStartScreen.route
         ) {
@@ -212,6 +218,11 @@ private fun MainNavHost(
             ProfileScreen(navController = navController)
         }
         composable(
+            route = Screen.EditProfileScreen.route
+        ) {
+            EditProfileScreen(navController = navController)
+        }
+        composable(
             route = Screen.FriendScreen.route
         ) {
             FriendScreen(navController = navController)
@@ -247,6 +258,7 @@ private fun MainNavHost(
                 navController = navController,
                 chapterId = chapterId
             )
+        }
         }
     }
 }

@@ -39,6 +39,10 @@ sealed class Screen(
         "profile_screen"
     )
 
+    object EditProfileScreen : Screen(
+        "edit_profile_screen"
+    )
+
     object QuickCheckScren : Screen(
         "quickcheck_screen"
     )
