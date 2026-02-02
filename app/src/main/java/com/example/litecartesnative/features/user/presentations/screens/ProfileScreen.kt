@@ -17,11 +17,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,18 +36,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.litecartesnative.R
 import com.example.litecartesnative.components.Navbar
+import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.features.user.presentations.components.StatsIcon
+import com.example.litecartesnative.features.user.presentations.viewmodel.ProfileViewModel
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
 @Composable
 fun ProfileScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadProfile()
+    }
+
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier
@@ -96,7 +110,9 @@ fun ProfileScreen(
                             )
                     )
                     IconButton(
-                        onClick = {},
+                        onClick = {
+                            navController.navigate(Screen.EditProfileScreen.route)
+                        },
                         modifier = Modifier
                             .size(24.dp)
                             .clip(CircleShape)
@@ -114,68 +130,82 @@ fun ProfileScreen(
                     modifier = Modifier
                         .padding(4.dp)
                 )
-                Text(
-                    text = "Maudy Ayunda",
-                    color = Color.White,
-                    fontFamily = nunitosFontFamily,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 20.sp
-                )
-                Text(
-                    text = "SMA Negeri 1 Kota Bogor",
-                    color = Color.White,
-                    fontFamily = nunitosFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp
-                )
+                when {
+                    state.isLoading -> {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    state.error != null -> {
+                        Text(
+                            text = state.error ?: "Error loading profile",
+                            color = Color.White,
+                            fontFamily = nunitosFontFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp
+                        )
+                    }
+                    else -> {
+                        Text(
+                            text = state.profile?.fullname ?: "User",
+                            color = Color.White,
+                            fontFamily = nunitosFontFamily,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 20.sp
+                        )
+                    }
+                }
+                // School text removed as requested
                 Spacer(
                     modifier = Modifier
                         .padding(10.dp)
                 )
-                Row {
-                    Box(
-                        modifier = Modifier
-                            .clip(
-                                RoundedCornerShape(12.dp)
-                            )
-                            .background(LitecartesColor.DarkerSurface)
-                            .padding(
-                                vertical = 4.dp,
-                                horizontal = 8.dp
-                            )
-                    ) {
-                        Text(
-                            text = "10 Mengikuti",
-                            color = LitecartesColor.Secondary,
-                            fontFamily = nunitosFontFamily,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp
-                        )
-                    }
-                    Spacer(
-                        modifier = Modifier
-                            .padding(6.dp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .clip(
-                                RoundedCornerShape(12.dp)
-                            )
-                            .background(LitecartesColor.DarkerSurface)
-                            .padding(
-                                vertical = 4.dp,
-                                horizontal = 8.dp
-                            )
-                    ) {
-                        Text(
-                            text = "10 Diikuti",
-                            color = LitecartesColor.Secondary,
-                            fontFamily = nunitosFontFamily,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp
-                        )
-                    }
-                }
+                // Hidden: Mengikuti dan Diikuti section
+                // Row {
+                //     Box(
+                //         modifier = Modifier
+                //             .clip(
+                //                 RoundedCornerShape(12.dp)
+                //             )
+                //             .background(LitecartesColor.DarkerSurface)
+                //             .padding(
+                //                 vertical = 4.dp,
+                //                 horizontal = 8.dp
+                //             )
+                //     ) {
+                //         Text(
+                //             text = "10 Mengikuti",
+                //             color = LitecartesColor.Secondary,
+                //             fontFamily = nunitosFontFamily,
+                //             fontWeight = FontWeight.SemiBold,
+                //             fontSize = 14.sp
+                //         )
+                //     }
+                //     Spacer(
+                //         modifier = Modifier
+                //             .padding(6.dp)
+                //     )
+                //     Box(
+                //         modifier = Modifier
+                //             .clip(
+                //                 RoundedCornerShape(12.dp)
+                //             )
+                //             .background(LitecartesColor.DarkerSurface)
+                //             .padding(
+                //                 vertical = 4.dp,
+                //                 horizontal = 8.dp
+                //             )
+                //     ) {
+                //         Text(
+                //             text = "10 Diikuti",
+                //             color = LitecartesColor.Secondary,
+                //             fontFamily = nunitosFontFamily,
+                //             fontWeight = FontWeight.SemiBold,
+                //             fontSize = 14.sp
+                //         )
+                //     }
+                // }
             }
             Column(
                 modifier = Modifier
@@ -186,114 +216,116 @@ fun ProfileScreen(
                     )
                     .weight(1f)
             ) {
-                Row(
-                    modifier = Modifier
-                        .shadow(
-                            elevation = 20.dp,
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                        .clip(
-                            RoundedCornerShape(12.dp)
-                        )
-                        .background(LitecartesColor.DarkerSurface)
-                        .padding(10.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    StatsIcon(
-                        resId = R.drawable.diamond,
-                        statName = "Hadiah",
-                        stat = 250
-                    )
-                    StatsIcon(
-                        resId = R.drawable.lightning,
-                        statName = "XP",
-                        stat = 150
-                    )
-                    StatsIcon(
-                        resId = R.drawable.fire,
-                        statName = "Streak",
-                        stat = 31
-                    )
-                }
-                Spacer(
-                    modifier = Modifier
-                        .padding(10.dp)
-                )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .shadow(
-                                elevation = 20.dp,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .clip(
-                                RoundedCornerShape(12.dp)
-                            )
-                            .background(LitecartesColor.DarkerSurface)
-                            .padding(
-                                vertical = 10.dp,
-                                horizontal = 20.dp
-                            )
-                    ) {
-                        StatsIcon(
-                            resId = R.drawable.nasional,
-                            statName = "Peringkat\nNasional",
-                            stat = 15
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .shadow(
-                                elevation = 20.dp,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .clip(
-                                RoundedCornerShape(12.dp)
-                            )
-                            .background(LitecartesColor.DarkerSurface)
-                            .padding(
-                                vertical = 10.dp,
-                                horizontal = 20.dp
-                            )
-                    ) {
-                        StatsIcon(
-                            resId = R.drawable.kota,
-                            statName = "Peringkat\nKota",
-                            stat = 4
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .shadow(
-                                elevation = 20.dp,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .clip(
-                                RoundedCornerShape(12.dp)
-                            )
-                            .background(LitecartesColor.DarkerSurface)
-                            .padding(
-                                vertical = 10.dp,
-                                horizontal = 20.dp
-                            )
-                    ) {
-                        StatsIcon(
-                            resId = R.drawable.sekolah,
-                            statName = "Peringkat\nSekolah",
-                            stat = 2
-                        )
-                    }
-                }
-                Spacer(
-                    modifier = Modifier
-                        .padding(10.dp)
-                )
+                // Hidden: Hadiah, XP, Streak section
+                // Row(
+                //     modifier = Modifier
+                //         .shadow(
+                //             elevation = 20.dp,
+                //             shape = RoundedCornerShape(12.dp)
+                //         )
+                //         .clip(
+                //             RoundedCornerShape(12.dp)
+                //         )
+                //         .background(LitecartesColor.DarkerSurface)
+                //         .padding(10.dp)
+                //         .fillMaxWidth(),
+                //     horizontalArrangement = Arrangement.SpaceEvenly,
+                //     verticalAlignment = Alignment.CenterVertically
+                // ) {
+                //     StatsIcon(
+                //         resId = R.drawable.diamond,
+                //         statName = "Hadiah",
+                //         stat = 250
+                //     )
+                //     StatsIcon(
+                //         resId = R.drawable.lightning,
+                //         statName = "XP",
+                //         stat = 150
+                //     )
+                //     StatsIcon(
+                //         resId = R.drawable.fire,
+                //         statName = "Streak",
+                //         stat = 31
+                //     )
+                // }
+                // Spacer(
+                //     modifier = Modifier
+                //         .padding(10.dp)
+                // )
+                // Hidden: Peringkat section
+                // Row(
+                //     horizontalArrangement = Arrangement.SpaceEvenly,
+                //     modifier = Modifier
+                //         .fillMaxWidth()
+                // ) {
+                //     Box(
+                //         modifier = Modifier
+                //             .shadow(
+                //                 elevation = 20.dp,
+                //                 shape = RoundedCornerShape(12.dp)
+                //             )
+                //             .clip(
+                //                 RoundedCornerShape(12.dp)
+                //             )
+                //             .background(LitecartesColor.DarkerSurface)
+                //             .padding(
+                //                 vertical = 10.dp,
+                //                 horizontal = 20.dp
+                //             )
+                //     ) {
+                //         StatsIcon(
+                //             resId = R.drawable.nasional,
+                //             statName = "Peringkat\nNasional",
+                //             stat = 15
+                //         )
+                //     }
+                //     Box(
+                //         modifier = Modifier
+                //             .shadow(
+                //                 elevation = 20.dp,
+                //                 shape = RoundedCornerShape(12.dp)
+                //             )
+                //             .clip(
+                //                 RoundedCornerShape(12.dp)
+                //             )
+                //             .background(LitecartesColor.DarkerSurface)
+                //             .padding(
+                //                 vertical = 10.dp,
+                //                 horizontal = 20.dp
+                //             )
+                //     ) {
+                //         StatsIcon(
+                //             resId = R.drawable.kota,
+                //             statName = "Peringkat\nKota",
+                //             stat = 4
+                //         )
+                //     }
+                //     Box(
+                //         modifier = Modifier
+                //             .shadow(
+                //                 elevation = 20.dp,
+                //                 shape = RoundedCornerShape(12.dp)
+                //             )
+                //             .clip(
+                //                 RoundedCornerShape(12.dp)
+                //             )
+                //             .background(LitecartesColor.DarkerSurface)
+                //             .padding(
+                //                 vertical = 10.dp,
+                //                 horizontal = 20.dp
+                //             )
+                //     ) {
+                //         StatsIcon(
+                //             resId = R.drawable.sekolah,
+                //             statName = "Peringkat\nSekolah",
+                //             stat = 2
+                //         )
+                //     }
+                // }
+                // Spacer(
+                //     modifier = Modifier
+                //         .padding(10.dp)
+                // )
                 Text(
                     text = "Pencapaian",
                     fontFamily = nunitosFontFamily,
