@@ -5,6 +5,7 @@ import com.example.litecartesnative.data.local.TokenManager
 import com.example.litecartesnative.data.remote.api.TelNetQuizApi
 import com.example.litecartesnative.data.remote.dto.LoginRequest
 import com.example.litecartesnative.data.remote.dto.RegisterRequest
+import com.example.litecartesnative.data.remote.dto.UserProfileDto
 import com.example.litecartesnative.data.remote.dto.ValidationErrorResponse
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
@@ -98,5 +99,25 @@ class AuthRepository @Inject constructor(
 
     suspend fun logout() {
         tokenManager.clearSession()
+    }
+
+    suspend fun validateSession(): Result<UserProfileDto> {
+        return try {
+            val response = api.getUserProfile()
+            if (response.isSuccessful) {
+                val profile = response.body()?.data
+                if (profile != null) {
+                    tokenManager.saveUserInfo(profile.email, profile.fullname)
+                    Result.Success(profile)
+                } else {
+                    Result.Error("Invalid profile response")
+                }
+            } else {
+                Result.Error("Session invalid", response.code())
+            }
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "validateSession error: ${e.message}", e)
+            Result.Error(e.message ?: "Network error")
+        }
     }
 }

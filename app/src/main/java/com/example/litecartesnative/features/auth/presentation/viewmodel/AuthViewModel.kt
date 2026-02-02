@@ -13,8 +13,15 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+sealed class SessionState {
+    data object Loading : SessionState()
+    data object Authenticated : SessionState()
+    data object Unauthenticated : SessionState()
+}
 
 data class AuthState(
     val isLoading: Boolean = false,
@@ -32,18 +39,39 @@ class AuthViewModel @Inject constructor(
     private val _state = MutableStateFlow(AuthState())
     val state: StateFlow<AuthState> = _state.asStateFlow()
 
+    private val _sessionState = MutableStateFlow<SessionState>(SessionState.Loading)
+    val sessionState: StateFlow<SessionState> = _sessionState.asStateFlow()
+
     private val _sessionExpiredEvent = MutableSharedFlow<Unit>()
     val sessionExpiredEvent: SharedFlow<Unit> = _sessionExpiredEvent.asSharedFlow()
 
     init {
-        checkLoginStatus()
+        validateSession()
         observeSessionExpired()
     }
 
-    private fun checkLoginStatus() {
+    private fun validateSession() {
         viewModelScope.launch {
-            authRepository.authToken.collect { token ->
-                _state.value = _state.value.copy(isLoggedIn = token != null)
+            val token = authRepository.authToken.first()
+            if (token == null) {
+                _sessionState.value = SessionState.Unauthenticated
+                _state.value = _state.value.copy(isLoggedIn = false)
+                return@launch
+            }
+
+            when (val result = authRepository.validateSession()) {
+                is Result.Success -> {
+                    _sessionState.value = SessionState.Authenticated
+                    _state.value = _state.value.copy(isLoggedIn = true)
+                }
+                is Result.Error -> {
+                    tokenManager.clearSession()
+                    _sessionState.value = SessionState.Unauthenticated
+                    _state.value = _state.value.copy(isLoggedIn = false)
+                }
+                is Result.Loading -> {
+                    // Stay in loading state
+                }
             }
         }
     }
@@ -61,6 +89,7 @@ class AuthViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, error = null)
             when (val result = authRepository.login(email, password)) {
                 is Result.Success -> {
+                    _sessionState.value = SessionState.Authenticated
                     _state.value = _state.value.copy(
                         isLoading = false,
                         isLoggedIn = true,
@@ -86,8 +115,10 @@ class AuthViewModel @Inject constructor(
             Log.d("REGISTER", "calling API")
             when (val result = authRepository.register(fullname, email, password)) {
                 is Result.Success -> {
+                    _sessionState.value = SessionState.Authenticated
                     _state.value = _state.value.copy(
                         isLoading = false,
+                        isLoggedIn = true,
                         successMessage = result.data
                     )
                     Log.d("REGISTER", "success")
@@ -109,6 +140,7 @@ class AuthViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             authRepository.logout()
+            _sessionState.value = SessionState.Unauthenticated
             _state.value = AuthState(isLoggedIn = false)
         }
     }

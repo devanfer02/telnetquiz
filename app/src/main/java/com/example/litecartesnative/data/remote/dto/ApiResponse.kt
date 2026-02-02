@@ -22,3 +22,12 @@ data class ValidationErrorResponse(
     @SerializedName("errors")
     val errors: Map<String, List<String>>? = null
 )
+
+data class UserProfileDto(
+    @SerializedName("id")
+    val id: Int,
+    @SerializedName("fullname")
+    val fullname: String,
+    @SerializedName("email")
+    val email: String
+)
