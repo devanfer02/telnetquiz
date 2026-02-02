@@ -2,6 +2,7 @@ package com.example.litecartesnative.features.chapter.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,12 +38,19 @@ fun ChapterCard(
         modifier = modifier
             .fillMaxWidth()
             .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(16.dp),
-                clip = false
+                elevation = 12.dp,
+                shape = RoundedCornerShape(20.dp),
+                clip = false,
+                ambientColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f),
+                spotColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f)
             )
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(LitecartesColor.DarkerSurface)
+            .border(
+                width = 1.dp,
+                color = LitecartesColor.Secondary.copy(alpha = 0.2f),
+                shape = RoundedCornerShape(20.dp)
+            )
     ) {
         Row(
             modifier = Modifier
@@ -114,12 +122,19 @@ fun ChapterCardFromApi(
         modifier = modifier
             .fillMaxWidth()
             .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(16.dp),
-                clip = false
+                elevation = 12.dp,
+                shape = RoundedCornerShape(20.dp),
+                clip = false,
+                ambientColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f),
+                spotColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f)
             )
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(LitecartesColor.DarkerSurface)
+            .border(
+                width = 1.dp,
+                color = LitecartesColor.Secondary.copy(alpha = 0.2f),
+                shape = RoundedCornerShape(20.dp)
+            )
     ) {
         Row(
             modifier = Modifier
