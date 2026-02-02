@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -28,7 +29,8 @@ import com.example.litecartesnative.ui.theme.nunitosFontFamily
 fun PasswordInput(
     value: String,
     label: String = "Kata Sandi",
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    leadingIcon: Painter? = null
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -50,6 +52,15 @@ fun PasswordInput(
                 fontWeight = FontWeight.SemiBold
             )
         },
+        leadingIcon = if (leadingIcon != null) {
+            {
+                Icon(
+                    painter = leadingIcon,
+                    contentDescription = null,
+                    tint = LitecartesColor.Secondary
+                )
+            }
+        } else null,
         visualTransformation = if (passwordVisible) {
             VisualTransformation.None
         } else {
@@ -76,7 +87,9 @@ fun PasswordInput(
         },
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = LitecartesColor.Secondary,
-            unfocusedBorderColor = LitecartesColor.Secondary
+            unfocusedBorderColor = LitecartesColor.Secondary,
+            focusedContainerColor = LitecartesColor.DarkerSurface.copy(alpha = 0.5f),
+            unfocusedContainerColor = LitecartesColor.DarkerSurface.copy(alpha = 0.3f)
         ),
         shape = RoundedCornerShape(16.dp),
         singleLine = true
