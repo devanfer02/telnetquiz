@@ -3,8 +3,11 @@ package com.example.litecartesnative.features.quiz.presentation.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -20,8 +23,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -91,40 +96,54 @@ fun LevelScreen(
                         val chapter = detailState.chapter!!
                         val quizzes = chapter.quizzes
 
-                        Box(
+                        BoxWithConstraints(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .verticalScroll(scrollState)
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.level_background),
-                                contentDescription = "bg",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize()
-                            )
+                            val screenWidth = maxWidth
+                            // Content height is proportional to screen width to maintain aspect ratio
+                            // Using 1.94 ratio (800/412) from original Pixel 8 design
+                            val contentHeight = screenWidth * 1.94f
 
-                            quizzes.forEachIndexed { index, quiz ->
-                                if (index >= levelsData.size) {
-                                    return@forEachIndexed
-                                }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(contentHeight)
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.level_background),
+                                    contentDescription = "bg",
+                                    contentScale = ContentScale.FillBounds,
+                                    modifier = Modifier.fillMaxSize()
+                                )
 
-                                val levelPosition = levelsData[index]
-                                Box(
-                                    modifier = Modifier
-                                        .offset(
-                                            x = levelPosition.x,
-                                            y = levelPosition.y
-                                        )
-                                ) {
-                                    LevelButton(
-                                        level = quiz.level,
-                                        onClick = {
-                                            navController.navigate(
-                                                "${Screen.QuestionScreen.route}/${quiz.id}"
+                                quizzes.forEachIndexed { index, quiz ->
+                                    if (index >= levelsData.size) {
+                                        return@forEachIndexed
+                                    }
+
+                                    val levelPosition = levelsData[index]
+                                    // Account for button size (approximately 50dp)
+                                    val buttonOffset = with(LocalDensity.current) { 25.dp.toPx() }
+
+                                    Box(
+                                        modifier = Modifier
+                                            .offset(
+                                                x = screenWidth * levelPosition.xFraction - with(LocalDensity.current) { buttonOffset.toDp() },
+                                                y = contentHeight * levelPosition.yFraction
                                             )
-                                        },
-                                        done = MarkAsDoneManager.levels.getOrNull(chapterId)?.getOrNull(quiz.level - 1) ?: false
-                                    )
+                                    ) {
+                                        LevelButton(
+                                            level = quiz.level,
+                                            onClick = {
+                                                navController.navigate(
+                                                    "${Screen.QuestionScreen.route}/${quiz.id}"
+                                                )
+                                            },
+                                            done = MarkAsDoneManager.levels.getOrNull(chapterId)?.getOrNull(quiz.level - 1) ?: false
+                                        )
+                                    }
                                 }
                             }
                         }
