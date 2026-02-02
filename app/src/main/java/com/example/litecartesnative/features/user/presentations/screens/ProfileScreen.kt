@@ -203,7 +203,7 @@ fun ProfileScreen(
                 ) {
                     StatsIcon(
                         resId = R.drawable.diamond,
-                        statName = "Reward",
+                        statName = "Hadiah",
                         stat = 250
                     )
                     StatsIcon(
@@ -213,7 +213,7 @@ fun ProfileScreen(
                     )
                     StatsIcon(
                         resId = R.drawable.fire,
-                        statName = "Streaks",
+                        statName = "Streak",
                         stat = 31
                     )
                 }

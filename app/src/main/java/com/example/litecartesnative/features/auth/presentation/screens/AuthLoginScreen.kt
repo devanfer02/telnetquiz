@@ -115,7 +115,7 @@ fun AuthLoginScreen(
                 )
                 PasswordInput(
                     value = password,
-                    label = "Password",
+                    label = "Kata Sandi",
                     onValueChange = {
                         password = it
                     }
@@ -132,7 +132,7 @@ fun AuthLoginScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ){
                     Text(
-                        text = "Register",
+                        text = "Daftar",
                         textAlign = TextAlign.Start,
                         color = LitecartesColor.Secondary,
                         fontFamily = nunitosFontFamily,
@@ -150,7 +150,7 @@ fun AuthLoginScreen(
                             )
                     )
                     Text(
-                        text = "Forgot Password?",
+                        text = "Lupa Kata Sandi?",
                         textAlign = TextAlign.End,
                         color = LitecartesColor.Secondary,
                         fontFamily = nunitosFontFamily,
@@ -202,7 +202,7 @@ fun AuthLoginScreen(
                     modifier = Modifier.padding()
                 )
                 Button(
-                    text = "Sign in with Google",
+                    text = "Masuk dengan Google",
                     borderColor = Color.White,
                     color = Color.Black,
                     backgroundColor = Color.White,

@@ -89,7 +89,7 @@ fun PretestScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = state.error ?: "An error occurred",
+                            text = state.error ?: "Terjadi kesalahan",
                             color = LitecartesColor.Secondary
                         )
                     }

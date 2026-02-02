@@ -27,7 +27,7 @@ import com.example.litecartesnative.ui.theme.nunitosFontFamily
 @Composable
 fun PasswordInput(
     value: String,
-    label: String = "Password",
+    label: String = "Kata Sandi",
     onValueChange: (String) -> Unit
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
@@ -66,9 +66,9 @@ fun PasswordInput(
                         }
                     ),
                     contentDescription = if (passwordVisible) {
-                        "Hide password"
+                        "Sembunyikan kata sandi"
                     } else {
-                        "Show password"
+                        "Tampilkan kata sandi"
                     },
                     tint = LitecartesColor.Secondary
                 )

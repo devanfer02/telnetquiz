@@ -111,7 +111,7 @@ fun AuthRegisterScreen(
             ) {
                 Input(
                     value = fullname,
-                    label = "Fullname",
+                    label = "Nama Lengkap",
                     onValueChange = {
                         fullname = it
                     }
@@ -131,7 +131,7 @@ fun AuthRegisterScreen(
                 )
                 PasswordInput(
                     value = password,
-                    label = "Password",
+                    label = "Kata Sandi",
                     onValueChange = {
                         password = it
                     }
@@ -148,7 +148,7 @@ fun AuthRegisterScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ){
                     Text(
-                        text = "Already have an account? Login",
+                        text = "Sudah punya akun? Masuk",
                         textAlign = TextAlign.Start,
                         color = LitecartesColor.Secondary,
                         fontFamily = nunitosFontFamily,

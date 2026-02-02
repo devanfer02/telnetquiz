@@ -75,7 +75,7 @@ fun LeaderboardScreen(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = "Leaderboard",
+                        text = "Papan Peringkat",
                         fontFamily = nunitosFontFamily,
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 28.sp,

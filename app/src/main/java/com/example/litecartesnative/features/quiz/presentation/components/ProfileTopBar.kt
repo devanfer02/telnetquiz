@@ -137,7 +137,7 @@ fun ProfileTopBar(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Voyager",
+                        text = "Penjelajah",
                         fontFamily = nunitosFontFamily,
                         color = LitecartesColor.Secondary,
                         fontWeight = FontWeight.Bold,

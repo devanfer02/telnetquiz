@@ -90,7 +90,7 @@ fun FriendScreen(
                 )
                 Input(
                     value = "Maudy",
-                    label = "Search",
+                    label = "Cari",
                     onValueChange = {}
                 )
             }
