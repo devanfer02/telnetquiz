@@ -51,7 +51,7 @@ fun AuthStartScreen(
                     .height(300.dp)
             )
             StrokedText(
-                text = "selamat datang\n sobat geomatruiz".uppercase(),
+                text = "selamat datang\n sobat telnetquiz".uppercase(),
                 color = LitecartesColor.Secondary,
                 strokeColor = Color.Black,
                 fontSize = 24.sp,
@@ -59,7 +59,7 @@ fun AuthStartScreen(
                 textAlign = TextAlign.Center
             )
             Text(
-                text = "Mari kita jelajahi bangun datar dan bangun ruang!",
+                text = "Mari kita jelajahi Media dan Jaringan Telekomunikasi!",
                 fontFamily = nunitosFontFamily,
                 color = LitecartesColor.Secondary,
                 textAlign = TextAlign.Center,
@@ -98,9 +98,12 @@ fun AuthStartScreen(
                 )
                 Button(
                     text = "Saya sudah punya akun".uppercase(),
-                    borderColor = LitecartesColor.Secondary,
-                    color = LitecartesColor.Secondary,
+                    borderColor = LitecartesColor.Surface,
+                    color = LitecartesColor.Secondary ,
                     backgroundColor = LitecartesColor.Surface,
+                    shadowEnabled = true,
+                    shadowHeight = 25.dp,
+                    shadowColor = LitecartesColor.Surface,
                     onClick = {
                         navController.navigate(
                             route = Screen.AuthLoginScreen.route
@@ -108,7 +111,8 @@ fun AuthStartScreen(
                     },
                     textModifier = Modifier.padding(8.dp),
                     modifier = Modifier.fillMaxWidth(),
-                )
+
+                    )
             }
         }
 
