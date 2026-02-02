@@ -51,11 +51,11 @@ fun Button(
                     .heightIn(min = shadowHeight)
                     .shadow(
                         elevation = 8.dp,
-                        shape = RoundedCornerShape(20.dp),
+                        shape = RoundedCornerShape(12.dp),
                         clip = false
                     ),
                 onClick = onClick,
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(12.dp),
                 border = BorderStroke(1.dp, borderColor),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = shadowColor!!
