@@ -4,50 +4,55 @@ import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+// Custom color scheme using the app's warm orange/brown theme
+private val LitecartesColorScheme = lightColorScheme(
+    primary = LitecartesColor.Primary,
     onPrimary = Color.White,
+    primaryContainer = LitecartesColor.DarkerSurface,
+    onPrimaryContainer = LitecartesColor.DarkBrown,
+    secondary = LitecartesColor.Secondary,
     onSecondary = Color.White,
+    secondaryContainer = LitecartesColor.DarkerSurface,
+    onSecondaryContainer = LitecartesColor.DarkBrown,
+    tertiary = LitecartesColor.Tertiary,
     onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    background = LitecartesColor.Surface,
+    onBackground = LitecartesColor.DarkBrown,
+    surface = LitecartesColor.Surface,
+    onSurface = LitecartesColor.DarkBrown,
+    surfaceVariant = LitecartesColor.DarkerSurface,
+    onSurfaceVariant = LitecartesColor.Secondary,
+    outline = LitecartesColor.Secondary,
+    outlineVariant = LitecartesColor.Secondary.copy(alpha = 0.5f)
 )
 
 @Composable
 fun LitecartesNativeTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    // Disable dynamic color to use our custom theme
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+    // Always use our custom color scheme
+    val colorScheme = LitecartesColorScheme
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            // Set status bar color to match the surface
+            window.statusBarColor = LitecartesColor.Surface.toArgb()
+            // Use dark icons on light background
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
+        }
     }
 
     MaterialTheme(
