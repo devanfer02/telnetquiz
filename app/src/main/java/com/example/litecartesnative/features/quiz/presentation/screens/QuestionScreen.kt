@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -64,6 +65,9 @@ fun QuestionScreen(
     val currentQuestion = viewModel.currentQuestion
 
     var showDialog by remember { mutableStateOf(false) }
+
+    // Letter labels for options
+    val letters = listOf('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
 
     LaunchedEffect(quizId) {
         viewModel.loadQuiz(quizId)
@@ -124,21 +128,32 @@ fun QuestionScreen(
                 currentQuestion != null -> {
                     val selectedOptionId = state.answers[currentQuestion.id]
 
+                    // Question header with gradient background
                     Box(
                         modifier = Modifier
-                            .clip(
-                                RoundedCornerShape(
-                                    bottomEnd = 20.dp,
-                                    bottomStart = 20.dp
-                                )
-                            )
                             .shadow(
-                                elevation = 8.dp,
-                                shape = RoundedCornerShape(20.dp),
+                                elevation = 12.dp,
+                                shape = RoundedCornerShape(
+                                    bottomEnd = 24.dp,
+                                    bottomStart = 24.dp
+                                ),
                                 clip = false
                             )
-                            .background(LitecartesColor.Primary)
-                            .padding(top = 18.dp),
+                            .clip(
+                                RoundedCornerShape(
+                                    bottomEnd = 24.dp,
+                                    bottomStart = 24.dp
+                                )
+                            )
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(
+                                        LitecartesColor.Primary,
+                                        LitecartesColor.Primary.copy(alpha = 0.9f)
+                                    )
+                                )
+                            )
+                            .padding(top = 18.dp, bottom = 20.dp),
                     ) {
                         Column(
                             modifier = Modifier
@@ -169,43 +184,50 @@ fun QuestionScreen(
                                 color = Color.White,
                                 fontFamily = nunitosFontFamily,
                                 fontSize = 17.sp,
-                                modifier = Modifier.padding(vertical = 20.dp)
+                                modifier = Modifier.padding(vertical = 16.dp)
                             )
                         }
                     }
-                    Box(
+
+                    // Options section
+                    Column(
                         modifier = Modifier
+                            .weight(1f)
                             .fillMaxSize()
                             .background(LitecartesColor.Surface)
-                            .padding(top = 20.dp)
+                            .padding(top = 16.dp)
                     ) {
-                        Column(
+                        Text(
+                            text = currentQuestion.question,
+                            textAlign = TextAlign.Center,
+                            color = LitecartesColor.Secondary,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = nunitosFontFamily,
+                            fontSize = 15.sp,
+                            modifier = Modifier.padding(horizontal = 18.dp)
+                        )
+                        Spacer(modifier = Modifier.padding(8.dp))
+                        LazyColumn(
                             modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 18.dp)
+                                .weight(1f)
+                                .padding(horizontal = 12.dp)
                         ) {
-                            Text(
-                                text = currentQuestion.question,
-                                textAlign = TextAlign.Center,
-                                color = LitecartesColor.Secondary,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Spacer(modifier = Modifier.padding(10.dp))
-                            LazyColumn(
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                items(currentQuestion.options) { option ->
-                                    OptionButton(
-                                        text = option.text,
-                                        isActive = selectedOptionId == option.id,
-                                        onClick = {
-                                            viewModel.selectAnswer(currentQuestion.id, option.id)
-                                        }
-                                    )
-                                }
+                            itemsIndexed(currentQuestion.options) { index, option ->
+                                OptionButton(
+                                    text = option.text,
+                                    letter = letters.getOrElse(index) { ' ' },
+                                    isActive = selectedOptionId == option.id,
+                                    onClick = {
+                                        viewModel.selectAnswer(currentQuestion.id, option.id)
+                                    }
+                                )
                             }
-                            Spacer(modifier = Modifier.padding(10.dp))
+                        }
 
+                        // Continue button
+                        Column(
+                            modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp)
+                        ) {
                             if (selectedOptionId != null) {
                                 OutlinedButton(
                                     modifier = Modifier
@@ -223,7 +245,10 @@ fun QuestionScreen(
                                 ) {
                                     Text(
                                         text = "Lanjutkan",
-                                        color = LitecartesColor.Surface
+                                        color = LitecartesColor.Surface,
+                                        fontFamily = nunitosFontFamily,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(vertical = 4.dp)
                                     )
                                 }
                             }
@@ -241,50 +266,48 @@ fun QuestionScreen(
                                     )
                                 }
                             }
+                        }
 
-                            Spacer(modifier = Modifier.padding(10.dp))
-
-                            if (showDialog) {
-                                ModalBottomSheet(
-                                    onDismissRequest = { showDialog = false },
-                                    containerColor = LitecartesColor.Surface
+                        if (showDialog) {
+                            ModalBottomSheet(
+                                onDismissRequest = { showDialog = false },
+                                containerColor = LitecartesColor.Surface
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(350.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(350.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = "Jawaban tersimpan!",
-                                            fontFamily = nunitosFontFamily,
-                                            fontSize = 20.sp,
-                                            color = LitecartesColor.Secondary,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Image(
-                                            painter = painterResource(id = R.drawable.chap1),
-                                            contentDescription = "",
-                                            modifier = Modifier.size(200.dp)
-                                        )
+                                    Text(
+                                        text = "Jawaban tersimpan!",
+                                        fontFamily = nunitosFontFamily,
+                                        fontSize = 20.sp,
+                                        color = LitecartesColor.Secondary,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Image(
+                                        painter = painterResource(id = R.drawable.chap1),
+                                        contentDescription = "",
+                                        modifier = Modifier.size(200.dp)
+                                    )
 
-                                        Column(
-                                            modifier = Modifier.padding(horizontal = 20.dp)
-                                        ) {
-                                            PretestButton(
-                                                text = if (viewModel.isLastQuestion) "Selesai" else "Lanjut",
-                                                backgroundColor = LitecartesColor.Secondary,
-                                                textColor = LitecartesColor.Surface,
-                                                onClick = {
-                                                    showDialog = false
-                                                    if (viewModel.isLastQuestion) {
-                                                        viewModel.submitQuiz()
-                                                    } else {
-                                                        viewModel.nextQuestion()
-                                                    }
+                                    Column(
+                                        modifier = Modifier.padding(horizontal = 20.dp)
+                                    ) {
+                                        PretestButton(
+                                            text = if (viewModel.isLastQuestion) "Selesai" else "Lanjut",
+                                            backgroundColor = LitecartesColor.Secondary,
+                                            textColor = LitecartesColor.Surface,
+                                            onClick = {
+                                                showDialog = false
+                                                if (viewModel.isLastQuestion) {
+                                                    viewModel.submitQuiz()
+                                                } else {
+                                                    viewModel.nextQuestion()
                                                 }
-                                            )
-                                        }
+                                            }
+                                        )
                                     }
                                 }
                             }
