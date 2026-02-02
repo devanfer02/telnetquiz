@@ -189,27 +189,6 @@ fun AuthLoginScreen(
                         )
                     }
                 }
-                Text(
-                    text = "atau".uppercase(),
-                    color = LitecartesColor.Secondary,
-                    fontFamily = nunitosFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(
-                        vertical = 20.dp
-                    )
-                )
-                Spacer(
-                    modifier = Modifier.padding()
-                )
-                Button(
-                    text = "Masuk dengan Google",
-                    borderColor = Color.White,
-                    color = Color.Black,
-                    backgroundColor = Color.White,
-                    modifier = Modifier.fillMaxWidth(),
-                    icon = painterResource(id = R.drawable.google_icon),
-                    textModifier = Modifier.padding(8.dp)
-                )
             }
         }
     }
