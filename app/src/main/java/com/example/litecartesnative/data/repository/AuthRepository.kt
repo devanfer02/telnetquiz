@@ -7,6 +7,7 @@ import com.example.litecartesnative.data.remote.dto.LoginRequest
 import com.example.litecartesnative.data.remote.dto.RegisterRequest
 import com.example.litecartesnative.data.remote.dto.UserProfileDto
 import com.example.litecartesnative.data.remote.dto.ValidationErrorResponse
+import com.example.litecartesnative.data.remote.dto.LoginErrorResponse
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -37,6 +38,18 @@ class AuthRepository @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e("AuthRepository", "Failed to parse error: ${e.message}")
+            errorBody
+        }
+    }
+
+    private fun parseLoginError(errorBody: String?): String {
+        if (errorBody.isNullOrBlank()) return "An error occurred"
+
+        return try {
+            val errorResponse = gson.fromJson(errorBody, LoginErrorResponse::class.java)
+            errorResponse.errors ?: errorResponse.message
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Failed to parse login error: ${e.message}")
             errorBody
         }
     }
@@ -88,7 +101,7 @@ class AuthRepository @Inject constructor(
             } else {
                 val errorBody = response.errorBody()?.string()
                 Log.e("LOGIN", "Error body: $errorBody")
-                val errorMessage = parseValidationError(errorBody)
+                val errorMessage = parseLoginError(errorBody)
                 Result.Error(errorMessage, response.code())
             }
         } catch (e: Exception) {
