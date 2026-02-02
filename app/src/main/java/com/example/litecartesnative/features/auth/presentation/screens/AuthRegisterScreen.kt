@@ -1,7 +1,6 @@
 package com.example.litecartesnative.features.auth.presentation.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,11 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,10 +27,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -104,72 +104,67 @@ fun AuthRegisterScreen(
                 modifier = Modifier
                     .padding(
                         horizontal = 35.dp,
-                        vertical = 50.dp
+                        vertical = 30.dp
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Top
             ) {
                 Input(
                     value = fullname,
                     label = "Nama Lengkap",
                     onValueChange = {
                         fullname = it
-                    }
+                    },
+                    leadingIcon = painterResource(id = R.drawable.ic_person)
                 )
                 Spacer(
-                    modifier = Modifier.padding(2.dp)
+                    modifier = Modifier.padding(4.dp)
                 )
                 Input(
                     value = email,
                     label = "Email",
                     onValueChange = {
                         email = it
-                    }
+                    },
+                    leadingIcon = painterResource(id = R.drawable.ic_email)
                 )
                 Spacer(
-                    modifier = Modifier.padding(2.dp)
+                    modifier = Modifier.padding(4.dp)
                 )
                 PasswordInput(
                     value = password,
                     label = "Kata Sandi",
                     onValueChange = {
                         password = it
-                    }
+                    },
+                    leadingIcon = painterResource(id = R.drawable.ic_lock)
                 )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            top = 2.dp,
-                            bottom = 12.dp,
-                            end = 5.dp,
-                            start = 5.dp
+                            top = 4.dp,
+                            bottom = 12.dp
                         ),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.Start
                 ){
-                    Text(
-                        text = "Sudah punya akun? Masuk",
-                        textAlign = TextAlign.Start,
-                        color = LitecartesColor.Secondary,
-                        fontFamily = nunitosFontFamily,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        modifier = Modifier
-                            .padding(
-                                vertical = 5.dp
-                            )
-                            .clickable(
-                                onClick = {
-                                    navController
-                                        .navigate(Screen.AuthLoginScreen.route)
-                                }
-                            )
-
-                    )
+                    TextButton(
+                        onClick = {
+                            navController.navigate(Screen.AuthLoginScreen.route)
+                        },
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = LitecartesColor.Secondary
+                        )
+                    ) {
+                        Text(
+                            text = "Sudah punya akun? Masuk",
+                            fontFamily = nunitosFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            textDecoration = TextDecoration.Underline
+                        )
+                    }
                 }
-                Spacer(
-                    modifier = Modifier.padding(2.dp)
-                )
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
@@ -197,28 +192,9 @@ fun AuthRegisterScreen(
                         )
                     }
                 }
-                Text(
-                    text = "atau".uppercase(),
-                    color = LitecartesColor.Secondary,
-                    fontFamily = nunitosFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(
-                        vertical = 20.dp
-                    )
-                )
-                Spacer(
-                    modifier = Modifier.padding()
-                )
-//                Button(
-//                    text = "Sign up with Google",
-//                    borderColor = Color.White,
-//                    color = Color.Black,
-//                    backgroundColor = Color.White,
-//                    icon = painterResource(id = R.drawable.google_icon),
-//                    modifier = Modifier.fillMaxWidth(),
-//                    textModifier = Modifier.padding(8.dp)
-//                )
             }
+
+            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
