@@ -62,20 +62,20 @@ fun AboutScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Tentang Geomatruiz",
+                    text = "Tentang TelNetQuiz",
                     fontFamily = nunitosFontFamily,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp
                 )
                 Text(
-                    text = "Aplikasi Geomatruiz adalah aplikasi pembelajaran bagi Anak-anak yang sedang menduduki bangku sekolah dasar. Aplikasi Geomatruiz dibuat untuk membantu user nya untuk memahami elemen Geometri dan Pengukuran dari Mata Pelajaran Matematika pada tingkat Sekolah Dasar, tepatnya Fase A hingga Fase C. Pengembang aplikasi ini mengacu pada Capaian Pembelajaran mata pelajaran Matematika di Fase A hingga Fase C, yang kami pinjam dari referensi penerapan kurikulum pada Platform Merdeka Mengajar (PMM).",
+                    text = "Aplikasi TelNetQuiz adalah aplikasi pembelajaran bagi Anak-anak yang sedang menduduki bangku sekolah dasar. Aplikasi TelNetQuiz dibuat untuk membantu user nya untuk memahami elemen Geometri dan Pengukuran dari Mata Pelajaran Matematika pada tingkat Sekolah Dasar, tepatnya Fase A hingga Fase C. Pengembang aplikasi ini mengacu pada Capaian Pembelajaran mata pelajaran Matematika di Fase A hingga Fase C, yang kami pinjam dari referensi penerapan kurikulum pada Platform Merdeka Mengajar (PMM).",
                     color = Color.White,
                     fontFamily = nunitosFontFamily,
                     textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = "Aplikasi Geomatruiz menggunakan pendekatan pembelajaran adaptif, di mana setiap pengguna akan mendapatkan materi yang sesuai dengan tingkat kemampuannya. Melalui diagnosa pengetahuan berbentuk placement test di awal permainan, aplikasi akan menentukan level yang tepat untuk memulai pembelajaran.",
+                    text = "Aplikasi TelNetQuiz menggunakan pendekatan pembelajaran adaptif, di mana setiap pengguna akan mendapatkan materi yang sesuai dengan tingkat kemampuannya. Melalui diagnosa pengetahuan berbentuk placement test di awal permainan, aplikasi akan menentukan level yang tepat untuk memulai pembelajaran.",
                     color = Color.White,
                     fontFamily = nunitosFontFamily,
                     textAlign = TextAlign.Justify
