@@ -1,9 +1,18 @@
 package com.example.litecartesnative.components
 
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,9 +33,11 @@ import com.example.litecartesnative.features.user.presentations.screens.ProfileS
 import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.features.auth.presentation.screens.AboutScreen
 import com.example.litecartesnative.features.auth.presentation.screens.FeedbackScren
+import com.example.litecartesnative.features.auth.presentation.viewmodel.SessionState
 import com.example.litecartesnative.features.quiz.presentation.screens.ResultScreen
 import com.example.litecartesnative.features.quiz.presentation.singletons.MarkAsDoneManager
 import com.example.litecartesnative.features.quiz.presentation.singletons.WrongQuizManager
+import com.example.litecartesnative.ui.theme.LitecartesColor
 import kotlinx.coroutines.flow.collectLatest
 
 
@@ -34,8 +45,9 @@ import kotlinx.coroutines.flow.collectLatest
 fun Navigation() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = hiltViewModel()
+    val sessionState by authViewModel.sessionState.collectAsState()
 
-    // Handle session expiration - redirect to login
+    // Handle session expiration during app usage
     LaunchedEffect(Unit) {
         authViewModel.sessionExpiredEvent.collectLatest {
             Log.d("Navigation", "Session expired, redirecting to login")
@@ -45,11 +57,47 @@ fun Navigation() {
         }
     }
 
+    // Conditional rendering based on session state
+    when (sessionState) {
+        SessionState.Loading -> {
+            SplashLoadingScreen()
+        }
+        SessionState.Authenticated -> {
+            MainNavHost(
+                navController = navController,
+                startDestination = Screen.HomeScreen.route
+            )
+        }
+        SessionState.Unauthenticated -> {
+            MainNavHost(
+                navController = navController,
+                startDestination = Screen.AuthStartScreen.route
+            )
+        }
+    }
+}
+
+@Composable
+private fun SplashLoadingScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(LitecartesColor.Surface),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(color = LitecartesColor.Secondary)
+    }
+}
+
+@Composable
+private fun MainNavHost(
+    navController: NavHostController,
+    startDestination: String
+) {
     NavHost(
         navController = navController,
-        startDestination = Screen.AuthStartScreen.route
+        startDestination = startDestination
     ) {
-
         composable(
             route = Screen.AuthStartScreen.route
         ) {
@@ -180,7 +228,7 @@ fun Navigation() {
         ) {
             val chapterId = it.arguments?.getInt("chapterId") ?: 0
             val level = it.arguments?.getInt("level") ?: 0
-            
+
             LaunchedEffect(key1 = chapterId) {
                 Log.d("QUEUEMANAGER", "${WrongQuizManager.queue.toString()}")
                 if (!WrongQuizManager.queue.isEmpty()) {
