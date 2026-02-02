@@ -52,6 +52,6 @@ interface TelNetQuizApi {
     ): Response<ApiResponse<QuizResultDto>>
 
     // User profile endpoint (also used for session validation)
-    @GET("api/user/profile")
+    @GET("api/users/profile")
     suspend fun getUserProfile(): Response<ApiResponse<UserProfileDto>>
 }
