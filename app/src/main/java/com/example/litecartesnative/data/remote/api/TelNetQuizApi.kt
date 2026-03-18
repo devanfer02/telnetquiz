@@ -27,7 +27,7 @@ interface TelNetQuizApi {
     @POST("api/pretest")
     suspend fun submitPretestAnswers(
         @Body request: SubmitPretestRequest
-    ): Response<ApiResponse<Unit>>
+    ): Response<ApiResponse<PretestResultDto>>
 
     // Chapter endpoints
     @GET("api/chapters")
@@ -51,7 +51,34 @@ interface TelNetQuizApi {
         @Body request: SubmitQuizRequest
     ): Response<ApiResponse<QuizResultDto>>
 
-    // User profile endpoint (also used for session validation)
+    // User profile endpoints (also used for session validation)
     @GET("api/users/profile")
     suspend fun getUserProfile(): Response<ApiResponse<UserProfileDto>>
+
+    @Headers("Content-Type: application/json")
+    @PATCH("api/users/profile")
+    suspend fun updateUserProfile(
+        @Body request: UpdateProfileRequest
+    ): Response<ApiResponse<UserProfileDto>>
+
+    // Study material
+    @GET("api/materials/{id}")
+    suspend fun getStudyMaterial(
+        @Path("id") id: Int
+    ): Response<ApiResponse<StudyMaterialDto>>
+
+    // Achievements
+    @GET("api/achievements")
+    suspend fun getAchievements(): Response<ApiResponse<AchievementsResponse>>
+
+    // Leaderboard
+    @GET("api/leaderboard")
+    suspend fun getLeaderboard(
+        @Query("limit") limit: Int = 10,
+        @Query("cursor") cursor: Int? = null
+    ): Response<ApiResponse<LeaderboardResponse>>
+
+    // Pretest status
+    @GET("api/pretest/status")
+    suspend fun getPretestStatus(): Response<ApiResponse<PretestStatusResponse>>
 }

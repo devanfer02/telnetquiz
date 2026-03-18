@@ -36,5 +36,96 @@ data class UserProfileDto(
     @SerializedName("fullname")
     val fullname: String,
     @SerializedName("email")
-    val email: String
+    val email: String,
+    @SerializedName("image")
+    val image: String? = null,
+    @SerializedName("createdAt")
+    val createdAt: String? = null,
+    @SerializedName("updatedAt")
+    val updatedAt: String? = null
+)
+
+data class UpdateProfileRequest(
+    @SerializedName("fullname")
+    val fullname: String? = null,
+    @SerializedName("image")
+    val image: String? = null
+)
+
+data class StudyMaterialDto(
+    @SerializedName("id")
+    val id: Int,
+    @SerializedName("title")
+    val title: String,
+    @SerializedName("imageLink")
+    val imageLink: String?,
+    @SerializedName("content")
+    val content: String,
+    @SerializedName("createdAt")
+    val createdAt: String? = null,
+    @SerializedName("updatedAt")
+    val updatedAt: String? = null
+)
+
+data class AchievementDto(
+    @SerializedName("id")
+    val id: String,
+    @SerializedName("title")
+    val title: String,
+    @SerializedName("description")
+    val description: String,
+    @SerializedName("unlocked")
+    val unlocked: Boolean,
+    @SerializedName("unlockedAt")
+    val unlockedAt: String? = null
+)
+
+data class AchievementsResponse(
+    @SerializedName("achievements")
+    val achievements: List<AchievementDto>
+)
+
+data class LeaderboardResponse(
+    @SerializedName("leaderboard")
+    val leaderboard: List<LeaderboardEntryDto>,
+    @SerializedName("currentUser")
+    val currentUser: LeaderboardUserDto?,
+    @SerializedName("pagination")
+    val pagination: PaginationDto
+)
+
+data class LeaderboardEntryDto(
+    @SerializedName("rank")
+    val rank: Int,
+    @SerializedName("userId")
+    val userId: String,
+    @SerializedName("fullname")
+    val fullname: String?,
+    @SerializedName("image")
+    val image: String?,
+    @SerializedName("totalScore")
+    val totalScore: Int
+)
+
+data class LeaderboardUserDto(
+    @SerializedName("rank")
+    val rank: Int,
+    @SerializedName("fullname")
+    val fullname: String?,
+    @SerializedName("image")
+    val image: String?,
+    @SerializedName("totalScore")
+    val totalScore: Int
+)
+
+data class PaginationDto(
+    @SerializedName("nextCursor")
+    val nextCursor: Int?,
+    @SerializedName("hasNextPage")
+    val hasNextPage: Boolean
+)
+
+data class PretestStatusResponse(
+    @SerializedName("has_taken_pretest")
+    val hasTakenPretest: Boolean
 )

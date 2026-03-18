@@ -60,8 +60,8 @@ data class QuizOptionDto(
 )
 
 data class SubmitQuizRequest(
-    @SerializedName("quiz_submissions")
-    val quizSubmissions: List<QuizAnswerDto>
+    @SerializedName("answers")
+    val answers: List<QuizAnswerDto>
 )
 
 data class QuizAnswerDto(
@@ -74,10 +74,12 @@ data class QuizAnswerDto(
 data class QuizResultDto(
     @SerializedName("passed")
     val passed: Boolean,
-    @SerializedName("score")
-    val score: Int,
-    @SerializedName("correctCount")
-    val correctCount: Int,
-    @SerializedName("totalQuestions")
-    val totalQuestions: Int
+    @SerializedName("correct_answers")
+    val correctAnswers: Int,
+    @SerializedName("total_questions")
+    val totalQuestions: Int,
+    @SerializedName("score_percentage")
+    val scorePercentage: Double,
+    @SerializedName("wrong_question_ids")
+    val wrongQuestionIds: List<Int>? = null
 )
