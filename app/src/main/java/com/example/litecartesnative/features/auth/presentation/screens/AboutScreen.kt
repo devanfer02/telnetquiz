@@ -28,6 +28,7 @@ import com.example.litecartesnative.R
 import com.example.litecartesnative.components.Button
 import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.ui.theme.LitecartesColor
+import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
 @Composable
@@ -100,8 +101,10 @@ fun AboutScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewAboutScreen() {
-    AboutScreen(navController = rememberNavController())
+    LitecartesNativeTheme {
+        AboutScreen(navController = rememberNavController())
+    }
 }

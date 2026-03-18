@@ -33,6 +33,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.litecartesnative.R
 import com.example.litecartesnative.ui.theme.LitecartesColor
+import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 
 @Composable
 fun EditProfileScreen(
@@ -108,10 +109,12 @@ fun EditProfileScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewEditProfileScreen() {
-    EditProfileScreen(
-        navController = rememberNavController()
-    )
+    LitecartesNativeTheme {
+        EditProfileScreen(
+            navController = rememberNavController()
+        )
+    }
 }

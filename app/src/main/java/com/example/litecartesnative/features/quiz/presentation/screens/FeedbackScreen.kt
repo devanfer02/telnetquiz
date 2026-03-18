@@ -32,6 +32,7 @@ import com.example.litecartesnative.components.Button
 import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.constants.chaptersData
 import com.example.litecartesnative.ui.theme.LitecartesColor
+import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
 @Composable
@@ -117,13 +118,15 @@ fun FeedbackScren(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewFeedbackScren() {
-    FeedbackScren(
-        navController = rememberNavController(),
-        chapterId = 0,
-        level = 1,
-        id = 1
-    )
+    LitecartesNativeTheme {
+        FeedbackScren(
+            navController = rememberNavController(),
+            chapterId = 0,
+            level = 1,
+            id = 1
+        )
+    }
 }

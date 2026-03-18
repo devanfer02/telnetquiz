@@ -28,6 +28,7 @@ import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.components.StrokedText
 import com.example.litecartesnative.components.Button
 import com.example.litecartesnative.ui.theme.LitecartesColor
+import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
 @Composable
@@ -119,10 +120,12 @@ fun AuthStartScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewAuthStartScreen() {
-    AuthStartScreen(
-        navController = rememberNavController()
-    )
+    LitecartesNativeTheme {
+        AuthStartScreen(
+            navController = rememberNavController()
+        )
+    }
 }

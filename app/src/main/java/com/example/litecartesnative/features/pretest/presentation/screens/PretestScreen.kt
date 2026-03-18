@@ -25,15 +25,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.litecartesnative.features.pretest.presentation.components.PretestButton
 import com.example.litecartesnative.features.pretest.presentation.components.ProgressBarFromApi
 import com.example.litecartesnative.features.pretest.presentation.viewmodel.PretestViewModel
 import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.ui.theme.LitecartesColor
+import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 
 @Composable
 fun PretestScreen(
@@ -172,5 +175,15 @@ fun PretestScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun PreviewPretestScreen() {
+    LitecartesNativeTheme {
+        PretestScreen(
+            navController = rememberNavController()
+        )
     }
 }

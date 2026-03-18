@@ -32,6 +32,7 @@ import com.example.litecartesnative.features.user.presentations.components.Top3P
 import com.example.litecartesnative.features.user.domain.model.User
 import com.example.litecartesnative.constants.usersDummy
 import com.example.litecartesnative.ui.theme.LitecartesColor
+import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
 @Composable
@@ -199,8 +200,10 @@ fun LeaderboardScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewLeaderboardScreen() {
-    LeaderboardScreen(navController = rememberNavController())
+    LitecartesNativeTheme {
+        LeaderboardScreen(navController = rememberNavController())
+    }
 }

@@ -44,6 +44,7 @@ import com.example.litecartesnative.features.auth.presentation.components.Input
 import com.example.litecartesnative.features.auth.presentation.components.PasswordInput
 import com.example.litecartesnative.features.auth.presentation.viewmodel.AuthViewModel
 import com.example.litecartesnative.ui.theme.LitecartesColor
+import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
 @Composable
@@ -199,10 +200,12 @@ fun AuthRegisterScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewAuthRegisterScreen() {
-    AuthRegisterScreen(
-        navController = rememberNavController()
-    )
+    LitecartesNativeTheme {
+        AuthRegisterScreen(
+            navController = rememberNavController()
+        )
+    }
 }

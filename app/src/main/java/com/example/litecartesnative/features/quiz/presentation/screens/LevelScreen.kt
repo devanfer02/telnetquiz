@@ -39,6 +39,7 @@ import com.example.litecartesnative.constants.levelsData
 import com.example.litecartesnative.features.chapter.presentation.viewmodel.ChapterViewModel
 import com.example.litecartesnative.features.quiz.presentation.singletons.MarkAsDoneManager
 import com.example.litecartesnative.ui.theme.LitecartesColor
+import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 
 @Composable
 fun LevelScreen(
@@ -155,11 +156,13 @@ fun LevelScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewLevelScreen() {
-    LevelScreen(
-        navController = rememberNavController(),
-        chapterId = 1
-    )
+    LitecartesNativeTheme {
+        LevelScreen(
+            navController = rememberNavController(),
+            chapterId = 1
+        )
+    }
 }

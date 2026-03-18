@@ -45,6 +45,7 @@ import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.features.user.presentations.components.StatsIcon
 import com.example.litecartesnative.features.user.presentations.viewmodel.ProfileViewModel
 import com.example.litecartesnative.ui.theme.LitecartesColor
+import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
 @Composable
@@ -416,10 +417,12 @@ fun ProfileScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewProfileScreen() {
-    ProfileScreen(
-        navController = rememberNavController()
-    )
+    LitecartesNativeTheme {
+        ProfileScreen(
+            navController = rememberNavController()
+        )
+    }
 }

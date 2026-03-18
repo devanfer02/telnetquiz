@@ -45,6 +45,7 @@ import com.example.litecartesnative.features.chapter.presentation.viewmodel.Chap
 import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.constants.chaptersData
 import com.example.litecartesnative.ui.theme.LitecartesColor
+import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
 @Composable
@@ -215,10 +216,12 @@ fun ChapterScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewChapterScreen() {
-    ChapterScreen(
-        navController = rememberNavController()
-    )
+    LitecartesNativeTheme {
+        ChapterScreen(
+            navController = rememberNavController()
+        )
+    }
 }

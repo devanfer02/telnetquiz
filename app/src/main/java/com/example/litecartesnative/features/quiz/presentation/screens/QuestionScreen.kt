@@ -38,12 +38,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.litecartesnative.R
 import com.example.litecartesnative.constants.Screen
@@ -52,6 +54,7 @@ import com.example.litecartesnative.features.quiz.presentation.components.Progre
 import com.example.litecartesnative.features.quiz.presentation.components.OptionButton
 import com.example.litecartesnative.features.quiz.presentation.viewmodel.QuizViewModel
 import com.example.litecartesnative.ui.theme.LitecartesColor
+import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -316,5 +319,16 @@ fun QuestionScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun PreviewQuestionScreen() {
+    LitecartesNativeTheme {
+        QuestionScreen(
+            navController = rememberNavController(),
+            quizId = 1
+        )
     }
 }

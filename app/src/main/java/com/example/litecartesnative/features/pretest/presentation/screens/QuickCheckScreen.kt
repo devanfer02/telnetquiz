@@ -33,6 +33,7 @@ import com.example.litecartesnative.components.Button
 import com.example.litecartesnative.features.pretest.presentation.components.PretestButton
 import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.ui.theme.LitecartesColor
+import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
 @Composable
@@ -130,8 +131,10 @@ fun QuickCheckScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewQuickCheckScreen() {
-    QuickCheckScreen(navController = rememberNavController())
+    LitecartesNativeTheme {
+        QuickCheckScreen(navController = rememberNavController())
+    }
 }

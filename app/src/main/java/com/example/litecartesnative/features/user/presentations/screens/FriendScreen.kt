@@ -31,6 +31,7 @@ import com.example.litecartesnative.features.user.presentations.components.AddFr
 import com.example.litecartesnative.features.user.presentations.components.Input
 import com.example.litecartesnative.constants.usersDummy
 import com.example.litecartesnative.ui.theme.LitecartesColor
+import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
 @Composable
@@ -138,8 +139,10 @@ fun FriendScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewFriendScreen() {
-    FriendScreen(navController = rememberNavController())
+    LitecartesNativeTheme {
+        FriendScreen(navController = rememberNavController())
+    }
 }
