@@ -31,6 +31,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.litecartesnative.R
 import com.example.litecartesnative.components.Button
 import com.example.litecartesnative.constants.Screen
+import com.example.litecartesnative.data.remote.dto.QuizResultDto
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
@@ -38,8 +39,17 @@ import com.example.litecartesnative.ui.theme.nunitosFontFamily
 @Composable
 fun ResultScreen(
     navController: NavController,
-    chapterId: Int
+    chapterId: Int,
+    quizResult: QuizResultDto? = null
 ) {
+    val correctCount = quizResult?.correctAnswers ?: 0
+    val wrongCount = (quizResult?.totalQuestions ?: 0) - correctCount
+    val scorePercentage = quizResult?.scorePercentage ?: 0.0
+    val passed = quizResult?.passed ?: true
+
+    val titleText = if (passed) "Sempurna" else "Coba Lagi"
+    val diamondReward = if (passed) (scorePercentage * 0.15).toInt().coerceAtLeast(5) else 0
+
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -66,7 +76,7 @@ fun ResultScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Sempurna".uppercase(),
+                    text = titleText.uppercase(),
                     color = LitecartesColor.Surface,
                     fontSize = 28.sp,
                     fontFamily = nunitosFontFamily,
@@ -74,7 +84,7 @@ fun ResultScreen(
                 )
                 Image(
                     painter = painterResource(id = R.drawable.result),
-                    contentDescription = "uwaw",
+                    contentDescription = "result",
                     modifier = Modifier
                         .size(300.dp)
                 )
@@ -94,12 +104,12 @@ fun ResultScreen(
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.icon_benar),
-                            contentDescription = "right icon",
+                            contentDescription = "correct icon",
                             modifier = Modifier
                                 .size(35.dp)
                         )
                         Text(
-                            text = "5",
+                            text = "$correctCount",
                             color = LitecartesColor.Primary,
                             fontSize = 30.sp,
                             fontWeight = FontWeight.Bold
@@ -121,12 +131,12 @@ fun ResultScreen(
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.icon_salah),
-                            contentDescription = "right icon",
+                            contentDescription = "wrong icon",
                             modifier = Modifier
                                 .size(35.dp)
                         )
                         Text(
-                            text = "0",
+                            text = "$wrongCount",
                             color = LitecartesColor.Primary,
                             fontSize = 30.sp,
                             fontWeight = FontWeight.Bold
@@ -137,35 +147,37 @@ fun ResultScreen(
                     modifier = Modifier
                         .padding(10.dp)
                 )
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(LitecartesColor.Surface)
-                        .padding(
-                            vertical = 10.dp,
-                            horizontal = 14.dp
-                        ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Yeay kamu mendapatkan ",
-                        color = LitecartesColor.Secondary,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        text = " +15 ",
-                        color = LitecartesColor.Primary,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.diamon),
-                        contentDescription = "",
+                if (diamondReward > 0) {
+                    Row(
                         modifier = Modifier
-                            .size(20.dp)
-                    )
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(LitecartesColor.Surface)
+                            .padding(
+                                vertical = 10.dp,
+                                horizontal = 14.dp
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Yeay kamu mendapatkan ",
+                            color = LitecartesColor.Secondary,
+                            fontSize = 16.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            text = " +$diamondReward ",
+                            color = LitecartesColor.Primary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.diamon),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(20.dp)
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.padding(5.dp))
                 Button(

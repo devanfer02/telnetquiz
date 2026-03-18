@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,12 +19,17 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,6 +43,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +59,8 @@ import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.features.pretest.presentation.components.PretestButton
 import com.example.litecartesnative.features.quiz.presentation.components.ProgressBarFromApi
 import com.example.litecartesnative.features.quiz.presentation.components.OptionButton
+import com.example.litecartesnative.features.quiz.presentation.components.TtsManager
+import com.example.litecartesnative.features.quiz.presentation.singletons.QuizResultHolder
 import com.example.litecartesnative.features.quiz.presentation.viewmodel.QuizViewModel
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
@@ -66,8 +75,14 @@ fun QuestionScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val currentQuestion = viewModel.currentQuestion
+    val context = LocalContext.current
 
     var showDialog by remember { mutableStateOf(false) }
+
+    val ttsManager = remember { TtsManager(context) }
+    DisposableEffect(Unit) {
+        onDispose { ttsManager.shutdown() }
+    }
 
     // Letter labels for options
     val letters = listOf('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
@@ -81,6 +96,7 @@ fun QuestionScreen(
         if (state.result != null) {
             val quiz = state.quiz
             if (quiz != null) {
+                QuizResultHolder.lastResult = state.result
                 navController.navigate(
                     "${Screen.ResultScreen.route}/${quiz.chapterId}/levels/${quiz.level}"
                 ) {
@@ -164,14 +180,35 @@ fun QuestionScreen(
                                 .fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(
-                                text = state.quiz?.title ?: "",
-                                textAlign = TextAlign.Center,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                fontSize = 20.sp,
-                                fontFamily = nunitosFontFamily
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = state.quiz?.title ?: "",
+                                    textAlign = TextAlign.Center,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    fontSize = 20.sp,
+                                    fontFamily = nunitosFontFamily,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                IconButton(
+                                    onClick = {
+                                        val textToRead = "${currentQuestion.description}. ${currentQuestion.question}"
+                                        ttsManager.speak(textToRead)
+                                    },
+                                    modifier = Modifier.size(36.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.VolumeUp,
+                                        contentDescription = "Baca soal",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                            }
                             Spacer(modifier = Modifier.padding(4.dp))
                             if (!currentQuestion.imageLink.isNullOrEmpty()) {
                                 AsyncImage(
