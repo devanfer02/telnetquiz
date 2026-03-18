@@ -42,7 +42,18 @@ data class UserProfileDto(
     @SerializedName("createdAt")
     val createdAt: String? = null,
     @SerializedName("updatedAt")
-    val updatedAt: String? = null
+    val updatedAt: String? = null,
+    @SerializedName("stats")
+    val stats: UserStatsDto? = null
+)
+
+data class UserStatsDto(
+    @SerializedName("total_score")
+    val totalScore: Int,
+    @SerializedName("levels_completed")
+    val levelsCompleted: Int,
+    @SerializedName("chapters_completed")
+    val chaptersCompleted: Int
 )
 
 data class UpdateProfileRequest(

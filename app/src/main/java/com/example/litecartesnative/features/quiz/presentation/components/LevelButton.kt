@@ -1,13 +1,14 @@
 package com.example.litecartesnative.features.quiz.presentation.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
-import androidx.compose.material3.ButtonColors
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,38 +24,49 @@ import com.example.litecartesnative.ui.theme.nunitosFontFamily
 fun LevelButton(
     level: Int,
     onClick: () -> Unit = {},
-    done: Boolean = true
+    done: Boolean = false,
+    isLocked: Boolean = false
 ) {
     OutlinedButton(
-        onClick = onClick,
+        onClick = { if (!isLocked) onClick() },
         contentPadding = PaddingValues(0.dp),
         shape = CircleShape,
+        enabled = !isLocked,
         modifier = Modifier
-            .size(50.dp)
-            ,
-        border = BorderStroke(5.dp, LitecartesColor.Secondary),
-//        border = BorderStroke(5.dp, LitecartesColor.Primary),
+            .size(50.dp),
+        border = BorderStroke(
+            5.dp,
+            if (isLocked) Color.Gray.copy(alpha = 0.5f) else LitecartesColor.Secondary
+        ),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if(done) {
-                LitecartesColor.Primary
-            } else {
-                LitecartesColor.Surface
-            }
-//                    containerColor = LitecartesColor.PathColor
+            containerColor = when {
+                isLocked -> Color.Gray.copy(alpha = 0.3f)
+                done -> LitecartesColor.Primary
+                else -> LitecartesColor.Surface
+            },
+            disabledContainerColor = Color.Gray.copy(alpha = 0.3f)
         )
     ) {
-        Text(
-            text = "$level",
-            color = if(done) {
-                LitecartesColor.PathColor
-            } else {
-                LitecartesColor.Secondary
-            },
-//            color = LitecartesColor.Secondary,
-            fontFamily = nunitosFontFamily,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
-        )
+        if (isLocked) {
+            Icon(
+                imageVector = Icons.Default.Lock,
+                contentDescription = "Locked",
+                tint = Color.Gray,
+                modifier = Modifier.size(20.dp)
+            )
+        } else {
+            Text(
+                text = "$level",
+                color = if (done) {
+                    LitecartesColor.PathColor
+                } else {
+                    LitecartesColor.Secondary
+                },
+                fontFamily = nunitosFontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+        }
     }
 }
 

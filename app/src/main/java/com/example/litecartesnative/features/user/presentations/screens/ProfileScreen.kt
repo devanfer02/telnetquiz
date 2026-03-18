@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,6 +18,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -174,10 +177,35 @@ fun ProfileScreen(
                         .padding(10.dp)
                 )
             }
+            // Stats row
+            state.profile?.stats?.let { stats ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    StatCard(
+                        label = "Total Skor",
+                        value = "${stats.totalScore}",
+                        modifier = Modifier.weight(1f)
+                    )
+                    StatCard(
+                        label = "Level Selesai",
+                        value = "${stats.levelsCompleted}",
+                        modifier = Modifier.weight(1f)
+                    )
+                    StatCard(
+                        label = "Bab Selesai",
+                        value = "${stats.chaptersCompleted}",
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
             Column(
                 modifier = Modifier
                     .padding(
-                        top = 20.dp,
+                        top = 8.dp,
                         start = 20.dp,
                         end = 20.dp
                     )
@@ -300,6 +328,49 @@ fun ProfileScreen(
             }
             Navbar(
                 navController = navController
+            )
+        }
+    }
+}
+
+@Composable
+private fun StatCard(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .shadow(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(12.dp)
+            ),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = LitecartesColor.DarkerSurface
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = value,
+                fontFamily = nunitosFontFamily,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 22.sp,
+                color = LitecartesColor.Primary
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = label,
+                fontFamily = nunitosFontFamily,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 11.sp,
+                color = LitecartesColor.Secondary.copy(alpha = 0.7f),
+                textAlign = TextAlign.Center
             )
         }
     }

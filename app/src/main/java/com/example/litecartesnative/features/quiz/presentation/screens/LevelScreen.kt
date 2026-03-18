@@ -42,7 +42,6 @@ import com.example.litecartesnative.features.quiz.presentation.components.Profil
 import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.features.chapter.presentation.viewmodel.ChapterViewModel
 import com.example.litecartesnative.features.quiz.domain.model.LevelData
-import com.example.litecartesnative.features.quiz.presentation.singletons.MarkAsDoneManager
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 
@@ -101,6 +100,7 @@ fun LevelScreen(
                     detailState.chapter != null -> {
                         val chapter = detailState.chapter!!
                         val quizzes = chapter.quizzes
+                        val completedQuizIds = chapter.completedQuizIds
                         val dynamicLevels = generateLevelPositions(quizzes.size)
 
                         BoxWithConstraints(
@@ -173,6 +173,12 @@ fun LevelScreen(
                                     val levelPosition = dynamicLevels[index]
                                     val buttonOffset = with(LocalDensity.current) { 25.dp.toPx() }
 
+                                    // Level 1 (index 0) always unlocked
+                                    // Level N unlocked if quiz at index N-1 is completed
+                                    val isCompleted = quiz.id in completedQuizIds
+                                    val isUnlocked = index == 0 ||
+                                        quizzes[index - 1].id in completedQuizIds
+
                                     Box(
                                         modifier = Modifier
                                             .offset(
@@ -187,7 +193,8 @@ fun LevelScreen(
                                                     "${Screen.QuestionScreen.route}/${quiz.id}"
                                                 )
                                             },
-                                            done = MarkAsDoneManager.levels.getOrNull(chapterId)?.getOrNull(quiz.level - 1) ?: false
+                                            done = isCompleted,
+                                            isLocked = !isUnlocked
                                         )
                                     }
                                 }

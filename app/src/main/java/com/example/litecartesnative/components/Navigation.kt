@@ -36,7 +36,6 @@ import com.example.litecartesnative.features.auth.presentation.screens.AboutScre
 import com.example.litecartesnative.features.auth.presentation.screens.FeedbackScren
 import com.example.litecartesnative.features.auth.presentation.viewmodel.SessionState
 import com.example.litecartesnative.features.quiz.presentation.screens.ResultScreen
-import com.example.litecartesnative.features.quiz.presentation.singletons.MarkAsDoneManager
 import com.example.litecartesnative.features.quiz.presentation.singletons.QuizResultHolder
 import com.example.litecartesnative.features.quiz.presentation.singletons.WrongQuizManager
 import com.example.litecartesnative.ui.theme.LitecartesColor
@@ -260,8 +259,6 @@ private fun MainNavHost(
                     )
                     WrongQuizManager.queue.removeFirst()
                 }
-
-                MarkAsDoneManager.levels[chapterId][level -1] = true
             }
 
             ResultScreen(
