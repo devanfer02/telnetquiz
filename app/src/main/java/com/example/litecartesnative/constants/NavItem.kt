@@ -22,13 +22,6 @@ sealed class NavItem(
         "leaderboard"
     )
 
-    object Friends : NavItem(
-        Screen.FriendScreen.route,
-        R.drawable.add_friends,
-        R.drawable.active_add_friends,
-        "friends"
-    )
-
     object Profile : NavItem(
         Screen.ProfileScreen.route,
         R.drawable.profile,
@@ -37,6 +30,6 @@ sealed class NavItem(
     )
 
     companion object {
-        val items = listOf(Home, Leaderboard, Friends, Profile)
+        val items = listOf(Home, Leaderboard, Profile)
     }
 }
