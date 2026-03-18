@@ -39,11 +39,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.litecartesnative.features.quiz.presentation.components.ProfileTopBar
 import com.example.litecartesnative.components.Navbar
-import com.example.litecartesnative.features.chapter.presentation.components.ChapterCard
 import com.example.litecartesnative.features.chapter.presentation.components.ChapterCardFromApi
 import com.example.litecartesnative.features.chapter.presentation.viewmodel.ChapterViewModel
 import com.example.litecartesnative.constants.Screen
-import com.example.litecartesnative.constants.chaptersData
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
@@ -178,34 +176,27 @@ fun ChapterScreen(
                         }
                     }
                     else -> {
-                        // Fallback to local data
-                        LazyColumn {
-                            itemsIndexed(chaptersData) { index, chapter ->
-                                Spacer(modifier = Modifier.padding(5.dp))
-                                Box(
-                                    modifier = Modifier
-                                        .padding(
-                                            horizontal = 10.dp
-                                        )
-                                ) {
-                                    ChapterCard(
-                                        chapter = chapter,
-                                        onClick = {
-                                            navController.navigate(
-                                                "${Screen.LevelScreen.route}/${index}"
-                                            )
-                                        }
-                                    )
-                                }
-                                Spacer(modifier = Modifier.padding(5.dp))
-                            }
-                            // Add Coming Soon card if fewer than 3 chapters
-                            if (chaptersData.size < 3) {
-                                item {
-                                    Spacer(modifier = Modifier.padding(5.dp))
-                                    ComingSoonCard()
-                                    Spacer(modifier = Modifier.padding(10.dp))
-                                }
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "Belum ada materi tersedia",
+                                    color = LitecartesColor.Secondary,
+                                    fontFamily = nunitosFontFamily,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 16.sp
+                                )
+                                Spacer(modifier = Modifier.padding(4.dp))
+                                Text(
+                                    text = "Silakan coba lagi nanti",
+                                    color = LitecartesColor.Secondary.copy(alpha = 0.6f),
+                                    fontFamily = nunitosFontFamily,
+                                    fontSize = 14.sp
+                                )
                             }
                         }
                     }

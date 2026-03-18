@@ -22,6 +22,7 @@ import com.example.litecartesnative.features.auth.presentation.screens.AuthLogin
 import com.example.litecartesnative.features.auth.presentation.screens.AuthRegisterScreen
 import com.example.litecartesnative.features.auth.presentation.screens.AuthStartScreen
 import com.example.litecartesnative.features.auth.presentation.viewmodel.AuthViewModel
+import com.example.litecartesnative.features.pretest.presentation.screens.PretestResultScreen
 import com.example.litecartesnative.features.pretest.presentation.screens.PretestScreen
 import com.example.litecartesnative.features.pretest.presentation.screens.QuickCheckScreen
 import com.example.litecartesnative.features.user.presentations.screens.LeaderboardScreen
@@ -29,7 +30,6 @@ import com.example.litecartesnative.features.chapter.presentation.screens.Chapte
 import com.example.litecartesnative.features.quiz.presentation.screens.LevelScreen
 import com.example.litecartesnative.features.quiz.presentation.screens.QuestionScreen
 import com.example.litecartesnative.features.user.presentations.screens.EditProfileScreen
-import com.example.litecartesnative.features.user.presentations.screens.FriendScreen
 import com.example.litecartesnative.features.user.presentations.screens.ProfileScreen
 import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.features.auth.presentation.screens.AboutScreen
@@ -37,6 +37,7 @@ import com.example.litecartesnative.features.auth.presentation.screens.FeedbackS
 import com.example.litecartesnative.features.auth.presentation.viewmodel.SessionState
 import com.example.litecartesnative.features.quiz.presentation.screens.ResultScreen
 import com.example.litecartesnative.features.quiz.presentation.singletons.MarkAsDoneManager
+import com.example.litecartesnative.features.quiz.presentation.singletons.QuizResultHolder
 import com.example.litecartesnative.features.quiz.presentation.singletons.WrongQuizManager
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import kotlinx.coroutines.flow.collectLatest
@@ -148,6 +149,13 @@ private fun MainNavHost(
             )
         }
         composable(
+            route = Screen.PretestResultScreen.route
+        ) {
+            PretestResultScreen(
+                navController = navController
+            )
+        }
+        composable(
             route = Screen.HomeScreen.route
         ) {
             ChapterScreen(navController = navController)
@@ -183,7 +191,7 @@ private fun MainNavHost(
             )
         }
         composable(
-            route = "${Screen.FeedbackScreen.route}/{chapterId}/levels/{level}/questions/{id}",
+            route = "${Screen.FeedbackScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}",
             arguments = listOf(
                 navArgument("chapterId") {
                     type = NavType.IntType
@@ -193,17 +201,23 @@ private fun MainNavHost(
                 },
                 navArgument("id") {
                     type = NavType.IntType
+                },
+                navArgument("materialId") {
+                    type = NavType.IntType
+                    defaultValue = 0
                 }
             )
         ) {
             val chapterId = it.arguments?.getInt("chapterId") ?: 1
             val level = it.arguments?.getInt("level") ?: 1
             val id = it.arguments?.getInt("id") ?: 1
+            val materialId = it.arguments?.getInt("materialId") ?: 0
 
             FeedbackScren(
                 chapterId = chapterId,
                 level = level,
                 id = id,
+                materialId = materialId,
                 navController = navController
             )
         }
@@ -223,11 +237,6 @@ private fun MainNavHost(
             EditProfileScreen(navController = navController)
         }
         composable(
-            route = Screen.FriendScreen.route
-        ) {
-            FriendScreen(navController = navController)
-        }
-        composable(
             route = "${Screen.ResultScreen.route}/{chapterId}/levels/{level}",
             arguments = listOf(
                 navArgument("chapterId") {
@@ -240,6 +249,7 @@ private fun MainNavHost(
         ) {
             val chapterId = it.arguments?.getInt("chapterId") ?: 0
             val level = it.arguments?.getInt("level") ?: 0
+            val quizResult = QuizResultHolder.lastResult
 
             LaunchedEffect(key1 = chapterId) {
                 Log.d("QUEUEMANAGER", "${WrongQuizManager.queue.toString()}")
@@ -256,7 +266,8 @@ private fun MainNavHost(
 
             ResultScreen(
                 navController = navController,
-                chapterId = chapterId
+                chapterId = chapterId,
+                quizResult = quizResult
             )
         }
         }

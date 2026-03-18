@@ -31,10 +31,6 @@ sealed class Screen(
         "leaderboard_screen"
     )
 
-    object FriendScreen : Screen(
-        "friend_screen"
-    )
-
     object ProfileScreen : Screen(
         "profile_screen"
     )
@@ -49,6 +45,10 @@ sealed class Screen(
 
     object PretestScreen : Screen(
         "pretest_screen"
+    )
+
+    object PretestResultScreen : Screen(
+        "pretest_result_screen"
     )
 
     object ResultScreen : Screen(
