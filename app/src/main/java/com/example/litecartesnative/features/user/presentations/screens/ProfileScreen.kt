@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,7 +43,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.litecartesnative.R
 import com.example.litecartesnative.components.Navbar
 import com.example.litecartesnative.constants.Screen
-import com.example.litecartesnative.features.user.presentations.components.StatsIcon
+import com.example.litecartesnative.features.user.presentations.viewmodel.AchievementViewModel
 import com.example.litecartesnative.features.user.presentations.viewmodel.ProfileViewModel
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
@@ -51,12 +52,15 @@ import com.example.litecartesnative.ui.theme.nunitosFontFamily
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    viewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ProfileViewModel = hiltViewModel(),
+    achievementViewModel: AchievementViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val achievementState by achievementViewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadProfile()
+        achievementViewModel.loadAchievements()
     }
 
     Scaffold { innerPadding ->
@@ -92,8 +96,7 @@ fun ProfileScreen(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(100.dp)
-                        ,
+                        .size(100.dp),
                     contentAlignment = Alignment.BottomEnd
                 ) {
                     Image(
@@ -155,58 +158,21 @@ fun ProfileScreen(
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 20.sp
                         )
+                        state.profile?.email?.let { email ->
+                            Text(
+                                text = email,
+                                color = Color.White.copy(alpha = 0.8f),
+                                fontFamily = nunitosFontFamily,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 14.sp
+                            )
+                        }
                     }
                 }
-                // School text removed as requested
                 Spacer(
                     modifier = Modifier
                         .padding(10.dp)
                 )
-                // Hidden: Mengikuti dan Diikuti section
-                // Row {
-                //     Box(
-                //         modifier = Modifier
-                //             .clip(
-                //                 RoundedCornerShape(12.dp)
-                //             )
-                //             .background(LitecartesColor.DarkerSurface)
-                //             .padding(
-                //                 vertical = 4.dp,
-                //                 horizontal = 8.dp
-                //             )
-                //     ) {
-                //         Text(
-                //             text = "10 Mengikuti",
-                //             color = LitecartesColor.Secondary,
-                //             fontFamily = nunitosFontFamily,
-                //             fontWeight = FontWeight.SemiBold,
-                //             fontSize = 14.sp
-                //         )
-                //     }
-                //     Spacer(
-                //         modifier = Modifier
-                //             .padding(6.dp)
-                //     )
-                //     Box(
-                //         modifier = Modifier
-                //             .clip(
-                //                 RoundedCornerShape(12.dp)
-                //             )
-                //             .background(LitecartesColor.DarkerSurface)
-                //             .padding(
-                //                 vertical = 4.dp,
-                //                 horizontal = 8.dp
-                //             )
-                //     ) {
-                //         Text(
-                //             text = "10 Diikuti",
-                //             color = LitecartesColor.Secondary,
-                //             fontFamily = nunitosFontFamily,
-                //             fontWeight = FontWeight.SemiBold,
-                //             fontSize = 14.sp
-                //         )
-                //     }
-                // }
             }
             Column(
                 modifier = Modifier
@@ -217,116 +183,6 @@ fun ProfileScreen(
                     )
                     .weight(1f)
             ) {
-                // Hidden: Hadiah, XP, Streak section
-                // Row(
-                //     modifier = Modifier
-                //         .shadow(
-                //             elevation = 20.dp,
-                //             shape = RoundedCornerShape(12.dp)
-                //         )
-                //         .clip(
-                //             RoundedCornerShape(12.dp)
-                //         )
-                //         .background(LitecartesColor.DarkerSurface)
-                //         .padding(10.dp)
-                //         .fillMaxWidth(),
-                //     horizontalArrangement = Arrangement.SpaceEvenly,
-                //     verticalAlignment = Alignment.CenterVertically
-                // ) {
-                //     StatsIcon(
-                //         resId = R.drawable.diamond,
-                //         statName = "Hadiah",
-                //         stat = 250
-                //     )
-                //     StatsIcon(
-                //         resId = R.drawable.lightning,
-                //         statName = "XP",
-                //         stat = 150
-                //     )
-                //     StatsIcon(
-                //         resId = R.drawable.fire,
-                //         statName = "Streak",
-                //         stat = 31
-                //     )
-                // }
-                // Spacer(
-                //     modifier = Modifier
-                //         .padding(10.dp)
-                // )
-                // Hidden: Peringkat section
-                // Row(
-                //     horizontalArrangement = Arrangement.SpaceEvenly,
-                //     modifier = Modifier
-                //         .fillMaxWidth()
-                // ) {
-                //     Box(
-                //         modifier = Modifier
-                //             .shadow(
-                //                 elevation = 20.dp,
-                //                 shape = RoundedCornerShape(12.dp)
-                //             )
-                //             .clip(
-                //                 RoundedCornerShape(12.dp)
-                //             )
-                //             .background(LitecartesColor.DarkerSurface)
-                //             .padding(
-                //                 vertical = 10.dp,
-                //                 horizontal = 20.dp
-                //             )
-                //     ) {
-                //         StatsIcon(
-                //             resId = R.drawable.nasional,
-                //             statName = "Peringkat\nNasional",
-                //             stat = 15
-                //         )
-                //     }
-                //     Box(
-                //         modifier = Modifier
-                //             .shadow(
-                //                 elevation = 20.dp,
-                //                 shape = RoundedCornerShape(12.dp)
-                //             )
-                //             .clip(
-                //                 RoundedCornerShape(12.dp)
-                //             )
-                //             .background(LitecartesColor.DarkerSurface)
-                //             .padding(
-                //                 vertical = 10.dp,
-                //                 horizontal = 20.dp
-                //             )
-                //     ) {
-                //         StatsIcon(
-                //             resId = R.drawable.kota,
-                //             statName = "Peringkat\nKota",
-                //             stat = 4
-                //         )
-                //     }
-                //     Box(
-                //         modifier = Modifier
-                //             .shadow(
-                //                 elevation = 20.dp,
-                //                 shape = RoundedCornerShape(12.dp)
-                //             )
-                //             .clip(
-                //                 RoundedCornerShape(12.dp)
-                //             )
-                //             .background(LitecartesColor.DarkerSurface)
-                //             .padding(
-                //                 vertical = 10.dp,
-                //                 horizontal = 20.dp
-                //             )
-                //     ) {
-                //         StatsIcon(
-                //             resId = R.drawable.sekolah,
-                //             statName = "Peringkat\nSekolah",
-                //             stat = 2
-                //         )
-                //     }
-                // }
-                // Spacer(
-                //     modifier = Modifier
-                //         .padding(10.dp)
-                // )
                 Text(
                     text = "Pencapaian",
                     fontFamily = nunitosFontFamily,
@@ -338,75 +194,107 @@ fun ProfileScreen(
                             bottom = 12.dp
                         )
                 )
-                LazyColumn {
-                    items((1..2).toList()){
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+
+                when {
+                    achievementState.isLoading -> {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .shadow(
-                                        elevation = 12.dp,
-                                        shape = RoundedCornerShape(
-                                            12.dp
-                                        )
-                                    )
-                                    .background(LitecartesColor.DarkerSurface)
-                                    .padding(16.dp)
-                                    .size(60.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.medal),
-                                    contentDescription = "",
+                            CircularProgressIndicator(
+                                color = LitecartesColor.Secondary,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                    }
+                    achievementState.error != null -> {
+                        Text(
+                            text = achievementState.error ?: "Gagal memuat pencapaian",
+                            color = LitecartesColor.Secondary,
+                            fontSize = 14.sp
+                        )
+                    }
+                    achievementState.achievements.isEmpty() -> {
+                        Text(
+                            text = "Belum ada pencapaian. Selesaikan quiz untuk mendapatkan pencapaian!",
+                            color = LitecartesColor.Secondary.copy(alpha = 0.7f),
+                            fontFamily = nunitosFontFamily,
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    else -> {
+                        LazyColumn {
+                            items(achievementState.achievements) { achievement ->
+                                Row(
                                     modifier = Modifier
-                                        .size(60.dp)
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .shadow(
-                                        elevation = 12.dp,
-                                        shape = RoundedCornerShape(
-                                            12.dp
+                                        .fillMaxWidth()
+                                        .padding(vertical = 6.dp)
+                                        .shadow(
+                                            elevation = 8.dp,
+                                            shape = RoundedCornerShape(12.dp)
                                         )
-                                    )
-                                    .background(LitecartesColor.DarkerSurface)
-                                    .padding(16.dp)
-                                    .size(60.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.medal),
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .size(60.dp)
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .shadow(
-                                        elevation = 12.dp,
-                                        shape = RoundedCornerShape(
-                                            12.dp
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(
+                                            if (achievement.unlocked) LitecartesColor.DarkerSurface
+                                            else LitecartesColor.DarkerSurface.copy(alpha = 0.5f)
                                         )
-                                    )
-                                    .background(LitecartesColor.DarkerSurface)
-                                    .padding(16.dp)
-                                    .size(60.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.medal),
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .size(60.dp)
-                                )
+                                        .padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(50.dp)
+                                            .background(
+                                                if (achievement.unlocked) LitecartesColor.Primary.copy(alpha = 0.2f)
+                                                else Color.Gray.copy(alpha = 0.2f),
+                                                shape = RoundedCornerShape(12.dp)
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.medal),
+                                            contentDescription = achievement.title,
+                                            modifier = Modifier
+                                                .size(35.dp)
+                                                .let { mod ->
+                                                    if (!achievement.unlocked) mod
+                                                    else mod
+                                                }
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.padding(8.dp))
+                                    Column(
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text(
+                                            text = achievement.title,
+                                            fontFamily = nunitosFontFamily,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 16.sp,
+                                            color = if (achievement.unlocked) LitecartesColor.Secondary
+                                            else LitecartesColor.Secondary.copy(alpha = 0.5f)
+                                        )
+                                        Text(
+                                            text = achievement.description,
+                                            fontFamily = nunitosFontFamily,
+                                            fontSize = 12.sp,
+                                            color = if (achievement.unlocked) LitecartesColor.Secondary.copy(alpha = 0.7f)
+                                            else LitecartesColor.Secondary.copy(alpha = 0.4f)
+                                        )
+                                    }
+                                    if (achievement.unlocked) {
+                                        Text(
+                                            text = "✓",
+                                            color = LitecartesColor.Primary,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp
+                                        )
+                                    }
+                                }
                             }
                         }
-                        Spacer(
-                            modifier = Modifier
-                                .padding(10.dp)
-                        )
                     }
                 }
             }
