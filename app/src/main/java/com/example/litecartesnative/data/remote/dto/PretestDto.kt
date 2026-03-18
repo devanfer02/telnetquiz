@@ -42,3 +42,27 @@ data class PretestSubmissionDto(
     @SerializedName("answered_option_id")
     val answeredOptionId: Int
 )
+
+data class PretestResultDto(
+    @SerializedName("total_questions")
+    val totalQuestions: Int,
+    @SerializedName("correct_answers")
+    val correctAnswers: Int,
+    @SerializedName("incorrect_answers")
+    val incorrectAnswers: Int,
+    @SerializedName("score_percentage")
+    val scorePercentage: Double,
+    @SerializedName("chapter_weaknesses")
+    val chapterWeaknesses: List<ChapterWeaknessDto>
+)
+
+data class ChapterWeaknessDto(
+    @SerializedName("chapter_id")
+    val chapterId: Int,
+    @SerializedName("chapter_title")
+    val chapterTitle: String,
+    @SerializedName("wrong_count")
+    val wrongCount: Int,
+    @SerializedName("total_questions")
+    val totalQuestions: Int
+)

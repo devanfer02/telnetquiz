@@ -3,6 +3,7 @@ package com.example.litecartesnative.features.pretest.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.litecartesnative.data.remote.dto.PretestQuestionDto
+import com.example.litecartesnative.data.remote.dto.PretestResultDto
 import com.example.litecartesnative.data.remote.dto.PretestSubmissionDto
 import com.example.litecartesnative.data.repository.PretestRepository
 import com.example.litecartesnative.data.repository.Result
@@ -21,7 +22,8 @@ data class PretestState(
     val isSubmitting: Boolean = false,
     val isCompleted: Boolean = false,
     val error: String? = null,
-    val successMessage: String? = null
+    val successMessage: String? = null,
+    val result: PretestResultDto? = null
 )
 
 @HiltViewModel
@@ -97,7 +99,7 @@ class PretestViewModel @Inject constructor(
                     _state.value = _state.value.copy(
                         isSubmitting = false,
                         isCompleted = true,
-                        successMessage = result.data
+                        result = result.data
                     )
                 }
                 is Result.Error -> {

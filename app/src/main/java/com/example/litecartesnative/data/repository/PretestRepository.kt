@@ -2,6 +2,7 @@ package com.example.litecartesnative.data.repository
 
 import com.example.litecartesnative.data.remote.api.TelNetQuizApi
 import com.example.litecartesnative.data.remote.dto.PretestQuestionDto
+import com.example.litecartesnative.data.remote.dto.PretestResultDto
 import com.example.litecartesnative.data.remote.dto.PretestSubmissionDto
 import com.example.litecartesnative.data.remote.dto.SubmitPretestRequest
 import javax.inject.Inject
@@ -29,12 +30,16 @@ class PretestRepository @Inject constructor(
         }
     }
 
-    suspend fun submitPretestAnswers(answers: List<PretestSubmissionDto>): Result<String> {
+    suspend fun submitPretestAnswers(answers: List<PretestSubmissionDto>): Result<PretestResultDto> {
         return try {
             val response = api.submitPretestAnswers(SubmitPretestRequest(answers))
             if (response.isSuccessful) {
                 val body = response.body()
-                Result.Success(body?.message ?: "Pretest submitted successfully")
+                if (body != null && body.data != null) {
+                    Result.Success(body.data)
+                } else {
+                    Result.Error("Invalid response from server")
+                }
             } else {
                 Result.Error(response.message() ?: "Failed to submit pretest", response.code())
             }
