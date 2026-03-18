@@ -26,7 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -144,21 +146,32 @@ fun LevelScreen(
                                             cubicTo(startX, midY, endX, midY, endX, endY)
                                         }
 
+                                        // Shadow
+                                        translate(top = 4f) {
+                                            drawPath(
+                                                path = path,
+                                                color = Color.Black.copy(alpha = 0.12f),
+                                                style = Stroke(
+                                                    width = 48f,
+                                                    cap = StrokeCap.Round
+                                                )
+                                            )
+                                        }
                                         // Road border
                                         drawPath(
                                             path = path,
-                                            color = LitecartesColor.Secondary.copy(alpha = 0.3f),
+                                            color = LitecartesColor.PathColor.copy(alpha = 0.5f),
                                             style = Stroke(
-                                                width = 28f,
+                                                width = 42f,
                                                 cap = StrokeCap.Round
                                             )
                                         )
                                         // Road fill
                                         drawPath(
                                             path = path,
-                                            color = LitecartesColor.Secondary.copy(alpha = 0.15f),
+                                            color = LitecartesColor.PathColor,
                                             style = Stroke(
-                                                width = 14f,
+                                                width = 24f,
                                                 cap = StrokeCap.Round
                                             )
                                         )
@@ -216,7 +229,7 @@ private fun generateLevelPositions(count: Int): List<LevelData> {
     if (count == 0) return emptyList()
 
     val positions = mutableListOf<LevelData>()
-    val yStart = 0.10f
+    val yStart = 0.04f
     val yEnd = 0.85f
     val yStep = if (count > 1) (yEnd - yStart) / (count - 1) else 0f
 

@@ -2,7 +2,7 @@
 <resources>
     <style name="Theme.LitecartesNative.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#FFDAB7</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_transparent</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
     </style>
