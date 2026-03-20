@@ -39,6 +39,14 @@ data class UserProfileDto(
     val email: String,
     @SerializedName("image")
     val image: String? = null,
+    @SerializedName("bio")
+    val bio: String? = null,
+    @SerializedName("gender")
+    val gender: Boolean? = null,
+    @SerializedName("grade")
+    val grade: String? = null,
+    @SerializedName("school")
+    val school: SchoolDto? = null,
     @SerializedName("createdAt")
     val createdAt: String? = null,
     @SerializedName("updatedAt")
@@ -60,7 +68,26 @@ data class UpdateProfileRequest(
     @SerializedName("fullname")
     val fullname: String? = null,
     @SerializedName("image")
-    val image: String? = null
+    val image: String? = null,
+    @SerializedName("bio")
+    val bio: String? = null
+)
+
+data class SchoolDto(
+    @SerializedName("id")
+    val id: Int,
+    @SerializedName("name")
+    val name: String
+)
+
+data class SchoolsResponse(
+    @SerializedName("schools")
+    val schools: List<SchoolDto>
+)
+
+data class AvatarResponse(
+    @SerializedName("image_url")
+    val imageUrl: String
 )
 
 data class StudyMaterialDto(

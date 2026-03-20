@@ -8,7 +8,13 @@ data class RegisterRequest(
     @SerializedName("email")
     val email: String,
     @SerializedName("password")
-    val password: String
+    val password: String,
+    @SerializedName("school_id")
+    val schoolId: Int,
+    @SerializedName("gender")
+    val gender: Boolean,
+    @SerializedName("grade")
+    val grade: String
 )
 
 data class LoginRequest(

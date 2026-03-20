@@ -1,6 +1,7 @@
 package com.example.litecartesnative.data.remote.api
 
 import com.example.litecartesnative.data.remote.dto.*
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -18,6 +19,10 @@ interface TelNetQuizApi {
     suspend fun login(
         @Body request: LoginRequest
     ): Response<AuthResponse>
+
+    // Schools
+    @GET("api/schools")
+    suspend fun getSchools(): Response<ApiResponse<SchoolsResponse>>
 
     // Pretest endpoints
     @GET("api/pretest")
@@ -60,6 +65,12 @@ interface TelNetQuizApi {
     suspend fun updateUserProfile(
         @Body request: UpdateProfileRequest
     ): Response<ApiResponse<UserProfileDto>>
+
+    @Multipart
+    @POST("api/users/avatar")
+    suspend fun uploadAvatar(
+        @Part image: MultipartBody.Part
+    ): Response<ApiResponse<AvatarResponse>>
 
     // Study material
     @GET("api/materials/{id}")

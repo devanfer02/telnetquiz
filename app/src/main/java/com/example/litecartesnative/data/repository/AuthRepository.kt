@@ -5,6 +5,7 @@ import com.example.litecartesnative.data.local.TokenManager
 import com.example.litecartesnative.data.remote.api.TelNetQuizApi
 import com.example.litecartesnative.data.remote.dto.LoginRequest
 import com.example.litecartesnative.data.remote.dto.RegisterRequest
+import com.example.litecartesnative.data.remote.dto.SchoolDto
 import com.example.litecartesnative.data.remote.dto.UserProfileDto
 import com.example.litecartesnative.data.remote.dto.ValidationErrorResponse
 import com.example.litecartesnative.data.remote.dto.LoginErrorResponse
@@ -54,9 +55,16 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun register(fullname: String, email: String, password: String): Result<String> {
+    suspend fun register(
+        fullname: String,
+        email: String,
+        password: String,
+        schoolId: Int,
+        gender: Boolean,
+        grade: String
+    ): Result<String> {
         return try {
-            val request = RegisterRequest(fullname, email, password)
+            val request = RegisterRequest(fullname, email, password, schoolId, gender, grade)
             Log.d("REGISTER", "Request: fullname=$fullname, email=$email, password=${password.take(3)}***")
             val response = api.register(request)
             Log.d("REGISTER", "Response code: ${response.code()}")
@@ -111,6 +119,25 @@ class AuthRepository @Inject constructor(
 
     suspend fun logout() {
         tokenManager.clearSession()
+    }
+
+    suspend fun getSchools(): Result<List<SchoolDto>> {
+        return try {
+            val response = api.getSchools()
+            if (response.isSuccessful) {
+                val data = response.body()?.data
+                if (data != null) {
+                    Result.Success(data.schools)
+                } else {
+                    Result.Error("Invalid schools response")
+                }
+            } else {
+                Result.Error("Failed to fetch schools", response.code())
+            }
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "getSchools error: ${e.message}", e)
+            Result.Error(e.message ?: "Network error")
+        }
     }
 
     suspend fun validateSession(): Result<UserProfileDto> {
