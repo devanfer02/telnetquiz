@@ -1,6 +1,8 @@
 package com.example.litecartesnative.features.auth.presentation.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,11 +10,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -22,11 +30,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -53,18 +63,20 @@ fun AuthRegisterScreen(
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val schools by viewModel.schools.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var fullname by remember {
-        mutableStateOf("")
-    }
+    var fullname by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var selectedSchoolId by remember { mutableIntStateOf(0) }
+    var selectedSchoolName by remember { mutableStateOf("") }
+    var schoolDropdownExpanded by remember { mutableStateOf(false) }
+    var gender by remember { mutableStateOf<Boolean?>(null) }
+    var grade by remember { mutableStateOf("") }
 
-    var email by remember {
-        mutableStateOf("")
-    }
-
-    var password by remember {
-        mutableStateOf("")
+    LaunchedEffect(Unit) {
+        viewModel.loadSchools()
     }
 
     // Navigate to QuickCheckScreen on successful registration
@@ -100,6 +112,7 @@ fun AuthRegisterScreen(
                 .fillMaxSize()
                 .background(LitecartesColor.Surface)
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
         ) {
             Column(
                 modifier = Modifier
@@ -113,33 +126,123 @@ fun AuthRegisterScreen(
                 Input(
                     value = fullname,
                     label = "Nama Lengkap",
-                    onValueChange = {
-                        fullname = it
-                    },
+                    onValueChange = { fullname = it },
                     leadingIcon = painterResource(id = R.drawable.ic_person)
                 )
-                Spacer(
-                    modifier = Modifier.padding(4.dp)
-                )
+                Spacer(modifier = Modifier.padding(4.dp))
                 Input(
                     value = email,
                     label = "Email",
-                    onValueChange = {
-                        email = it
-                    },
+                    onValueChange = { email = it },
                     leadingIcon = painterResource(id = R.drawable.ic_email)
                 )
-                Spacer(
-                    modifier = Modifier.padding(4.dp)
-                )
+                Spacer(modifier = Modifier.padding(4.dp))
                 PasswordInput(
                     value = password,
                     label = "Kata Sandi",
-                    onValueChange = {
-                        password = it
-                    },
+                    onValueChange = { password = it },
                     leadingIcon = painterResource(id = R.drawable.ic_lock)
                 )
+                Spacer(modifier = Modifier.padding(4.dp))
+
+                // School dropdown
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Sekolah",
+                        fontFamily = nunitosFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        color = LitecartesColor.Secondary,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .border(
+                                    1.dp,
+                                    LitecartesColor.Secondary.copy(alpha = 0.3f),
+                                    RoundedCornerShape(12.dp)
+                                )
+                                .clickable { schoolDropdownExpanded = true }
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = selectedSchoolName.ifEmpty { "Pilih sekolah" },
+                                color = if (selectedSchoolName.isEmpty())
+                                    LitecartesColor.Secondary.copy(alpha = 0.5f)
+                                else LitecartesColor.Secondary,
+                                fontFamily = nunitosFontFamily,
+                                fontSize = 14.sp
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = schoolDropdownExpanded,
+                            onDismissRequest = { schoolDropdownExpanded = false },
+                            modifier = Modifier
+                                .fillMaxWidth(0.75f)
+                                .heightIn(max = 250.dp)
+                        ) {
+                            schools.forEach { school ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = school.name,
+                                            fontFamily = nunitosFontFamily,
+                                            fontSize = 14.sp
+                                        )
+                                    },
+                                    onClick = {
+                                        selectedSchoolId = school.id
+                                        selectedSchoolName = school.name
+                                        schoolDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.padding(4.dp))
+
+                // Gender toggle
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Jenis Kelamin",
+                        fontFamily = nunitosFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        color = LitecartesColor.Secondary,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        GenderToggleButton(
+                            text = "Laki-Laki",
+                            selected = gender == true,
+                            onClick = { gender = true },
+                            modifier = Modifier.weight(1f)
+                        )
+                        GenderToggleButton(
+                            text = "Perempuan",
+                            selected = gender == false,
+                            onClick = { gender = false },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.padding(4.dp))
+
+                // Grade input
+                Input(
+                    value = grade,
+                    label = "Kelas",
+                    onValueChange = { grade = it },
+                    leadingIcon = painterResource(id = R.drawable.ic_person)
+                )
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -181,8 +284,14 @@ fun AuthRegisterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         textModifier = Modifier.padding(8.dp),
                         onClick = {
-                            if (!state.isLoading && fullname.isNotBlank() && email.isNotBlank() && password.isNotBlank()) {
-                                viewModel.register(fullname, email, password)
+                            if (!state.isLoading && fullname.isNotBlank() && email.isNotBlank()
+                                && password.isNotBlank() && selectedSchoolId > 0
+                                && gender != null && grade.isNotBlank()
+                            ) {
+                                viewModel.register(
+                                    fullname, email, password,
+                                    selectedSchoolId, gender!!, grade
+                                )
                             }
                         }
                     )
@@ -195,8 +304,41 @@ fun AuthRegisterScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.padding(16.dp))
         }
+    }
+}
+
+@Composable
+private fun GenderToggleButton(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .border(
+                width = if (selected) 2.dp else 1.dp,
+                color = if (selected) LitecartesColor.Primary else LitecartesColor.Secondary.copy(alpha = 0.3f),
+                shape = RoundedCornerShape(12.dp)
+            )
+            .background(
+                if (selected) LitecartesColor.Primary.copy(alpha = 0.1f)
+                else LitecartesColor.Surface
+            )
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            fontFamily = nunitosFontFamily,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+            color = if (selected) LitecartesColor.Primary else LitecartesColor.Secondary,
+            fontSize = 14.sp
+        )
     }
 }
 

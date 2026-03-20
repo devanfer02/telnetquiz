@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.litecartesnative.data.local.TokenManager
+import com.example.litecartesnative.data.remote.dto.SchoolDto
 import com.example.litecartesnative.data.repository.AuthRepository
 import com.example.litecartesnative.data.repository.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,9 +46,26 @@ class AuthViewModel @Inject constructor(
     private val _sessionExpiredEvent = MutableSharedFlow<Unit>()
     val sessionExpiredEvent: SharedFlow<Unit> = _sessionExpiredEvent.asSharedFlow()
 
+    private val _schools = MutableStateFlow<List<SchoolDto>>(emptyList())
+    val schools: StateFlow<List<SchoolDto>> = _schools.asStateFlow()
+
     init {
         validateSession()
         observeSessionExpired()
+    }
+
+    fun loadSchools() {
+        viewModelScope.launch {
+            when (val result = authRepository.getSchools()) {
+                is Result.Success -> {
+                    _schools.value = result.data
+                }
+                is Result.Error -> {
+                    Log.e("AuthViewModel", "Failed to load schools: ${result.message}")
+                }
+                is Result.Loading -> {}
+            }
+        }
     }
 
     private fun validateSession() {
@@ -110,11 +128,18 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun register(fullname: String, email: String, password: String) {
+    fun register(
+        fullname: String,
+        email: String,
+        password: String,
+        schoolId: Int,
+        gender: Boolean,
+        grade: String
+    ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
             Log.d("REGISTER", "calling API")
-            when (val result = authRepository.register(fullname, email, password)) {
+            when (val result = authRepository.register(fullname, email, password, schoolId, gender, grade)) {
                 is Result.Success -> {
                     _sessionState.value = SessionState.Authenticated
                     _state.value = _state.value.copy(
