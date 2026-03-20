@@ -1,5 +1,6 @@
 package com.example.litecartesnative.features.user.presentations.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.litecartesnative.data.remote.dto.UpdateProfileRequest
@@ -18,6 +19,8 @@ data class EditProfileState(
     val isSaving: Boolean = false,
     val profile: UserProfileDto? = null,
     val fullname: String = "",
+    val bio: String = "",
+    val selectedImageUri: Uri? = null,
     val saveSuccess: Boolean = false,
     val error: String? = null
 )
@@ -38,7 +41,8 @@ class EditProfileViewModel @Inject constructor(
                     _state.value = _state.value.copy(
                         isLoading = false,
                         profile = result.data,
-                        fullname = result.data.fullname
+                        fullname = result.data.fullname,
+                        bio = result.data.bio ?: ""
                     )
                 }
                 is Result.Error -> {
@@ -58,6 +62,14 @@ class EditProfileViewModel @Inject constructor(
         _state.value = _state.value.copy(fullname = value)
     }
 
+    fun onBioChanged(value: String) {
+        _state.value = _state.value.copy(bio = value)
+    }
+
+    fun onImageSelected(uri: Uri?) {
+        _state.value = _state.value.copy(selectedImageUri = uri)
+    }
+
     fun saveProfile() {
         val fullname = _state.value.fullname.trim()
         if (fullname.length < 3) {
@@ -67,12 +79,37 @@ class EditProfileViewModel @Inject constructor(
 
         viewModelScope.launch {
             _state.value = _state.value.copy(isSaving = true, error = null, saveSuccess = false)
-            val request = UpdateProfileRequest(fullname = fullname)
+
+            // Upload image first if selected
+            var imageUrl: String? = null
+            val selectedUri = _state.value.selectedImageUri
+            if (selectedUri != null) {
+                when (val uploadResult = userRepository.uploadAvatar(selectedUri)) {
+                    is Result.Success -> {
+                        imageUrl = uploadResult.data
+                    }
+                    is Result.Error -> {
+                        _state.value = _state.value.copy(
+                            isSaving = false,
+                            error = uploadResult.message
+                        )
+                        return@launch
+                    }
+                    is Result.Loading -> {}
+                }
+            }
+
+            val request = UpdateProfileRequest(
+                fullname = fullname,
+                image = imageUrl,
+                bio = _state.value.bio.trim().ifEmpty { null }
+            )
             when (val result = userRepository.updateUserProfile(request)) {
                 is Result.Success -> {
                     _state.value = _state.value.copy(
                         isSaving = false,
                         profile = result.data,
+                        selectedImageUri = null,
                         saveSuccess = true
                     )
                 }

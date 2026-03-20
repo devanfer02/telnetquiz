@@ -1,7 +1,10 @@
 package com.example.litecartesnative.features.user.presentations.screens
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,12 +15,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,7 +38,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +50,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.litecartesnative.R
 import com.example.litecartesnative.components.Button
 import com.example.litecartesnative.features.user.presentations.viewmodel.EditProfileViewModel
@@ -55,6 +66,13 @@ fun EditProfileScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        viewModel.onImageSelected(uri)
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadProfile()
@@ -85,6 +103,7 @@ fun EditProfileScreen(
                 .padding(innerPadding)
                 .background(LitecartesColor.Surface)
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(
                     top = 30.dp
                 ),
@@ -124,26 +143,75 @@ fun EditProfileScreen(
 
             Spacer(modifier = Modifier.padding(16.dp))
 
+            // Profile image with camera overlay
             Box(
                 modifier = Modifier
-                    .size(100.dp),
+                    .size(100.dp)
+                    .clickable { imagePickerLauncher.launch("image/*") },
                 contentAlignment = Alignment.BottomEnd
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.template_profile),
-                    contentDescription = "profile",
+                val imageModel = state.selectedImageUri
+                    ?: state.profile?.image
+
+                if (imageModel != null) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(context)
+                            .data(imageModel)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = "profile",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .shadow(
+                                elevation = 20.dp,
+                                shape = CircleShape
+                            )
+                            .clip(CircleShape)
+                            .background(
+                                LitecartesColor.Surface,
+                                shape = CircleShape
+                            )
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.template_profile),
+                        contentDescription = "profile",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .shadow(
+                                elevation = 20.dp,
+                                shape = CircleShape
+                            )
+                            .background(
+                                LitecartesColor.Surface,
+                                shape = CircleShape
+                            )
+                    )
+                }
+                Box(
                     modifier = Modifier
-                        .size(100.dp)
-                        .shadow(
-                            elevation = 20.dp,
-                            shape = CircleShape
-                        )
-                        .background(
-                            LitecartesColor.Surface,
-                            shape = CircleShape
-                        )
-                )
+                        .size(28.dp)
+                        .clip(CircleShape)
+                        .background(LitecartesColor.Secondary)
+                        .padding(4.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CameraAlt,
+                        contentDescription = "Change photo",
+                        tint = LitecartesColor.Surface,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
+            Text(
+                text = "Maks 2MB",
+                fontFamily = nunitosFontFamily,
+                fontSize = 11.sp,
+                color = LitecartesColor.Secondary.copy(alpha = 0.5f),
+                modifier = Modifier.padding(top = 4.dp)
+            )
 
             Spacer(modifier = Modifier.padding(24.dp))
 
@@ -211,7 +279,47 @@ fun EditProfileScreen(
                             singleLine = true
                         )
 
-                        Spacer(modifier = Modifier.padding(24.dp))
+                        Spacer(modifier = Modifier.padding(8.dp))
+
+                        Text(
+                            text = "Bio",
+                            fontFamily = nunitosFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            color = LitecartesColor.Secondary,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        OutlinedTextField(
+                            value = state.bio,
+                            onValueChange = { if (it.length <= 500) viewModel.onBioChanged(it) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = LitecartesColor.Primary,
+                                unfocusedBorderColor = LitecartesColor.Secondary.copy(alpha = 0.3f),
+                                focusedTextColor = LitecartesColor.Secondary,
+                                unfocusedTextColor = LitecartesColor.Secondary
+                            ),
+                            minLines = 3,
+                            maxLines = 5,
+                            placeholder = {
+                                Text(
+                                    text = "Tulis bio singkat...",
+                                    color = LitecartesColor.Secondary.copy(alpha = 0.5f)
+                                )
+                            }
+                        )
+                        Text(
+                            text = "${state.bio.length}/500",
+                            fontFamily = nunitosFontFamily,
+                            fontSize = 11.sp,
+                            color = LitecartesColor.Secondary.copy(alpha = 0.5f),
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(top = 2.dp)
+                        )
+
+                        Spacer(modifier = Modifier.padding(16.dp))
 
                         Button(
                             text = if (state.isSaving) "Menyimpan..." else "Simpan",
@@ -229,6 +337,8 @@ fun EditProfileScreen(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.padding(16.dp))
         }
     }
 }
