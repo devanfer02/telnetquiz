@@ -1,15 +1,61 @@
 package com.example.litecartesnative.data.repository
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import com.example.litecartesnative.data.remote.api.TelNetQuizApi
 import com.example.litecartesnative.data.remote.dto.*
+import dagger.hilt.android.qualifiers.ApplicationContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class UserRepository @Inject constructor(
-    private val api: TelNetQuizApi
+    private val api: TelNetQuizApi,
+    @ApplicationContext private val context: Context
 ) {
+    companion object {
+        private const val MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
+    }
+
+    suspend fun uploadAvatar(uri: Uri): Result<String> {
+        return try {
+            val contentResolver = context.contentResolver
+            val inputStream = contentResolver.openInputStream(uri)
+                ?: return Result.Error("Cannot read file")
+            val bytes = inputStream.readBytes()
+            inputStream.close()
+
+            if (bytes.size > MAX_FILE_SIZE) {
+                return Result.Error("Ukuran file melebihi batas 2MB")
+            }
+
+            val mimeType = contentResolver.getType(uri) ?: "image/jpeg"
+            val requestBody = bytes.toRequestBody(mimeType.toMediaTypeOrNull())
+            val part = MultipartBody.Part.createFormData("image", "avatar.jpg", requestBody)
+
+            val response = api.uploadAvatar(part)
+            if (response.isSuccessful) {
+                val imageUrl = response.body()?.data?.imageUrl
+                if (imageUrl != null) {
+                    Result.Success(imageUrl)
+                } else {
+                    Result.Error("Invalid upload response")
+                }
+            } else {
+                val errorBody = response.errorBody()?.string()
+                Log.e("UserRepository", "Upload error: $errorBody")
+                Result.Error("Gagal mengunggah foto", response.code())
+            }
+        } catch (e: Exception) {
+            Log.e("UserRepository", "uploadAvatar error: ${e.message}", e)
+            Result.Error(e.message ?: "Network error")
+        }
+    }
+
     suspend fun getUserProfile(): Result<UserProfileDto> {
         return try {
             Log.d("UserRepository", "Fetching user profile...")
