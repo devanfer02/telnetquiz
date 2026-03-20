@@ -63,7 +63,7 @@ fun QuickCheckScreen(
                         .fillMaxWidth()
                         .size(300.dp)
                         ,
-                    contentScale = ContentScale.Crop
+
                 )
                 Column(
                     modifier = Modifier

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,6 +35,32 @@ import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.features.pretest.presentation.singletons.PretestResultHolder
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
+
+private data class PretestFeedback(
+    val title: String,
+    val description: String
+)
+
+private fun getFeedback(scorePercentage: Double): PretestFeedback {
+    return when {
+        scorePercentage >= 90 -> PretestFeedback(
+            title = "Luar Biasa! 🌟",
+            description = "Kamu memiliki pemahaman yang sangat baik! Tetap pertahankan dan terus belajar."
+        )
+        scorePercentage >= 75 -> PretestFeedback(
+            title = "Bagus! 👍",
+            description = "Pemahaman kamu sudah cukup baik. Pelajari lagi beberapa bab untuk hasil yang lebih maksimal."
+        )
+        scorePercentage >= 40 -> PretestFeedback(
+            title = "Perlu Ditingkatkan 📚",
+            description = "Ada beberapa materi yang perlu kamu pelajari lebih dalam. Jangan menyerah, terus berlatih!"
+        )
+        else -> PretestFeedback(
+            title = "Ayo Semangat! 💪",
+            description = "Masih banyak materi yang perlu dipelajari. Mulai dari bab-bab di bawah ini dan coba lagi nanti!"
+        )
+    }
+}
 
 @Composable
 fun PretestResultScreen(
@@ -94,6 +121,23 @@ fun PretestResultScreen(
                         fontWeight = FontWeight.ExtraBold
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
+                    val feedback = getFeedback(scorePercentage)
+                    Text(
+                        text = feedback.title,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = feedback.description,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.White.copy(alpha = 0.85f),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
                     Row(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {

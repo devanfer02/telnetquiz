@@ -1,6 +1,7 @@
 package com.example.litecartesnative.features.user.presentations.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import com.example.litecartesnative.R
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -205,18 +208,33 @@ fun LeaderboardScreen(
                             }
                         }
                         activityState.days.all { it.entries.isEmpty() } -> {
-                            Box(
+                            Column(
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxWidth(),
-                                contentAlignment = Alignment.Center
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
                             ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.start_screen),
+                                    contentDescription = "Mascot",
+                                    modifier = Modifier.size(160.dp)
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
                                 Text(
-                                    text = "Segera mainkan level",
+                                    text = "Belum ada aktivitas",
                                     color = LitecartesColor.Secondary,
                                     fontFamily = nunitosFontFamily,
-                                    fontWeight = FontWeight.SemiBold,
+                                    fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "Yuk mainkan level pertamamu!",
+                                    color = LitecartesColor.Secondary.copy(alpha = 0.7f),
+                                    fontFamily = nunitosFontFamily,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 14.sp
                                 )
                             }
                         }
@@ -351,7 +369,7 @@ private fun SegmentedToggle(
         LeaderboardTab.entries.forEach { tab ->
             val isSelected = tab == selectedTab
             val label = when (tab) {
-                LeaderboardTab.PROGRESS -> "Progres"
+                LeaderboardTab.PROGRESS -> "Aktivitas Harian"
                 LeaderboardTab.LEADERBOARD -> "Papan Peringkat"
             }
             Box(

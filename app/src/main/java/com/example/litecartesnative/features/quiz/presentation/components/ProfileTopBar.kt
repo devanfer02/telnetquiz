@@ -38,7 +38,13 @@ import com.example.litecartesnative.ui.theme.nunitosFontFamily
 @Composable
 fun ProfileTopBar(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = LitecartesColor.Surface
+    backgroundColor: Color = LitecartesColor.Surface,
+    name: String = "...",
+    school: String = "",
+    imageUrl: String? = null,
+    totalScore: Int = 0,
+    dailyStreak: Int = 0,
+    tag: String = "Penjelajah"
 ) {
     Box(
         modifier = modifier
@@ -70,13 +76,23 @@ fun ProfileTopBar(
                     .background(LitecartesColor.Primary),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.template_profile),
-                    contentDescription = "profile image",
-                    modifier = Modifier
-                        .height(55.dp)
-                        .aspectRatio(1f)
-                )
+                if (imageUrl != null) {
+                    AsyncImage(
+                        model = imageUrl,
+                        contentDescription = "profile image",
+                        modifier = Modifier
+                            .height(55.dp)
+                            .aspectRatio(1f)
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.template_profile),
+                        contentDescription = "profile image",
+                        modifier = Modifier
+                            .height(55.dp)
+                            .aspectRatio(1f)
+                    )
+                }
             }
             Spacer(modifier = Modifier.padding(4.dp))
             Column(
@@ -85,14 +101,14 @@ fun ProfileTopBar(
                 modifier = Modifier
             ) {
                 Text(
-                    text = "Maudy Ayunda",
+                    text = name,
                     fontFamily = nunitosFontFamily,
                     color = LitecartesColor.Surface,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
                 Text(
-                    text = "SMAN 1 Kota Bogor",
+                    text = school,
                     fontFamily = nunitosFontFamily,
                     color = LitecartesColor.Surface,
                     fontWeight = FontWeight.SemiBold,
@@ -113,12 +129,12 @@ fun ProfileTopBar(
                 ) {
                     BoxPoints(
                         imageId = R.drawable.diamon,
-                        points = "250",
+                        points = "$totalScore",
                     )
-                    
+
                     BoxPoints(
                         imageId = R.drawable.lightning,
-                        points =  "150"
+                        points = "$dailyStreak"
                     )
                 }
                 Spacer(modifier = Modifier.padding(2.dp))
@@ -137,7 +153,7 @@ fun ProfileTopBar(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Penjelajah",
+                        text = tag,
                         fontFamily = nunitosFontFamily,
                         color = LitecartesColor.Secondary,
                         fontWeight = FontWeight.Bold,

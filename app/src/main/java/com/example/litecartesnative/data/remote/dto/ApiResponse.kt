@@ -61,7 +61,11 @@ data class UserStatsDto(
     @SerializedName("levels_completed")
     val levelsCompleted: Int,
     @SerializedName("chapters_completed")
-    val chaptersCompleted: Int
+    val chaptersCompleted: Int,
+    @SerializedName("total_chapters")
+    val totalChapters: Int = 0,
+    @SerializedName("daily_streak")
+    val dailyStreak: Int = 0
 )
 
 data class UpdateProfileRequest(

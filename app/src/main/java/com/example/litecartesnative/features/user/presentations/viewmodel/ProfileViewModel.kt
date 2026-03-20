@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.litecartesnative.data.remote.dto.UserProfileDto
 import com.example.litecartesnative.data.repository.Result
 import com.example.litecartesnative.data.repository.UserRepository
+import com.example.litecartesnative.features.quiz.presentation.singletons.ProfileCache
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,6 +32,7 @@ class ProfileViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, error = null)
             when (val result = userRepository.getUserProfile()) {
                 is Result.Success -> {
+                    ProfileCache.profile = result.data
                     _state.value = _state.value.copy(
                         isLoading = false,
                         profile = result.data

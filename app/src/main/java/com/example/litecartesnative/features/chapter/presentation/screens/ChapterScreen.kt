@@ -41,6 +41,8 @@ import com.example.litecartesnative.features.quiz.presentation.components.Profil
 import com.example.litecartesnative.components.Navbar
 import com.example.litecartesnative.features.chapter.presentation.components.ChapterCardFromApi
 import com.example.litecartesnative.features.chapter.presentation.viewmodel.ChapterViewModel
+import com.example.litecartesnative.features.user.presentations.viewmodel.ProfileViewModel
+import com.example.litecartesnative.features.quiz.presentation.singletons.ProfileCache
 import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
@@ -89,12 +91,15 @@ fun ComingSoonCard() {
 @Composable
 fun ChapterScreen(
     navController: NavController,
-    viewModel: ChapterViewModel = hiltViewModel()
+    viewModel: ChapterViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
     val state by viewModel.listState.collectAsState()
+    val profileState by profileViewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadChapters()
+        profileViewModel.loadProfile()
     }
 
     // Redirect to pretest if user hasn't taken it
@@ -108,17 +113,24 @@ fun ChapterScreen(
     }
     Scaffold(
         topBar = {
-            ProfileTopBar()
-        },
-        modifier = Modifier.systemBarsPadding()
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Box(
+                ProfileTopBar(
+                    name = profileState.profile?.fullname ?: "...",
+                    school = profileState.profile?.school?.name ?: "",
+                    imageUrl = profileState.profile?.image,
+                    totalScore = profileState.profile?.stats?.totalScore ?: 0,
+                    dailyStreak = profileState.profile?.stats?.dailyStreak ?: 0,
+                    tag = ProfileCache.getTag()
+                )
+            },
+            modifier = Modifier.systemBarsPadding()
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)

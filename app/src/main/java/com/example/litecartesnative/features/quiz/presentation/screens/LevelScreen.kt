@@ -56,8 +56,10 @@ import com.example.litecartesnative.features.quiz.presentation.components.LevelB
 import com.example.litecartesnative.features.quiz.presentation.components.ProfileTopBar
 import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.features.chapter.presentation.viewmodel.ChapterViewModel
+import com.example.litecartesnative.features.user.presentations.viewmodel.ProfileViewModel
 import com.example.litecartesnative.features.quiz.domain.model.LevelData
 import com.example.litecartesnative.features.quiz.presentation.singletons.LearnFirstHolder
+import com.example.litecartesnative.features.quiz.presentation.singletons.ProfileCache
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
@@ -67,10 +69,12 @@ import kotlinx.coroutines.launch
 fun LevelScreen(
     navController: NavController,
     chapterId: Int,
-    viewModel: ChapterViewModel = hiltViewModel()
+    viewModel: ChapterViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
     val detailState by viewModel.detailState.collectAsState()
+    val profileState by profileViewModel.state.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     var showLevelDialog by remember { mutableStateOf(false) }
@@ -80,12 +84,19 @@ fun LevelScreen(
 
     LaunchedEffect(chapterId) {
         viewModel.loadChapterById(chapterId)
+        profileViewModel.loadProfile()
     }
 
     Scaffold(
         topBar = {
             ProfileTopBar(
-                backgroundColor = LitecartesColor.DarkerSurface
+                backgroundColor = LitecartesColor.DarkerSurface,
+                name = profileState.profile?.fullname ?: "...",
+                school = profileState.profile?.school?.name ?: "",
+                imageUrl = profileState.profile?.image,
+                totalScore = profileState.profile?.stats?.totalScore ?: 0,
+                dailyStreak = profileState.profile?.stats?.dailyStreak ?: 0,
+                tag = ProfileCache.getTag()
             )
         },
         modifier = Modifier.systemBarsPadding()

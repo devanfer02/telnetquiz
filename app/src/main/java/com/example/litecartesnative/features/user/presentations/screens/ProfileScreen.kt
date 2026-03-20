@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -317,72 +318,11 @@ fun ProfileScreen(
                     else -> {
                         LazyColumn {
                             items(achievementState.achievements) { achievement ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 6.dp)
-                                        .shadow(
-                                            elevation = 8.dp,
-                                            shape = RoundedCornerShape(12.dp)
-                                        )
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(
-                                            if (achievement.unlocked) LitecartesColor.DarkerSurface
-                                            else LitecartesColor.DarkerSurface.copy(alpha = 0.5f)
-                                        )
-                                        .padding(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(50.dp)
-                                            .background(
-                                                if (achievement.unlocked) LitecartesColor.Primary.copy(alpha = 0.2f)
-                                                else Color.Gray.copy(alpha = 0.2f),
-                                                shape = RoundedCornerShape(12.dp)
-                                            ),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Image(
-                                            painter = painterResource(id = R.drawable.medal),
-                                            contentDescription = achievement.title,
-                                            modifier = Modifier
-                                                .size(35.dp)
-                                                .let { mod ->
-                                                    if (!achievement.unlocked) mod
-                                                    else mod
-                                                }
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.padding(8.dp))
-                                    Column(
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-                                        Text(
-                                            text = achievement.title,
-                                            fontFamily = nunitosFontFamily,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 16.sp,
-                                            color = if (achievement.unlocked) LitecartesColor.Secondary
-                                            else LitecartesColor.Secondary.copy(alpha = 0.5f)
-                                        )
-                                        Text(
-                                            text = achievement.description,
-                                            fontFamily = nunitosFontFamily,
-                                            fontSize = 12.sp,
-                                            color = if (achievement.unlocked) LitecartesColor.Secondary.copy(alpha = 0.7f)
-                                            else LitecartesColor.Secondary.copy(alpha = 0.4f)
-                                        )
-                                    }
-                                    if (achievement.unlocked) {
-                                        Text(
-                                            text = "✓",
-                                            color = LitecartesColor.Primary,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 20.sp
-                                        )
-                                    }
-                                }
+                                AchievementCard(
+                                    title = achievement.title,
+                                    description = achievement.description,
+                                    unlocked = achievement.unlocked
+                                )
                             }
                         }
                     }
@@ -392,6 +332,108 @@ fun ProfileScreen(
                 navController = navController
             )
         }
+    }
+}
+
+@Composable
+private fun AchievementCard(
+    title: String,
+    description: String,
+    unlocked: Boolean
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp)
+            .shadow(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clip(RoundedCornerShape(12.dp))
+            .background(
+                if (unlocked) LitecartesColor.DarkerSurface
+                else LitecartesColor.DarkerSurface.copy(alpha = 0.5f)
+            )
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .background(
+                    if (unlocked) LitecartesColor.Primary.copy(alpha = 0.2f)
+                    else Color.Gray.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(12.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            if (unlocked) {
+                Image(
+                    painter = painterResource(id = R.drawable.medal),
+                    contentDescription = title,
+                    modifier = Modifier.size(35.dp)
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.Lock,
+                    contentDescription = "Locked",
+                    tint = Color.Gray.copy(alpha = 0.5f),
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.padding(8.dp))
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = title,
+                fontFamily = nunitosFontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = if (unlocked) LitecartesColor.Secondary
+                else LitecartesColor.Secondary.copy(alpha = 0.5f)
+            )
+            Text(
+                text = description,
+                fontFamily = nunitosFontFamily,
+                fontSize = 12.sp,
+                color = if (unlocked) LitecartesColor.Secondary.copy(alpha = 0.7f)
+                else LitecartesColor.Secondary.copy(alpha = 0.4f)
+            )
+        }
+        if (unlocked) {
+            Text(
+                text = "✓",
+                color = LitecartesColor.Primary,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewAchievementCardUnlocked() {
+    LitecartesNativeTheme {
+        AchievementCard(
+            title = "Penjelajah Geometri",
+            description = "Selesaikan 5 level pertama",
+            unlocked = true
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewAchievementCardLocked() {
+    LitecartesNativeTheme {
+        AchievementCard(
+            title = "Master Bangun Datar",
+            description = "Selesaikan semua level di Bab 1",
+            unlocked = false
+        )
     }
 }
 
