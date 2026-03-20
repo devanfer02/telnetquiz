@@ -86,7 +86,6 @@ class AuthRepository @Inject constructor(
     suspend fun login(email: String, password: String): Result<String> {
         return try {
             val request = LoginRequest(email, password)
-            Log.d("LOGIN", "Request: email=$email, password=${password.take(3)}***")
             val response = api.login(request)
             Log.d("LOGIN", "Response code: ${response.code()}")
             if (response.isSuccessful) {

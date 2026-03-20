@@ -2,6 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Gradle Safety Rules
+
+**BEFORE running ANY `./gradlew` command**, you MUST check for conflicts:
+
+1. **Check if Gradle is already running**: Run `pgrep -f 'gradle|GradleDaemon'`. If any process is found, **DO NOT run Gradle**. Instead, notify the user: _"Cannot run Gradle — a Gradle process is already running (likely from Android Studio). Please wait for it to finish or stop it before retrying."_
+2. **Check if an Android Studio emulator is running**: Run `pgrep -f 'qemu-system|emulator'`. If any process is found, **DO NOT run Gradle**. Instead, notify the user: _"Cannot run Gradle — an Android Studio emulator is currently running. Running Gradle from CLI while the emulator/Android Studio is active can cause build conflicts and lock issues. Please close the emulator or run the build from Android Studio instead."_
+
+If both checks pass (no output from either `pgrep`), proceed with the Gradle command.
+
 ## Build Commands
 
 ```bash

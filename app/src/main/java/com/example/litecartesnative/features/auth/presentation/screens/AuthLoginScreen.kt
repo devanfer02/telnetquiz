@@ -272,6 +272,8 @@ fun AuthLoginScreen(
                     Text(
                         text = if (errorMessage.contains("password")) {
                             "Email atau kata sandi tidak sesuai"
+                        } else if (errorMessage.contains("Failed to connect")) {
+                            "Gagak terkoneksi dengan server"
                         } else {
                             "Email yang digunakan tidak valid"
                         },
