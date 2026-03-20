@@ -136,6 +136,31 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun getRecentActivity(): Result<RecentActivityResponse> {
+        return try {
+            Log.d("UserRepository", "Fetching recent activity...")
+            val response = api.getRecentActivity()
+            Log.d("UserRepository", "Response code: ${response.code()}")
+            if (response.isSuccessful) {
+                val activity = response.body()?.data
+                if (activity != null) {
+                    Log.d("UserRepository", "Recent activity loaded: ${activity.activities.size} days")
+                    Result.Success(activity)
+                } else {
+                    Log.e("UserRepository", "Recent activity data is null")
+                    Result.Error("Invalid recent activity response")
+                }
+            } else {
+                val errorBody = response.errorBody()?.string()
+                Log.e("UserRepository", "Error response: $errorBody")
+                Result.Error("Failed to fetch recent activity", response.code())
+            }
+        } catch (e: Exception) {
+            Log.e("UserRepository", "getRecentActivity error: ${e.message}", e)
+            Result.Error(e.message ?: "Network error")
+        }
+    }
+
     suspend fun getPretestStatus(): Result<PretestStatusResponse> {
         return try {
             Log.d("UserRepository", "Fetching pretest status...")

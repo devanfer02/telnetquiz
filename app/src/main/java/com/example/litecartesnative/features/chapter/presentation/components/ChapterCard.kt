@@ -6,10 +6,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -114,9 +117,9 @@ fun ChapterCardFromApi(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
-    val progress = if (chapter.quizCount > 0) {
-        (chapter.completedQuizzes * 100) / chapter.quizCount
-    } else 0
+    val progressFraction = if (chapter.quizCount > 0) {
+        chapter.completedQuizzes.toFloat() / chapter.quizCount.toFloat()
+    } else 0f
 
     Box(
         modifier = modifier
@@ -163,16 +166,24 @@ fun ChapterCardFromApi(
                     fontWeight = FontWeight.SemiBold,
                     lineHeight = 14.sp
                 )
-                if (progress > 0) {
-                    Text(
-                        text = "Progress: $progress%",
-                        color = LitecartesColor.Secondary.copy(alpha = 0.7f),
-                        fontFamily = nunitosFontFamily,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "${chapter.completedQuizzes} / ${chapter.quizCount} kuis selesai",
+                    color = LitecartesColor.Secondary.copy(alpha = 0.7f),
+                    fontFamily = nunitosFontFamily,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                LinearProgressIndicator(
+                    progress = { progressFraction },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    color = LitecartesColor.Primary,
+                    trackColor = LitecartesColor.Surface,
+                )
                 Button(
                     text = "Yuk Main".uppercase(),
                     color = LitecartesColor.Secondary,
