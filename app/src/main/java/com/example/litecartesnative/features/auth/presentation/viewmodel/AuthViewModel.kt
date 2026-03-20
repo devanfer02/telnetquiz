@@ -31,6 +31,15 @@ data class AuthState(
     val successMessage: String? = null
 )
 
+data class SchoolSearchState(
+    val schools: List<SchoolDto> = emptyList(),
+    val isLoading: Boolean = false,
+    val isLoadingMore: Boolean = false,
+    val hasNextPage: Boolean = false,
+    val currentOffset: Int = 0,
+    val searchQuery: String = ""
+)
+
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
@@ -48,6 +57,9 @@ class AuthViewModel @Inject constructor(
 
     private val _schools = MutableStateFlow<List<SchoolDto>>(emptyList())
     val schools: StateFlow<List<SchoolDto>> = _schools.asStateFlow()
+
+    private val _schoolSearchState = MutableStateFlow(SchoolSearchState())
+    val schoolSearchState: StateFlow<SchoolSearchState> = _schoolSearchState.asStateFlow()
 
     init {
         validateSession()
@@ -168,6 +180,62 @@ class AuthViewModel @Inject constructor(
             authRepository.logout()
             _sessionState.value = SessionState.Unauthenticated
             _state.value = AuthState(isLoggedIn = false)
+        }
+    }
+
+    fun searchSchools(query: String) {
+        viewModelScope.launch {
+            _schoolSearchState.value = _schoolSearchState.value.copy(
+                isLoading = true,
+                searchQuery = query,
+                currentOffset = 0,
+                schools = emptyList()
+            )
+            val search = query.ifBlank { null }
+            when (val result = authRepository.searchSchools(search = search, limit = 20, offset = 0)) {
+                is Result.Success -> {
+                    _schoolSearchState.value = _schoolSearchState.value.copy(
+                        isLoading = false,
+                        schools = result.data.schools,
+                        hasNextPage = result.data.pagination.hasNextPage,
+                        currentOffset = result.data.pagination.limit
+                    )
+                }
+                is Result.Error -> {
+                    _schoolSearchState.value = _schoolSearchState.value.copy(isLoading = false)
+                    Log.e("AuthViewModel", "Failed to search schools: ${result.message}")
+                }
+                is Result.Loading -> {}
+            }
+        }
+    }
+
+    fun loadMoreSchools() {
+        val current = _schoolSearchState.value
+        if (current.isLoadingMore || !current.hasNextPage) return
+
+        viewModelScope.launch {
+            _schoolSearchState.value = current.copy(isLoadingMore = true)
+            val search = current.searchQuery.ifBlank { null }
+            when (val result = authRepository.searchSchools(
+                search = search,
+                limit = 20,
+                offset = current.currentOffset
+            )) {
+                is Result.Success -> {
+                    _schoolSearchState.value = _schoolSearchState.value.copy(
+                        isLoadingMore = false,
+                        schools = current.schools + result.data.schools,
+                        hasNextPage = result.data.pagination.hasNextPage,
+                        currentOffset = current.currentOffset + result.data.pagination.limit
+                    )
+                }
+                is Result.Error -> {
+                    _schoolSearchState.value = _schoolSearchState.value.copy(isLoadingMore = false)
+                    Log.e("AuthViewModel", "Failed to load more schools: ${result.message}")
+                }
+                is Result.Loading -> {}
+            }
         }
     }
 

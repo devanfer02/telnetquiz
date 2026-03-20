@@ -5,6 +5,7 @@ import com.example.litecartesnative.data.local.TokenManager
 import com.example.litecartesnative.data.remote.api.TelNetQuizApi
 import com.example.litecartesnative.data.remote.dto.LoginRequest
 import com.example.litecartesnative.data.remote.dto.RegisterRequest
+import com.example.litecartesnative.data.remote.dto.PaginatedSchoolsResponse
 import com.example.litecartesnative.data.remote.dto.SchoolDto
 import com.example.litecartesnative.data.remote.dto.UserProfileDto
 import com.example.litecartesnative.data.remote.dto.ValidationErrorResponse
@@ -136,6 +137,29 @@ class AuthRepository @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e("AuthRepository", "getSchools error: ${e.message}", e)
+            Result.Error(e.message ?: "Network error")
+        }
+    }
+
+    suspend fun searchSchools(
+        search: String? = null,
+        limit: Int = 20,
+        offset: Int = 0
+    ): Result<PaginatedSchoolsResponse> {
+        return try {
+            val response = api.searchSchools(search, limit, offset)
+            if (response.isSuccessful) {
+                val data = response.body()?.data
+                if (data != null) {
+                    Result.Success(data)
+                } else {
+                    Result.Error("Invalid schools response")
+                }
+            } else {
+                Result.Error("Failed to search schools", response.code())
+            }
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "searchSchools error: ${e.message}", e)
             Result.Error(e.message ?: "Network error")
         }
     }

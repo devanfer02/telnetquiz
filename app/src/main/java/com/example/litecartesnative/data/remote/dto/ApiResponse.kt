@@ -85,6 +85,24 @@ data class SchoolsResponse(
     val schools: List<SchoolDto>
 )
 
+data class PaginatedSchoolsResponse(
+    @SerializedName("schools")
+    val schools: List<SchoolDto>,
+    @SerializedName("pagination")
+    val pagination: SchoolPaginationDto
+)
+
+data class SchoolPaginationDto(
+    @SerializedName("total")
+    val total: Int,
+    @SerializedName("limit")
+    val limit: Int,
+    @SerializedName("offset")
+    val offset: Int,
+    @SerializedName("hasNextPage")
+    val hasNextPage: Boolean
+)
+
 data class AvatarResponse(
     @SerializedName("image_url")
     val imageUrl: String

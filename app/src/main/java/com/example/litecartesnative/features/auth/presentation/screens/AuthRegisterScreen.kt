@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -19,8 +18,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -52,6 +52,7 @@ import com.example.litecartesnative.features.auth.presentation.components.AuthTo
 import com.example.litecartesnative.components.Button
 import com.example.litecartesnative.features.auth.presentation.components.Input
 import com.example.litecartesnative.features.auth.presentation.components.PasswordInput
+import com.example.litecartesnative.features.auth.presentation.components.SchoolPickerDialog
 import com.example.litecartesnative.features.auth.presentation.viewmodel.AuthViewModel
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
@@ -63,7 +64,6 @@ fun AuthRegisterScreen(
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val schools by viewModel.schools.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     var fullname by remember { mutableStateOf("") }
@@ -71,13 +71,9 @@ fun AuthRegisterScreen(
     var password by remember { mutableStateOf("") }
     var selectedSchoolId by remember { mutableIntStateOf(0) }
     var selectedSchoolName by remember { mutableStateOf("") }
-    var schoolDropdownExpanded by remember { mutableStateOf(false) }
+    var showSchoolPicker by remember { mutableStateOf(false) }
     var gender by remember { mutableStateOf<Boolean?>(null) }
     var grade by remember { mutableStateOf("") }
-
-    LaunchedEffect(Unit) {
-        viewModel.loadSchools()
-    }
 
     // Navigate to QuickCheckScreen on successful registration
     LaunchedEffect(state.successMessage) {
@@ -145,7 +141,7 @@ fun AuthRegisterScreen(
                 )
                 Spacer(modifier = Modifier.padding(4.dp))
 
-                // School dropdown
+                // School picker
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
                         text = "Sekolah",
@@ -155,53 +151,46 @@ fun AuthRegisterScreen(
                         fontSize = 14.sp,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp))
-                                .border(
-                                    1.dp,
-                                    LitecartesColor.Secondary.copy(alpha = 0.3f),
-                                    RoundedCornerShape(12.dp)
-                                )
-                                .clickable { schoolDropdownExpanded = true }
-                                .padding(16.dp)
-                        ) {
-                            Text(
-                                text = selectedSchoolName.ifEmpty { "Pilih sekolah" },
-                                color = if (selectedSchoolName.isEmpty())
-                                    LitecartesColor.Secondary.copy(alpha = 0.5f)
-                                else LitecartesColor.Secondary,
-                                fontFamily = nunitosFontFamily,
-                                fontSize = 14.sp
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .border(
+                                1.dp,
+                                LitecartesColor.Secondary.copy(alpha = 0.3f),
+                                RoundedCornerShape(12.dp)
                             )
-                        }
-                        DropdownMenu(
-                            expanded = schoolDropdownExpanded,
-                            onDismissRequest = { schoolDropdownExpanded = false },
-                            modifier = Modifier
-                                .fillMaxWidth(0.75f)
-                                .heightIn(max = 250.dp)
-                        ) {
-                            schools.forEach { school ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = school.name,
-                                            fontFamily = nunitosFontFamily,
-                                            fontSize = 14.sp
-                                        )
-                                    },
-                                    onClick = {
-                                        selectedSchoolId = school.id
-                                        selectedSchoolName = school.name
-                                        schoolDropdownExpanded = false
-                                    }
-                                )
-                            }
-                        }
+                            .clickable { showSchoolPicker = true }
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = selectedSchoolName.ifEmpty { "Pilih sekolah" },
+                            color = if (selectedSchoolName.isEmpty())
+                                LitecartesColor.Secondary.copy(alpha = 0.5f)
+                            else LitecartesColor.Secondary,
+                            fontFamily = nunitosFontFamily,
+                            fontSize = 14.sp,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Select school",
+                            tint = LitecartesColor.Secondary.copy(alpha = 0.5f)
+                        )
                     }
+                }
+
+                if (showSchoolPicker) {
+                    SchoolPickerDialog(
+                        onDismiss = { showSchoolPicker = false },
+                        onSchoolSelected = { school ->
+                            selectedSchoolId = school.id
+                            selectedSchoolName = school.name
+                        },
+                        selectedSchoolId = if (selectedSchoolId > 0) selectedSchoolId else null,
+                        viewModel = viewModel
+                    )
                 }
                 Spacer(modifier = Modifier.padding(4.dp))
 

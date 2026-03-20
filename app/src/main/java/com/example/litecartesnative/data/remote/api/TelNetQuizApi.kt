@@ -24,6 +24,13 @@ interface TelNetQuizApi {
     @GET("api/schools")
     suspend fun getSchools(): Response<ApiResponse<SchoolsResponse>>
 
+    @GET("api/schools")
+    suspend fun searchSchools(
+        @Query("search") search: String? = null,
+        @Query("limit") limit: Int = 20,
+        @Query("offset") offset: Int = 0
+    ): Response<ApiResponse<PaginatedSchoolsResponse>>
+
     // Pretest endpoints
     @GET("api/pretest")
     suspend fun getPretestQuestions(): Response<ApiResponse<PretestQuestionsResponse>>
