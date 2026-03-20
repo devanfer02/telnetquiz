@@ -1,5 +1,6 @@
 package com.example.litecartesnative.features.auth.presentation.screens
 
+import android.webkit.WebView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -45,6 +47,9 @@ import coil.compose.AsyncImage
 import com.example.litecartesnative.components.Button
 import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.features.quiz.presentation.components.TtsManager
+import com.example.litecartesnative.features.quiz.presentation.singletons.LearnFirstHolder
+import com.example.litecartesnative.features.quiz.presentation.singletons.RemedialHolder
+import com.example.litecartesnative.features.quiz.presentation.singletons.WrongQuizManager
 import com.example.litecartesnative.features.quiz.presentation.viewmodel.StudyMaterialViewModel
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
@@ -127,7 +132,8 @@ fun FeedbackScren(
                         ) {
                             IconButton(
                                 onClick = {
-                                    ttsManager.speak("${material.title}. ${material.content}")
+                                    val plainContent = material.content.replace(Regex("<[^>]*>"), "")
+                                    ttsManager.speak("${material.title}. $plainContent")
                                 },
                                 modifier = Modifier.size(32.dp)
                             ) {
@@ -155,11 +161,26 @@ fun FeedbackScren(
                                 contentScale = ContentScale.Fit
                             )
                         }
-                        Text(
-                            text = material.content,
-                            color = Color.White,
-                            fontFamily = nunitosFontFamily,
-                            textAlign = TextAlign.Justify
+                        AndroidView(
+                            factory = { ctx ->
+                                WebView(ctx).apply {
+                                    settings.javaScriptEnabled = false
+                                    settings.setSupportZoom(false)
+                                    setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                                }
+                            },
+                            update = { webView ->
+                                val html = """
+                                    <html>
+                                    <head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+                                    <body style="color:white;font-family:sans-serif;margin:0;padding:0;">
+                                    ${material.content}
+                                    </body>
+                                    </html>
+                                """.trimIndent()
+                                webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null)
+                            },
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }
@@ -197,14 +218,51 @@ fun FeedbackScren(
 
             Spacer(modifier = Modifier.padding(30.dp))
             Button(
-                text = "Mari perbaiki kesalahanmu",
+                text = when {
+                    WrongQuizManager.queue.isNotEmpty() -> "Lanjut Belajar"
+                    LearnFirstHolder.hasNext() -> "Lanjut Belajar"
+                    LearnFirstHolder.isActive() -> "Mulai Kuis"
+                    else -> "Coba Lagi"
+                },
                 borderColor = LitecartesColor.Secondary,
                 color = LitecartesColor.Surface,
                 backgroundColor = LitecartesColor.Secondary,
                 onClick = {
-                    navController.navigate(
-                        route = "${Screen.QuestionScreen.route}/${chapterId}/levels/${level}/questions/${id}?toquestion=${true}"
-                    )
+                    if (WrongQuizManager.queue.isNotEmpty()) {
+                        // Remedial flow: more materials to review
+                        val next = WrongQuizManager.queue.first()
+                        WrongQuizManager.queue.removeFirst()
+                        navController.navigate(
+                            "${Screen.FeedbackScreen.route}/${next.chapterId}/levels/${next.level}/questions/${next.id}?materialId=${next.materialId}"
+                        ) {
+                            popUpTo("${Screen.FeedbackScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}") { inclusive = true }
+                        }
+                    } else if (LearnFirstHolder.hasNext()) {
+                        // Learn-first flow: more materials to view
+                        val nextMaterial = LearnFirstHolder.next()!!
+                        navController.navigate(
+                            "${Screen.FeedbackScreen.route}/${chapterId}/levels/${level}/questions/0?materialId=${nextMaterial.id}"
+                        ) {
+                            popUpTo("${Screen.FeedbackScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}") { inclusive = true }
+                        }
+                    } else if (LearnFirstHolder.isActive()) {
+                        // Learn-first flow done: start the quiz
+                        val quizId = LearnFirstHolder.quizId
+                        LearnFirstHolder.clear()
+                        navController.navigate(
+                            "${Screen.QuestionScreen.route}/${quizId}"
+                        ) {
+                            popUpTo("${Screen.FeedbackScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}") { inclusive = true }
+                        }
+                    } else {
+                        // Remedial flow done: retry the quiz
+                        val quizId = RemedialHolder.quizId
+                        navController.navigate(
+                            "${Screen.QuestionScreen.route}/${quizId}?retry=true"
+                        ) {
+                            popUpTo("${Screen.FeedbackScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}") { inclusive = true }
+                        }
+                    }
                 },
                 textModifier = Modifier.padding(8.dp),
                 modifier = Modifier.fillMaxWidth(),

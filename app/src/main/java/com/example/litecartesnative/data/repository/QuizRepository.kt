@@ -5,6 +5,10 @@ import com.example.litecartesnative.data.remote.dto.QuizAnswerDto
 import com.example.litecartesnative.data.remote.dto.QuizDto
 import com.example.litecartesnative.data.remote.dto.QuizResultDto
 import com.example.litecartesnative.data.remote.dto.SubmitQuizRequest
+import com.example.litecartesnative.data.remote.dto.QuizMaterialsRequest
+import com.example.litecartesnative.data.remote.dto.QuizMaterialsResponse
+import com.example.litecartesnative.data.remote.dto.VerifyAnswerRequest
+import com.example.litecartesnative.data.remote.dto.VerifyAnswerResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -42,6 +46,48 @@ class QuizRepository @Inject constructor(
                 }
             } else {
                 Result.Error(response.message() ?: "Failed to submit quiz", response.code())
+            }
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "Network error")
+        }
+    }
+
+    suspend fun verifyAnswer(quizId: Int, questionId: Int, answeredOptionId: Int): Result<VerifyAnswerResponse> {
+        return try {
+            val response = api.verifyAnswer(
+                VerifyAnswerRequest(
+                    quizId = quizId,
+                    questionId = questionId,
+                    answeredOptionId = answeredOptionId
+                )
+            )
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null && body.data != null) {
+                    Result.Success(body.data)
+                } else {
+                    Result.Error("Invalid verify response")
+                }
+            } else {
+                Result.Error(response.message() ?: "Failed to verify answer", response.code())
+            }
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "Network error")
+        }
+    }
+
+    suspend fun getQuizMaterials(quizId: Int): Result<QuizMaterialsResponse> {
+        return try {
+            val response = api.getQuizMaterials(QuizMaterialsRequest(quizId = quizId))
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null && body.data != null) {
+                    Result.Success(body.data)
+                } else {
+                    Result.Error("No materials found")
+                }
+            } else {
+                Result.Error(response.message() ?: "Failed to fetch materials", response.code())
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")

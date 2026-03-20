@@ -39,6 +39,7 @@ import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.features.auth.presentation.screens.AboutScreen
 import com.example.litecartesnative.features.auth.presentation.screens.FeedbackScren
 import com.example.litecartesnative.features.auth.presentation.viewmodel.SessionState
+import com.example.litecartesnative.features.quiz.presentation.screens.RemedialScreen
 import com.example.litecartesnative.features.quiz.presentation.screens.ResultScreen
 import com.example.litecartesnative.features.quiz.presentation.singletons.QuizResultHolder
 import com.example.litecartesnative.features.quiz.presentation.singletons.WrongQuizManager
@@ -183,17 +184,23 @@ private fun MainNavHost(
             )
         }
         composable(
-            route = "${Screen.QuestionScreen.route}/{quizId}",
+            route = "${Screen.QuestionScreen.route}/{quizId}?retry={retry}",
             arguments = listOf(
                 navArgument("quizId") {
                     type = NavType.IntType
+                },
+                navArgument("retry") {
+                    type = NavType.BoolType
+                    defaultValue = false
                 }
             )
         ) {
             val quizId = it.arguments?.getInt("quizId") ?: 1
+            val isRetry = it.arguments?.getBoolean("retry") ?: false
 
             QuestionScreen(
                 quizId = quizId,
+                isRetry = isRetry,
                 navController = navController
             )
         }
@@ -229,6 +236,26 @@ private fun MainNavHost(
             )
         }
         composable(
+            route = "${Screen.RemedialScreen.route}/{wrongCount}/{totalCount}",
+            arguments = listOf(
+                navArgument("wrongCount") {
+                    type = NavType.IntType
+                },
+                navArgument("totalCount") {
+                    type = NavType.IntType
+                }
+            )
+        ) {
+            val wrongCount = it.arguments?.getInt("wrongCount") ?: 0
+            val totalCount = it.arguments?.getInt("totalCount") ?: 0
+
+            RemedialScreen(
+                navController = navController,
+                wrongCount = wrongCount,
+                totalCount = totalCount
+            )
+        }
+        composable(
             route = Screen.LeaderboardScreen.route
         ) {
             LeaderboardScreen(navController = navController)
@@ -255,19 +282,7 @@ private fun MainNavHost(
             )
         ) {
             val chapterId = it.arguments?.getInt("chapterId") ?: 0
-            val level = it.arguments?.getInt("level") ?: 0
             val quizResult = QuizResultHolder.lastResult
-
-            LaunchedEffect(key1 = chapterId) {
-                Log.d("QUEUEMANAGER", "${WrongQuizManager.queue.toString()}")
-                if (!WrongQuizManager.queue.isEmpty()) {
-                    val quizIndex = WrongQuizManager.queue.first()
-                    navController.navigate(
-                        "${Screen.FeedbackScreen.route}/${quizIndex.chapterId}/levels/${quizIndex.level}/questions/${quizIndex.id}"
-                    )
-                    WrongQuizManager.queue.removeFirst()
-                }
-            }
 
             ResultScreen(
                 navController = navController,

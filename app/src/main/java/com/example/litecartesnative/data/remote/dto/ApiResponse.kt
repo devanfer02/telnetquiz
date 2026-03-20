@@ -140,3 +140,40 @@ data class PretestStatusResponse(
     @SerializedName("has_taken_pretest")
     val hasTakenPretest: Boolean
 )
+
+data class RecentActivityResponse(
+    @SerializedName("activities") val activities: List<DayActivityDto>
+)
+
+data class DayActivityDto(
+    @SerializedName("date") val date: String,
+    @SerializedName("entries") val entries: List<ActivityEntryDto>
+)
+
+data class ActivityEntryDto(
+    @SerializedName("quiz_id") val quizId: Int,
+    @SerializedName("chapter_id") val chapterId: Int,
+    @SerializedName("chapter_title") val chapterTitle: String,
+    @SerializedName("quiz_level") val quizLevel: Int,
+    @SerializedName("retry_count") val retryCount: Int,
+    @SerializedName("latest_score") val latestScore: Int
+)
+
+data class VerifyAnswerRequest(
+    @SerializedName("quiz_id") val quizId: Int,
+    @SerializedName("question_id") val questionId: Int,
+    @SerializedName("answered_option_id") val answeredOptionId: Int
+)
+
+data class VerifyAnswerResponse(
+    @SerializedName("correct") val correct: Boolean,
+    @SerializedName("correct_option_id") val correctOptionId: Int
+)
+
+data class QuizMaterialsRequest(
+    @SerializedName("quiz_id") val quizId: Int
+)
+
+data class QuizMaterialsResponse(
+    @SerializedName("materials") val materials: List<StudyMaterialDto>
+)

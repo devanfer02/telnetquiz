@@ -62,4 +62,8 @@ sealed class Screen(
     object FeedbackScreen : Screen(
         "feedback_screen"
     )
+
+    object RemedialScreen : Screen(
+        "remedial_screen"
+    )
 }

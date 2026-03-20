@@ -81,4 +81,22 @@ interface TelNetQuizApi {
     // Pretest status
     @GET("api/pretest/status")
     suspend fun getPretestStatus(): Response<ApiResponse<PretestStatusResponse>>
+
+    // Recent activity
+    @GET("api/activity/recent")
+    suspend fun getRecentActivity(): Response<ApiResponse<RecentActivityResponse>>
+
+    // Verify quiz answer
+    @Headers("Content-Type: application/json")
+    @POST("api/quiz/verify")
+    suspend fun verifyAnswer(
+        @Body request: VerifyAnswerRequest
+    ): Response<ApiResponse<VerifyAnswerResponse>>
+
+    // Quiz study materials
+    @Headers("Content-Type: application/json")
+    @POST("api/quiz/materials")
+    suspend fun getQuizMaterials(
+        @Body request: QuizMaterialsRequest
+    ): Response<ApiResponse<QuizMaterialsResponse>>
 }

@@ -30,17 +30,49 @@ import androidx.compose.ui.unit.sp
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.nunitosFontFamily
 
+enum class OptionFeedback {
+    NONE, CORRECT, WRONG
+}
+
 @Composable
 fun OptionButton(
     text: String,
     letter: Char = ' ',
     isActive: Boolean = false,
+    feedback: OptionFeedback = OptionFeedback.NONE,
     onClick: () -> Unit = {}
 ) {
     val scale by animateFloatAsState(
-        targetValue = if (isActive) 1.02f else 1f,
+        targetValue = if (isActive || feedback != OptionFeedback.NONE) 1.02f else 1f,
         label = "scale"
     )
+
+    val feedbackGreen = Color(0xFF4CAF50)
+    val feedbackRed = Color(0xFFE53935)
+
+    val badgeColor = when (feedback) {
+        OptionFeedback.CORRECT -> feedbackGreen
+        OptionFeedback.WRONG -> feedbackRed
+        OptionFeedback.NONE -> if (isActive) LitecartesColor.Primary else LitecartesColor.Secondary
+    }
+
+    val borderColor = when (feedback) {
+        OptionFeedback.CORRECT -> feedbackGreen
+        OptionFeedback.WRONG -> feedbackRed
+        OptionFeedback.NONE -> if (isActive) LitecartesColor.Primary else LitecartesColor.Secondary
+    }
+
+    val containerColor = when (feedback) {
+        OptionFeedback.CORRECT -> feedbackGreen.copy(alpha = 0.15f)
+        OptionFeedback.WRONG -> feedbackRed.copy(alpha = 0.15f)
+        OptionFeedback.NONE -> if (isActive) LitecartesColor.Secondary else LitecartesColor.DarkerSurface
+    }
+
+    val textColor = when (feedback) {
+        OptionFeedback.CORRECT -> feedbackGreen
+        OptionFeedback.WRONG -> feedbackRed
+        OptionFeedback.NONE -> if (isActive) LitecartesColor.Surface else LitecartesColor.Secondary
+    }
 
     Row(
         modifier = Modifier
@@ -54,9 +86,7 @@ fun OptionButton(
                 modifier = Modifier
                     .size(36.dp)
                     .clip(CircleShape)
-                    .background(
-                        if (isActive) LitecartesColor.Primary else LitecartesColor.Secondary
-                    ),
+                    .background(badgeColor),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -72,31 +102,25 @@ fun OptionButton(
         OutlinedButton(
             modifier = Modifier.weight(1f),
             onClick = onClick,
+            enabled = feedback == OptionFeedback.NONE,
             shape = RoundedCornerShape(12.dp),
             border = BorderStroke(
-                width = if (isActive) 2.dp else 1.dp,
-                color = if (isActive) LitecartesColor.Primary else LitecartesColor.Secondary
+                width = if (isActive || feedback != OptionFeedback.NONE) 2.dp else 1.dp,
+                color = borderColor
             ),
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (isActive) {
-                    LitecartesColor.Secondary
-                } else {
-                    LitecartesColor.DarkerSurface
-                }
+                containerColor = containerColor,
+                disabledContainerColor = containerColor
             ),
             elevation = ButtonDefaults.elevatedButtonElevation(
-                defaultElevation = if (isActive) 4.dp else 2.dp
+                defaultElevation = if (isActive || feedback != OptionFeedback.NONE) 4.dp else 2.dp
             )
         ) {
             Text(
                 text = text,
-                color = if (isActive) {
-                    LitecartesColor.Surface
-                } else {
-                    LitecartesColor.Secondary
-                },
+                color = textColor,
                 fontFamily = nunitosFontFamily,
-                fontWeight = if (isActive) FontWeight.Bold else FontWeight.SemiBold,
+                fontWeight = if (isActive || feedback != OptionFeedback.NONE) FontWeight.Bold else FontWeight.SemiBold,
                 textAlign = TextAlign.Start,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -122,5 +146,25 @@ fun PreviewOptionButtonActive() {
         text = "Ini Opsi B (Active)",
         letter = 'B',
         isActive = true
+    )
+}
+
+@Preview
+@Composable
+fun PreviewOptionButtonCorrect() {
+    OptionButton(
+        text = "Ini Opsi C (Correct)",
+        letter = 'C',
+        feedback = OptionFeedback.CORRECT
+    )
+}
+
+@Preview
+@Composable
+fun PreviewOptionButtonWrong() {
+    OptionButton(
+        text = "Ini Opsi D (Wrong)",
+        letter = 'D',
+        feedback = OptionFeedback.WRONG
     )
 }

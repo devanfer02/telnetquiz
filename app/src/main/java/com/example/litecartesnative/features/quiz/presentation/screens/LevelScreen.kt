@@ -11,16 +11,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -32,20 +42,26 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.litecartesnative.R
 import com.example.litecartesnative.components.Navbar
+import com.example.litecartesnative.data.repository.Result
 import com.example.litecartesnative.features.quiz.presentation.components.LevelButton
 import com.example.litecartesnative.features.quiz.presentation.components.ProfileTopBar
 import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.features.chapter.presentation.viewmodel.ChapterViewModel
 import com.example.litecartesnative.features.quiz.domain.model.LevelData
+import com.example.litecartesnative.features.quiz.presentation.singletons.LearnFirstHolder
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
+import com.example.litecartesnative.ui.theme.nunitosFontFamily
+import kotlinx.coroutines.launch
 
 @Composable
 fun LevelScreen(
@@ -55,6 +71,12 @@ fun LevelScreen(
 ) {
     val scrollState = rememberScrollState()
     val detailState by viewModel.detailState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+
+    var showLevelDialog by remember { mutableStateOf(false) }
+    var selectedQuizId by remember { mutableIntStateOf(0) }
+    var selectedQuizLevel by remember { mutableIntStateOf(0) }
+    var isFetchingMaterials by remember { mutableStateOf(false) }
 
     LaunchedEffect(chapterId) {
         viewModel.loadChapterById(chapterId)
@@ -119,7 +141,7 @@ fun LevelScreen(
                                     .height(contentHeight)
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.level_background),
+                                    painter = painterResource(id = R.drawable.level_background_no_path),
                                     contentDescription = "bg",
                                     contentScale = ContentScale.FillBounds,
                                     modifier = Modifier.fillMaxSize()
@@ -152,7 +174,7 @@ fun LevelScreen(
                                                 path = path,
                                                 color = Color.Black.copy(alpha = 0.12f),
                                                 style = Stroke(
-                                                    width = 48f,
+                                                    width = 72f,
                                                     cap = StrokeCap.Round
                                                 )
                                             )
@@ -162,7 +184,7 @@ fun LevelScreen(
                                             path = path,
                                             color = LitecartesColor.PathColor.copy(alpha = 0.5f),
                                             style = Stroke(
-                                                width = 42f,
+                                                width = 64f,
                                                 cap = StrokeCap.Round
                                             )
                                         )
@@ -171,7 +193,7 @@ fun LevelScreen(
                                             path = path,
                                             color = LitecartesColor.PathColor,
                                             style = Stroke(
-                                                width = 24f,
+                                                width = 44f,
                                                 cap = StrokeCap.Round
                                             )
                                         )
@@ -202,9 +224,9 @@ fun LevelScreen(
                                         LevelButton(
                                             level = quiz.level,
                                             onClick = {
-                                                navController.navigate(
-                                                    "${Screen.QuestionScreen.route}/${quiz.id}"
-                                                )
+                                                selectedQuizId = quiz.id
+                                                selectedQuizLevel = quiz.level
+                                                showLevelDialog = true
                                             },
                                             done = isCompleted,
                                             isLocked = !isUnlocked
@@ -218,6 +240,114 @@ fun LevelScreen(
             }
             Navbar(navController = navController)
         }
+
+        if (showLevelDialog) {
+            AlertDialog(
+                onDismissRequest = { showLevelDialog = false },
+                title = {
+                    Text(
+                        text = "Level $selectedQuizLevel",
+                        fontFamily = nunitosFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                },
+                text = {
+                    if (isFetchingMaterials) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = LitecartesColor.Secondary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = "Mau belajar materi dulu atau langsung main kuis?",
+                            fontFamily = nunitosFontFamily
+                        )
+                    }
+                },
+                confirmButton = {
+                    OutlinedButton(
+                        onClick = {
+                            showLevelDialog = false
+                            navController.navigate(
+                                "${Screen.QuestionScreen.route}/${selectedQuizId}"
+                            )
+                        },
+                        enabled = !isFetchingMaterials,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = LitecartesColor.Secondary
+                        )
+                    ) {
+                        Text(
+                            text = "Langsung Main",
+                            fontFamily = nunitosFontFamily,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                },
+                dismissButton = {
+                    OutlinedButton(
+                        onClick = {
+                            isFetchingMaterials = true
+                            coroutineScope.launch {
+                                when (val result = viewModel.fetchQuizMaterials(selectedQuizId)) {
+                                    is Result.Success -> {
+                                        val materials = result.data.materials
+                                        if (materials.isNotEmpty()) {
+                                            LearnFirstHolder.setup(
+                                                quizId = selectedQuizId,
+                                                chapterId = chapterId,
+                                                level = selectedQuizLevel,
+                                                materials = materials
+                                            )
+                                            val firstMaterial = LearnFirstHolder.next()!!
+                                            showLevelDialog = false
+                                            isFetchingMaterials = false
+                                            navController.navigate(
+                                                "${Screen.FeedbackScreen.route}/${chapterId}/levels/${selectedQuizLevel}/questions/0?materialId=${firstMaterial.id}"
+                                            )
+                                        } else {
+                                            // No materials — go straight to quiz
+                                            showLevelDialog = false
+                                            isFetchingMaterials = false
+                                            navController.navigate(
+                                                "${Screen.QuestionScreen.route}/${selectedQuizId}"
+                                            )
+                                        }
+                                    }
+                                    is Result.Error -> {
+                                        // Fetch failed — go straight to quiz
+                                        showLevelDialog = false
+                                        isFetchingMaterials = false
+                                        navController.navigate(
+                                            "${Screen.QuestionScreen.route}/${selectedQuizId}"
+                                        )
+                                    }
+                                    is Result.Loading -> {}
+                                }
+                            }
+                        },
+                        enabled = !isFetchingMaterials,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = LitecartesColor.Primary
+                        )
+                    ) {
+                        Text(
+                            text = "Belajar Dulu",
+                            fontFamily = nunitosFontFamily,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -229,7 +359,7 @@ private fun generateLevelPositions(count: Int): List<LevelData> {
     if (count == 0) return emptyList()
 
     val positions = mutableListOf<LevelData>()
-    val yStart = 0.04f
+    val yStart = 0.02f
     val yEnd = 0.85f
     val yStep = if (count > 1) (yEnd - yStart) / (count - 1) else 0f
 

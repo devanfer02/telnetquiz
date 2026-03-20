@@ -59,8 +59,10 @@ import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.features.pretest.presentation.components.PretestButton
 import com.example.litecartesnative.features.quiz.presentation.components.ProgressBarFromApi
 import com.example.litecartesnative.features.quiz.presentation.components.OptionButton
+import com.example.litecartesnative.features.quiz.presentation.components.OptionFeedback
 import com.example.litecartesnative.features.quiz.presentation.components.TtsManager
 import com.example.litecartesnative.features.quiz.presentation.singletons.QuizResultHolder
+import com.example.litecartesnative.features.quiz.presentation.singletons.RemedialHolder
 import com.example.litecartesnative.features.quiz.presentation.viewmodel.QuizViewModel
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
@@ -71,6 +73,7 @@ import com.example.litecartesnative.ui.theme.nunitosFontFamily
 fun QuestionScreen(
     navController: NavController,
     quizId: Int,
+    isRetry: Boolean = false,
     viewModel: QuizViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -87,20 +90,45 @@ fun QuestionScreen(
     // Letter labels for options
     val letters = listOf('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
 
-    LaunchedEffect(quizId) {
-        viewModel.loadQuiz(quizId)
+    LaunchedEffect(quizId, isRetry) {
+        if (isRetry) {
+            viewModel.loadQuizForRetry()
+        } else {
+            viewModel.loadQuiz(quizId)
+        }
     }
 
-    // Navigate to result when quiz is submitted
+    // Show dialog after verification completes
+    LaunchedEffect(state.verifiedQuestions.size) {
+        if (currentQuestion != null && state.verifiedQuestions.containsKey(currentQuestion.id)) {
+            showDialog = true
+        }
+    }
+
+    // Navigate after quiz is submitted
     LaunchedEffect(state.result) {
         if (state.result != null) {
             val quiz = state.quiz
-            if (quiz != null) {
-                QuizResultHolder.lastResult = state.result
-                navController.navigate(
-                    "${Screen.ResultScreen.route}/${quiz.chapterId}/levels/${quiz.level}"
-                ) {
-                    popUpTo("${Screen.QuestionScreen.route}/${quizId}") { inclusive = true }
+            val result = state.result
+            if (quiz != null && result != null) {
+                val originalQuiz = RemedialHolder.quizData ?: quiz
+
+                if (!result.passed && !RemedialHolder.isRetry) {
+                    // First attempt failed → go to RemedialScreen
+                    navController.navigate(
+                        "${Screen.RemedialScreen.route}/${result.wrongQuestionIds?.size ?: 0}/${result.totalQuestions}"
+                    ) {
+                        popUpTo("${Screen.QuestionScreen.route}/${quizId}") { inclusive = true }
+                    }
+                } else {
+                    // Passed, or retry attempt done → go to ResultScreen
+                    QuizResultHolder.lastResult = result
+                    RemedialHolder.clear()
+                    navController.navigate(
+                        "${Screen.ResultScreen.route}/${originalQuiz.chapterId}/levels/${originalQuiz.level}"
+                    ) {
+                        popUpTo("${Screen.QuestionScreen.route}/${quizId}") { inclusive = true }
+                    }
                 }
             }
         }
@@ -146,6 +174,7 @@ fun QuestionScreen(
                 }
                 currentQuestion != null -> {
                     val selectedOptionId = state.answers[currentQuestion.id]
+                    val verification = state.verifiedQuestions[currentQuestion.id]
 
                     // Question header with gradient background
                     Box(
@@ -253,10 +282,18 @@ fun QuestionScreen(
                                 .padding(horizontal = 12.dp)
                         ) {
                             itemsIndexed(currentQuestion.options) { index, option ->
+                                val optionFeedback = when {
+                                    verification == null -> OptionFeedback.NONE
+                                    option.id == selectedOptionId && verification.correct -> OptionFeedback.CORRECT
+                                    option.id == selectedOptionId && !verification.correct -> OptionFeedback.WRONG
+                                    else -> OptionFeedback.NONE
+                                }
+
                                 OptionButton(
                                     text = option.text,
                                     letter = letters.getOrElse(index) { ' ' },
-                                    isActive = selectedOptionId == option.id,
+                                    isActive = selectedOptionId == option.id && verification == null,
+                                    feedback = optionFeedback,
                                     onClick = {
                                         viewModel.selectAnswer(currentQuestion.id, option.id)
                                     }
@@ -268,14 +305,15 @@ fun QuestionScreen(
                         Column(
                             modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp)
                         ) {
-                            if (selectedOptionId != null) {
+                            if (selectedOptionId != null && !viewModel.isCurrentQuestionVerified) {
                                 OutlinedButton(
                                     modifier = Modifier
                                         .padding(5.dp)
                                         .fillMaxWidth(),
                                     onClick = {
-                                        showDialog = true
+                                        viewModel.verifyCurrentAnswer()
                                     },
+                                    enabled = !state.isVerifying,
                                     shape = RoundedCornerShape(12.dp),
                                     border = BorderStroke(1.dp, LitecartesColor.DarkBrown),
                                     colors = ButtonDefaults.buttonColors(
@@ -283,13 +321,20 @@ fun QuestionScreen(
                                     ),
                                     elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 8.dp)
                                 ) {
-                                    Text(
-                                        text = "Lanjutkan",
-                                        color = LitecartesColor.Surface,
-                                        fontFamily = nunitosFontFamily,
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier.padding(vertical = 4.dp)
-                                    )
+                                    if (state.isVerifying) {
+                                        CircularProgressIndicator(
+                                            color = LitecartesColor.Surface,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    } else {
+                                        Text(
+                                            text = if (viewModel.isLastQuestion) "Selesai" else "Lanjutkan",
+                                            color = LitecartesColor.Surface,
+                                            fontFamily = nunitosFontFamily,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(vertical = 4.dp)
+                                        )
+                                    }
                                 }
                             }
 
@@ -308,7 +353,10 @@ fun QuestionScreen(
                             }
                         }
 
-                        if (showDialog) {
+                        if (showDialog && verification != null) {
+                            val feedbackGreen = Color(0xFF4CAF50)
+                            val feedbackRed = Color(0xFFE53935)
+
                             ModalBottomSheet(
                                 onDismissRequest = { showDialog = false },
                                 containerColor = LitecartesColor.Surface
@@ -320,10 +368,10 @@ fun QuestionScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Text(
-                                        text = "Jawaban tersimpan!",
+                                        text = if (verification.correct) "Jawaban benar!" else "Jawaban salah!",
                                         fontFamily = nunitosFontFamily,
                                         fontSize = 20.sp,
-                                        color = LitecartesColor.Secondary,
+                                        color = if (verification.correct) feedbackGreen else feedbackRed,
                                         fontWeight = FontWeight.Bold
                                     )
                                     Image(
@@ -342,7 +390,11 @@ fun QuestionScreen(
                                             onClick = {
                                                 showDialog = false
                                                 if (viewModel.isLastQuestion) {
-                                                    viewModel.submitQuiz()
+                                                    if (isRetry) {
+                                                        viewModel.submitRetry()
+                                                    } else {
+                                                        viewModel.submitQuiz()
+                                                    }
                                                 } else {
                                                     viewModel.nextQuestion()
                                                 }

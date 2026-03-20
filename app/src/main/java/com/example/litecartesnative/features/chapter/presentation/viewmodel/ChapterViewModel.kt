@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.litecartesnative.data.remote.dto.ChapterDetailDto
 import com.example.litecartesnative.data.remote.dto.ChapterDto
+import com.example.litecartesnative.data.remote.dto.QuizMaterialsResponse
 import com.example.litecartesnative.data.repository.ChapterRepository
+import com.example.litecartesnative.data.repository.QuizRepository
 import com.example.litecartesnative.data.repository.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +30,8 @@ data class ChapterDetailState(
 
 @HiltViewModel
 class ChapterViewModel @Inject constructor(
-    private val chapterRepository: ChapterRepository
+    private val chapterRepository: ChapterRepository,
+    private val quizRepository: QuizRepository
 ) : ViewModel() {
 
     private val _listState = MutableStateFlow(ChapterListState())
@@ -87,5 +90,9 @@ class ChapterViewModel @Inject constructor(
     fun clearError() {
         _listState.value = _listState.value.copy(error = null)
         _detailState.value = _detailState.value.copy(error = null)
+    }
+
+    suspend fun fetchQuizMaterials(quizId: Int): Result<QuizMaterialsResponse> {
+        return quizRepository.getQuizMaterials(quizId)
     }
 }
