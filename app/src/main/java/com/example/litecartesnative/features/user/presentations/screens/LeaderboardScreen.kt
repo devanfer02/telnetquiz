@@ -228,28 +228,17 @@ fun LeaderboardScreen(
                             ) {
                                 item { Spacer(modifier = Modifier.height(12.dp)) }
                                 activityState.days.forEach { day ->
-                                    item {
-                                        Text(
-                                            text = formatDateHeader(day.date),
-                                            fontFamily = nunitosFontFamily,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 16.sp,
-                                            color = LitecartesColor.Secondary,
-                                            modifier = Modifier.padding(vertical = 8.dp)
-                                        )
-                                    }
-                                    if (day.entries.isEmpty()) {
+                                    if (!day.entries.isEmpty()) {
                                         item {
                                             Text(
-                                                text = "(kosong)",
+                                                text = formatDateHeader(day.date),
                                                 fontFamily = nunitosFontFamily,
-                                                fontWeight = FontWeight.Normal,
-                                                fontSize = 13.sp,
-                                                color = LitecartesColor.Secondary.copy(alpha = 0.5f),
-                                                modifier = Modifier.padding(bottom = 8.dp)
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 16.sp,
+                                                color = LitecartesColor.Secondary,
+                                                modifier = Modifier.padding(vertical = 8.dp)
                                             )
                                         }
-                                    } else {
                                         day.entries.forEachIndexed { idx, entry ->
                                             item {
                                                 ActivityEntryCard(
