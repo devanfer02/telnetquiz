@@ -34,6 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,6 +45,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.litecartesnative.R
 import com.example.litecartesnative.components.Navbar
 import com.example.litecartesnative.constants.Screen
@@ -60,6 +64,7 @@ fun ProfileScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val achievementState by achievementViewModel.state.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.loadProfile()
@@ -102,20 +107,42 @@ fun ProfileScreen(
                         .size(100.dp),
                     contentAlignment = Alignment.BottomEnd
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.template_profile),
-                        contentDescription = "profile",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .shadow(
-                                elevation = 20.dp,
-                                shape = CircleShape
-                            )
-                            .background(
-                                LitecartesColor.Surface,
-                                shape = CircleShape
-                            )
-                    )
+                    if (state.profile?.image != null) {
+                        AsyncImage(
+                            model = ImageRequest.Builder(context)
+                                .data(state.profile?.image)
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = "profile",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(100.dp)
+                                .shadow(
+                                    elevation = 20.dp,
+                                    shape = CircleShape
+                                )
+                                .clip(CircleShape)
+                                .background(
+                                    LitecartesColor.Surface,
+                                    shape = CircleShape
+                                )
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.template_profile),
+                            contentDescription = "profile",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .shadow(
+                                    elevation = 20.dp,
+                                    shape = CircleShape
+                                )
+                                .background(
+                                    LitecartesColor.Surface,
+                                    shape = CircleShape
+                                )
+                        )
+                    }
                     IconButton(
                         onClick = {
                             navController.navigate(Screen.EditProfileScreen.route)
@@ -169,6 +196,41 @@ fun ProfileScreen(
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 14.sp
                             )
+                        }
+                        // School, Grade, Gender info
+                        val infoItems = mutableListOf<String>()
+                        state.profile?.school?.let { infoItems.add(it.name) }
+                        state.profile?.grade?.let { infoItems.add("Kelas $it") }
+                        state.profile?.gender?.let {
+                            infoItems.add(if (it) "Laki-Laki" else "Perempuan")
+                        }
+                        if (infoItems.isNotEmpty()) {
+                            Text(
+                                text = infoItems.joinToString(" · "),
+                                color = Color.White.copy(alpha = 0.7f),
+                                fontFamily = nunitosFontFamily,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
+                        // Bio
+                        state.profile?.bio?.let { bio ->
+                            if (bio.isNotBlank()) {
+                                Text(
+                                    text = bio,
+                                    color = Color.White.copy(alpha = 0.8f),
+                                    fontFamily = nunitosFontFamily,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 13.sp,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(
+                                        top = 6.dp,
+                                        start = 24.dp,
+                                        end = 24.dp
+                                    )
+                                )
+                            }
                         }
                     }
                 }
