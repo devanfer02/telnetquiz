@@ -102,10 +102,10 @@ fun ChapterScreen(
         profileViewModel.loadProfile()
     }
 
-    // Redirect to pretest if user hasn't taken it
-    LaunchedEffect(state.hasTakenPretest) {
-        Log.d("CHAPTER", state.hasTakenPretest.toString())
-        if (state.hasTakenPretest == false) {
+    // Redirect to pretest if user hasn't taken it (read from profile)
+    LaunchedEffect(profileState.profile?.hasTakenPretest) {
+        Log.d("CHAPTER", profileState.profile?.hasTakenPretest.toString())
+        if (profileState.profile?.hasTakenPretest == false) {
             navController.navigate(Screen.QuickCheckScren.route) {
                 popUpTo(Screen.HomeScreen.route) { inclusive = true }
             }

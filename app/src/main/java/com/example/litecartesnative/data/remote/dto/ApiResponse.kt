@@ -51,6 +51,8 @@ data class UserProfileDto(
     val createdAt: String? = null,
     @SerializedName("updatedAt")
     val updatedAt: String? = null,
+    @SerializedName("has_taken_pretest")
+    val hasTakenPretest: Boolean = false,
     @SerializedName("stats")
     val stats: UserStatsDto? = null
 )
