@@ -53,7 +53,6 @@ fun Navigation() {
     val authViewModel: AuthViewModel = hiltViewModel()
     val sessionState by authViewModel.sessionState.collectAsState()
 
-    // Handle session expiration during app usage
     LaunchedEffect(Unit) {
         authViewModel.sessionExpiredEvent.collectLatest {
             Log.d("Navigation", "Session expired, redirecting to login")
@@ -63,7 +62,6 @@ fun Navigation() {
         }
     }
 
-    // Conditional rendering based on session state
     when (sessionState) {
         SessionState.Loading -> {
             SplashLoadingScreen()

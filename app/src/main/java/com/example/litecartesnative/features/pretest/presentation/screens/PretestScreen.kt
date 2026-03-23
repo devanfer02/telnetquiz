@@ -26,13 +26,11 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,7 +42,6 @@ import com.example.litecartesnative.features.pretest.presentation.components.Pre
 import com.example.litecartesnative.features.pretest.presentation.components.ProgressBarFromApi
 import com.example.litecartesnative.features.pretest.presentation.viewmodel.PretestViewModel
 import com.example.litecartesnative.features.pretest.presentation.singletons.PretestResultHolder
-import com.example.litecartesnative.features.quiz.presentation.components.TtsManager
 import com.example.litecartesnative.constants.Screen
 import com.example.litecartesnative.ui.theme.LitecartesColor
 import com.example.litecartesnative.ui.theme.LitecartesNativeTheme
@@ -56,18 +53,15 @@ fun PretestScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val currentQuestion = viewModel.currentQuestion
-    val context = LocalContext.current
 
-    val ttsManager = remember { TtsManager(context) }
     DisposableEffect(Unit) {
-        onDispose { ttsManager.shutdown() }
+        onDispose { viewModel.stopTts() }
     }
 
     LaunchedEffect(Unit) {
         viewModel.loadPretestQuestions()
     }
 
-    // Navigate to result screen when pretest is completed successfully
     LaunchedEffect(state.isCompleted) {
         if (state.isCompleted) {
             PretestResultHolder.lastResult = state.result
@@ -133,7 +127,7 @@ fun PretestScreen(
                         ) {
                             IconButton(
                                 onClick = {
-                                    ttsManager.speak(currentQuestion.question)
+                                    viewModel.speak(currentQuestion.question)
                                 },
                                 modifier = Modifier.size(32.dp)
                             ) {
@@ -180,8 +174,8 @@ fun PretestScreen(
 
                     PretestButton(
                         text = if (isLastQuestion) "Selesai" else "Lanjutkan",
-                        backgroundColor = if (hasSelectedAnswer) LitecartesColor.Secondary else LitecartesColor.Secondary.copy(alpha = 0.5f),
-                        textColor = LitecartesColor.Surface,
+                        backgroundColor = if (hasSelectedAnswer) LitecartesColor.Secondary else Color.Gray,
+                        textColor = if (hasSelectedAnswer) LitecartesColor.Surface else Color.White,
                         onClick = {
                             if (hasSelectedAnswer) {
                                 if (isLastQuestion) {

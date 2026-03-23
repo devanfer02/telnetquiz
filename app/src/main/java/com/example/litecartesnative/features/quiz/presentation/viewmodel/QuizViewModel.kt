@@ -8,6 +8,7 @@ import com.example.litecartesnative.data.remote.dto.QuizResultDto
 import com.example.litecartesnative.data.remote.dto.VerifyAnswerResponse
 import com.example.litecartesnative.data.repository.QuizRepository
 import com.example.litecartesnative.data.repository.Result
+import com.example.litecartesnative.data.tts.TtsProvider
 import com.example.litecartesnative.features.quiz.domain.model.QuizIndex
 import com.example.litecartesnative.features.quiz.presentation.singletons.RemedialHolder
 import com.example.litecartesnative.features.quiz.presentation.singletons.WrongQuizManager
@@ -32,8 +33,12 @@ data class QuizState(
 
 @HiltViewModel
 class QuizViewModel @Inject constructor(
-    private val quizRepository: QuizRepository
+    private val quizRepository: QuizRepository,
+    private val ttsProvider: TtsProvider
 ) : ViewModel() {
+
+    fun speak(text: String) = ttsProvider.speak(text)
+    fun stopTts() = ttsProvider.stop()
 
     private val _state = MutableStateFlow(QuizState())
     val state: StateFlow<QuizState> = _state.asStateFlow()
@@ -88,7 +93,6 @@ class QuizViewModel @Inject constructor(
     }
 
     fun selectAnswer(questionId: Int, optionId: Int) {
-        // Don't allow changing answer after verification
         if (_state.value.verifiedQuestions.containsKey(questionId)) return
 
         _state.value = _state.value.copy(

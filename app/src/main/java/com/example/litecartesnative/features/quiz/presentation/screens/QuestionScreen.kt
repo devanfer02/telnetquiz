@@ -43,7 +43,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
@@ -60,7 +59,6 @@ import com.example.litecartesnative.features.pretest.presentation.components.Pre
 import com.example.litecartesnative.features.quiz.presentation.components.ProgressBarFromApi
 import com.example.litecartesnative.features.quiz.presentation.components.OptionButton
 import com.example.litecartesnative.features.quiz.presentation.components.OptionFeedback
-import com.example.litecartesnative.features.quiz.presentation.components.TtsManager
 import com.example.litecartesnative.features.quiz.presentation.singletons.QuizResultHolder
 import com.example.litecartesnative.features.quiz.presentation.singletons.RemedialHolder
 import com.example.litecartesnative.features.quiz.presentation.viewmodel.QuizViewModel
@@ -78,16 +76,13 @@ fun QuestionScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val currentQuestion = viewModel.currentQuestion
-    val context = LocalContext.current
 
     var showDialog by remember { mutableStateOf(false) }
 
-    val ttsManager = remember { TtsManager(context) }
     DisposableEffect(Unit) {
-        onDispose { ttsManager.shutdown() }
+        onDispose { viewModel.stopTts() }
     }
 
-    // Letter labels for options
     val letters = listOf('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
 
     LaunchedEffect(quizId, isRetry) {
@@ -98,14 +93,12 @@ fun QuestionScreen(
         }
     }
 
-    // Show dialog after verification completes
     LaunchedEffect(state.verifiedQuestions.size) {
         if (currentQuestion != null && state.verifiedQuestions.containsKey(currentQuestion.id)) {
             showDialog = true
         }
     }
 
-    // Navigate after quiz is submitted
     LaunchedEffect(state.result) {
         if (state.result != null) {
             val quiz = state.quiz
@@ -114,14 +107,12 @@ fun QuestionScreen(
                 val originalQuiz = RemedialHolder.quizData ?: quiz
 
                 if (!result.passed && !RemedialHolder.isRetry) {
-                    // First attempt failed → go to RemedialScreen
                     navController.navigate(
                         "${Screen.RemedialScreen.route}/${result.wrongQuestionIds?.size ?: 0}/${result.totalQuestions}"
                     ) {
                         popUpTo("${Screen.QuestionScreen.route}/${quizId}") { inclusive = true }
                     }
                 } else {
-                    // Passed, or retry attempt done → go to ResultScreen
                     QuizResultHolder.lastResult = result
                     RemedialHolder.clear()
                     navController.navigate(
@@ -176,7 +167,6 @@ fun QuestionScreen(
                     val selectedOptionId = state.answers[currentQuestion.id]
                     val verification = state.verifiedQuestions[currentQuestion.id]
 
-                    // Question header with gradient background
                     Box(
                         modifier = Modifier
                             .shadow(
@@ -226,7 +216,7 @@ fun QuestionScreen(
                                 IconButton(
                                     onClick = {
                                         val textToRead = "${currentQuestion.description}. ${currentQuestion.question}"
-                                        ttsManager.speak(textToRead)
+                                        viewModel.speak(textToRead)
                                     },
                                     modifier = Modifier.size(36.dp)
                                 ) {
@@ -258,7 +248,6 @@ fun QuestionScreen(
                         }
                     }
 
-                    // Options section
                     Column(
                         modifier = Modifier
                             .weight(1f)
@@ -301,7 +290,6 @@ fun QuestionScreen(
                             }
                         }
 
-                        // Continue button
                         Column(
                             modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp)
                         ) {

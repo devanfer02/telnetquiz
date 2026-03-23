@@ -158,7 +158,6 @@ fun LevelScreen(
                                     modifier = Modifier.fillMaxSize()
                                 )
 
-                                // Road path between nodes
                                 val buttonCenterOffset = with(LocalDensity.current) { 25.dp.toPx() }
                                 Canvas(modifier = Modifier.fillMaxSize()) {
                                     val canvasWidth = size.width
@@ -179,7 +178,6 @@ fun LevelScreen(
                                             cubicTo(startX, midY, endX, midY, endX, endY)
                                         }
 
-                                        // Shadow
                                         translate(top = 4f) {
                                             drawPath(
                                                 path = path,
@@ -190,7 +188,6 @@ fun LevelScreen(
                                                 )
                                             )
                                         }
-                                        // Road border
                                         drawPath(
                                             path = path,
                                             color = LitecartesColor.PathColor.copy(alpha = 0.5f),
@@ -199,7 +196,6 @@ fun LevelScreen(
                                                 cap = StrokeCap.Round
                                             )
                                         )
-                                        // Road fill
                                         drawPath(
                                             path = path,
                                             color = LitecartesColor.PathColor,
