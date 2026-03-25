@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 val apiProperties = Properties().apply {
@@ -18,11 +20,11 @@ val apiProperties = Properties().apply {
 }
 
 android {
-    namespace = "com.example.litecartesnative"
+    namespace = "com.example.telnetquiz"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.litecartesnative"
+        applicationId = "com.example.telnetquiz"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -114,6 +116,11 @@ dependencies {
 
     // DataStore for token storage
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
 
     ksp("com.google.dagger:hilt-compiler:2.51")
     testImplementation(libs.junit)

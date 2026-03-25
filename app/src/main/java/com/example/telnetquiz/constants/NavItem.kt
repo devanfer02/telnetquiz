@@ -1,0 +1,35 @@
+package com.example.telnetquiz.constants
+
+import com.example.telnetquiz.R
+
+sealed class NavItem(
+    val route: String,
+    val idIcon: Int,
+    val activeIdIcon: Int,
+    val label: String
+) {
+    object Home : NavItem(
+        Screen.HomeScreen.route,
+        R.drawable.home,
+        R.drawable.active_family_home,
+        "home"
+    )
+
+    object Leaderboard : NavItem(
+        Screen.LeaderboardScreen.route,
+        R.drawable.emoji_events,
+        R.drawable.active_emoji_events,
+        "leaderboard"
+    )
+
+    object Profile : NavItem(
+        Screen.ProfileScreen.route,
+        R.drawable.profile,
+        R.drawable.active_account_circle,
+        "profile"
+    )
+
+    companion object {
+        val items = listOf(Home, Leaderboard, Profile)
+    }
+}
