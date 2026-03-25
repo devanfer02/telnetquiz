@@ -19,7 +19,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Female
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Male
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -210,12 +212,14 @@ fun AuthRegisterScreen(
                     ) {
                         GenderToggleButton(
                             text = "Laki-Laki",
+                            icon = Icons.Default.Male,
                             selected = gender == true,
                             onClick = { gender = true },
                             modifier = Modifier.weight(1f)
                         )
                         GenderToggleButton(
                             text = "Perempuan",
+                            icon = Icons.Default.Female,
                             selected = gender == false,
                             onClick = { gender = false },
                             modifier = Modifier.weight(1f)
@@ -301,6 +305,7 @@ fun AuthRegisterScreen(
 @Composable
 private fun GenderToggleButton(
     text: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -321,13 +326,25 @@ private fun GenderToggleButton(
             .padding(vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = text,
-            fontFamily = nunitosFontFamily,
-            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
-            color = if (selected) LitecartesColor.Primary else LitecartesColor.Secondary,
-            fontSize = 14.sp
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = text,
+                tint = if (selected) LitecartesColor.Primary else LitecartesColor.Secondary,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+            Text(
+                text = text,
+                fontFamily = nunitosFontFamily,
+                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+                color = if (selected) LitecartesColor.Primary else LitecartesColor.Secondary,
+                fontSize = 14.sp
+            )
+        }
     }
 }
 

@@ -1,6 +1,5 @@
 package com.example.litecartesnative.features.auth.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.litecartesnative.data.local.TokenManager
@@ -73,9 +72,7 @@ class AuthViewModel @Inject constructor(
                 is Result.Success -> {
                     _schools.value = result.data
                 }
-                is Result.Error -> {
-                    Log.e("AuthViewModel", "Failed to load schools: ${result.message}")
-                }
+                is Result.Error -> {}
                 is Result.Loading -> {}
             }
         }
@@ -84,7 +81,6 @@ class AuthViewModel @Inject constructor(
     private fun validateSession() {
         viewModelScope.launch {
             val token = authRepository.authToken.first()
-            Log.d("SESSION_TOKEN", token.toString())
             if (token == null) {
                 _sessionState.value = SessionState.Unauthenticated
                 _state.value = _state.value.copy(isLoggedIn = false)
@@ -151,7 +147,6 @@ class AuthViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
-            Log.d("REGISTER", "calling API")
             when (val result = authRepository.register(fullname, email, password, schoolId, gender, grade)) {
                 is Result.Success -> {
                     _sessionState.value = SessionState.Authenticated
@@ -160,14 +155,12 @@ class AuthViewModel @Inject constructor(
                         isLoggedIn = true,
                         successMessage = result.data
                     )
-                    Log.d("REGISTER", "success")
                 }
                 is Result.Error -> {
                     _state.value = _state.value.copy(
                         isLoading = false,
                         error = result.message
                     )
-                    Log.d("REGISTER", result.message)
                 }
                 is Result.Loading -> {
                     _state.value = _state.value.copy(isLoading = true)
@@ -205,7 +198,6 @@ class AuthViewModel @Inject constructor(
                 }
                 is Result.Error -> {
                     _schoolSearchState.value = _schoolSearchState.value.copy(isLoading = false)
-                    Log.e("AuthViewModel", "Failed to search schools: ${result.message}")
                 }
                 is Result.Loading -> {}
             }
@@ -234,7 +226,6 @@ class AuthViewModel @Inject constructor(
                 }
                 is Result.Error -> {
                     _schoolSearchState.value = _schoolSearchState.value.copy(isLoadingMore = false)
-                    Log.e("AuthViewModel", "Failed to load more schools: ${result.message}")
                 }
                 is Result.Loading -> {}
             }

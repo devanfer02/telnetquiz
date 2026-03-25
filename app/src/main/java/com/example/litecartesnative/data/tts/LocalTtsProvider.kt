@@ -1,10 +1,10 @@
-package com.example.litecartesnative.features.quiz.presentation.components
+package com.example.litecartesnative.data.tts
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
 import java.util.Locale
 
-class TtsManager(context: Context) : TextToSpeech.OnInitListener {
+class LocalTtsProvider(context: Context) : TtsProvider, TextToSpeech.OnInitListener {
 
     private var tts: TextToSpeech = TextToSpeech(context, this)
     private var isReady = false
@@ -16,26 +16,25 @@ class TtsManager(context: Context) : TextToSpeech.OnInitListener {
             isReady = result != TextToSpeech.LANG_MISSING_DATA &&
                     result != TextToSpeech.LANG_NOT_SUPPORTED
             if (!isReady) {
-                // Fallback to default locale
                 tts.setLanguage(Locale.getDefault())
                 isReady = true
             }
         }
     }
 
-    fun speak(text: String) {
+    override fun speak(text: String) {
         if (isReady) {
             tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "tts_utterance")
         }
     }
 
-    fun stop() {
+    override fun stop() {
         if (isReady) {
             tts.stop()
         }
     }
 
-    fun shutdown() {
+    override fun shutdown() {
         tts.stop()
         tts.shutdown()
     }

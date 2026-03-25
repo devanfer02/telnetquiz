@@ -1,6 +1,5 @@
 package com.example.litecartesnative.data.repository
 
-import android.util.Log
 import com.example.litecartesnative.data.local.TokenManager
 import com.example.litecartesnative.data.remote.api.TelNetQuizApi
 import com.example.litecartesnative.data.remote.dto.LoginRequest
@@ -39,7 +38,6 @@ class AuthRepository @Inject constructor(
                 errorResponse.message
             }
         } catch (e: Exception) {
-            Log.e("AuthRepository", "Failed to parse error: ${e.message}")
             errorBody
         }
     }
@@ -51,7 +49,6 @@ class AuthRepository @Inject constructor(
             val errorResponse = gson.fromJson(errorBody, LoginErrorResponse::class.java)
             errorResponse.errors ?: errorResponse.message
         } catch (e: Exception) {
-            Log.e("AuthRepository", "Failed to parse login error: ${e.message}")
             errorBody
         }
     }
@@ -66,10 +63,7 @@ class AuthRepository @Inject constructor(
     ): Result<String> {
         return try {
             val request = RegisterRequest(fullname, email, password, schoolId, gender, grade)
-            Log.d("REGISTER", "Request: fullname=$fullname, email=$email, password=${password.take(3)}***")
             val response = api.register(request)
-            Log.d("REGISTER", "Response code: ${response.code()}")
-            Log.d("REGISTER", "Response body: ${response.body()}")
             if (response.isSuccessful) {
                 val body = response.body()
 
@@ -82,12 +76,10 @@ class AuthRepository @Inject constructor(
                 }
             } else {
                 val errorBody = response.errorBody()?.string()
-                Log.e("REGISTER", "Error body: $errorBody")
                 val errorMessage = parseValidationError(errorBody)
                 Result.Error(errorMessage, response.code())
             }
         } catch (e: Exception) {
-            Log.e("REGISTER", "Exception: ${e.message}", e)
             Result.Error(e.message ?: "Network error")
         }
     }
@@ -96,7 +88,6 @@ class AuthRepository @Inject constructor(
         return try {
             val request = LoginRequest(email, password)
             val response = api.login(request)
-            Log.d("LOGIN", "Response code: ${response.code()}")
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null && body.token != null) {
@@ -108,12 +99,10 @@ class AuthRepository @Inject constructor(
                 }
             } else {
                 val errorBody = response.errorBody()?.string()
-                Log.e("LOGIN", "Error body: $errorBody")
                 val errorMessage = parseLoginError(errorBody)
                 Result.Error(errorMessage, response.code())
             }
         } catch (e: Exception) {
-            Log.e("LOGIN", "Exception: ${e.message}", e)
             Result.Error(e.message ?: "Network error")
         }
     }
@@ -136,7 +125,6 @@ class AuthRepository @Inject constructor(
                 Result.Error("Failed to fetch schools", response.code())
             }
         } catch (e: Exception) {
-            Log.e("AuthRepository", "getSchools error: ${e.message}", e)
             Result.Error(e.message ?: "Network error")
         }
     }
@@ -159,7 +147,6 @@ class AuthRepository @Inject constructor(
                 Result.Error("Failed to search schools", response.code())
             }
         } catch (e: Exception) {
-            Log.e("AuthRepository", "searchSchools error: ${e.message}", e)
             Result.Error(e.message ?: "Network error")
         }
     }
@@ -168,7 +155,6 @@ class AuthRepository @Inject constructor(
         return try {
             val response = api.getUserProfile()
             if (response.isSuccessful) {
-                Log.d("SESSION", response.body().toString())
                 val profile = response.body()?.data
                 if (profile != null) {
                     tokenManager.saveUserInfo(profile.email, profile.fullname)
@@ -180,7 +166,6 @@ class AuthRepository @Inject constructor(
                 Result.Error("Session invalid", response.code())
             }
         } catch (e: Exception) {
-            Log.e("AuthRepository", "validateSession error: ${e.message}", e)
             Result.Error(e.message ?: "Network error")
         }
     }

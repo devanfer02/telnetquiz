@@ -160,7 +160,7 @@ fun PretestResultScreen(
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                        Spacer(modifier = Modifier.padding(24.dp))
+                        Spacer(modifier = Modifier.padding(10.dp))
                         Column(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(20.dp))
@@ -181,7 +181,7 @@ fun PretestResultScreen(
                             )
                         }
                     }
-                    if (weaknesses.isNotEmpty()) {
+                    if (wrongCount > 0 && weaknesses.isNotEmpty()) {
                         Spacer(modifier = Modifier.padding(12.dp))
                         Text(
                             text = "Bab yang perlu dipelajari lagi:",

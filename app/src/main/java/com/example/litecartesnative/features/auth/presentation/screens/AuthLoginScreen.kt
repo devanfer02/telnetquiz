@@ -1,5 +1,6 @@
 package com.example.litecartesnative.features.auth.presentation.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -208,7 +209,27 @@ fun AuthLoginScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.start_screen),
+                    contentDescription = null,
+                    modifier = Modifier.size(200.dp)
+                )
+                Text(
+                    text = "Mari jelajahi Media dan\nJaringan Telekomunikasi!",
+                    fontFamily = nunitosFontFamily,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = LitecartesColor.Secondary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
         }
 
         if (showForgotPasswordDialog) {

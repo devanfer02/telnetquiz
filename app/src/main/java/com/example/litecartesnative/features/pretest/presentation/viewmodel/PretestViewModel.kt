@@ -7,6 +7,7 @@ import com.example.litecartesnative.data.remote.dto.PretestResultDto
 import com.example.litecartesnative.data.remote.dto.PretestSubmissionDto
 import com.example.litecartesnative.data.repository.PretestRepository
 import com.example.litecartesnative.data.repository.Result
+import com.example.litecartesnative.data.tts.TtsProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,8 +29,12 @@ data class PretestState(
 
 @HiltViewModel
 class PretestViewModel @Inject constructor(
-    private val pretestRepository: PretestRepository
+    private val pretestRepository: PretestRepository,
+    private val ttsProvider: TtsProvider
 ) : ViewModel() {
+
+    fun speak(text: String) = ttsProvider.speak(text)
+    fun stopTts() = ttsProvider.stop()
 
     private val _state = MutableStateFlow(PretestState())
     val state: StateFlow<PretestState> = _state.asStateFlow()

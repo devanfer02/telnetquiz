@@ -1,6 +1,5 @@
 package com.example.litecartesnative.components
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -55,7 +54,6 @@ fun Navigation() {
 
     LaunchedEffect(Unit) {
         authViewModel.sessionExpiredEvent.collectLatest {
-            Log.d("Navigation", "Session expired, redirecting to login")
             navController.navigate(Screen.AuthLoginScreen.route) {
                 popUpTo(0) { inclusive = true }
             }

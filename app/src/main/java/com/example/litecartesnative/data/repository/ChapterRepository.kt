@@ -1,6 +1,5 @@
 package com.example.litecartesnative.data.repository
 
-import android.util.Log
 import com.example.litecartesnative.data.remote.api.TelNetQuizApi
 import com.example.litecartesnative.data.remote.dto.ChapterDetailDto
 import com.example.litecartesnative.data.remote.dto.ChapterDto
@@ -15,7 +14,6 @@ class ChapterRepository @Inject constructor(
     suspend fun getChapters(): Result<ChaptersResponse> {
         return try {
             val response = api.getChapters()
-            Log.d("CHAPTERS", response.body().toString())
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null && body.data != null) {

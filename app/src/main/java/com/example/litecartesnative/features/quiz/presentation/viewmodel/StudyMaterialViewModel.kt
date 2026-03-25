@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.litecartesnative.data.remote.dto.StudyMaterialDto
 import com.example.litecartesnative.data.repository.Result
 import com.example.litecartesnative.data.repository.UserRepository
+import com.example.litecartesnative.data.tts.TtsProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,8 +21,12 @@ data class StudyMaterialState(
 
 @HiltViewModel
 class StudyMaterialViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val ttsProvider: TtsProvider
 ) : ViewModel() {
+
+    fun speak(text: String) = ttsProvider.speak(text)
+    fun stopTts() = ttsProvider.stop()
 
     private val _state = MutableStateFlow(StudyMaterialState())
     val state: StateFlow<StudyMaterialState> = _state.asStateFlow()

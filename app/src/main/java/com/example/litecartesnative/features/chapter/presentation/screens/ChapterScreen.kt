@@ -1,6 +1,5 @@
 package com.example.litecartesnative.features.chapter.presentation.screens
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -102,10 +101,9 @@ fun ChapterScreen(
         profileViewModel.loadProfile()
     }
 
-    // Redirect to pretest if user hasn't taken it (read from profile)
-    LaunchedEffect(profileState.profile?.hasTakenPretest) {
-        Log.d("CHAPTER", profileState.profile?.hasTakenPretest.toString())
-        if (profileState.profile?.hasTakenPretest == false) {
+    // Redirect to pretest if user hasn't taken it (wait for fresh profile data)
+    LaunchedEffect(profileState.isLoading, profileState.profile?.hasTakenPretest) {
+        if (!profileState.isLoading && profileState.profile?.hasTakenPretest == false) {
             navController.navigate(Screen.QuickCheckScren.route) {
                 popUpTo(Screen.HomeScreen.route) { inclusive = true }
             }

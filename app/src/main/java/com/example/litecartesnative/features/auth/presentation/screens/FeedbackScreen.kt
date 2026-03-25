@@ -27,13 +27,11 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,7 +44,6 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.litecartesnative.components.Button
 import com.example.litecartesnative.constants.Screen
-import com.example.litecartesnative.features.quiz.presentation.components.TtsManager
 import com.example.litecartesnative.features.quiz.presentation.singletons.LearnFirstHolder
 import com.example.litecartesnative.features.quiz.presentation.singletons.RemedialHolder
 import com.example.litecartesnative.features.quiz.presentation.singletons.WrongQuizManager
@@ -66,11 +63,9 @@ fun FeedbackScren(
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
-    val context = LocalContext.current
 
-    val ttsManager = remember { TtsManager(context) }
     DisposableEffect(Unit) {
-        onDispose { ttsManager.shutdown() }
+        onDispose { viewModel.stopTts() }
     }
 
     LaunchedEffect(materialId) {
@@ -133,7 +128,7 @@ fun FeedbackScren(
                             IconButton(
                                 onClick = {
                                     val plainContent = material.content.replace(Regex("<[^>]*>"), "")
-                                    ttsManager.speak("${material.title}. $plainContent")
+                                    viewModel.speak("${material.title}. $plainContent")
                                 },
                                 modifier = Modifier.size(32.dp)
                             ) {

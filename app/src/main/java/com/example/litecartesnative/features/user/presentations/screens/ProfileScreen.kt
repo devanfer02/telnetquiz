@@ -346,7 +346,7 @@ private fun AchievementCard(
             .fillMaxWidth()
             .padding(vertical = 6.dp)
             .shadow(
-                elevation = 8.dp,
+                elevation = if(unlocked) 8.dp else 0.dp,
                 shape = RoundedCornerShape(12.dp)
             )
             .clip(RoundedCornerShape(12.dp))
