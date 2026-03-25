@@ -23,7 +23,7 @@ class PretestRepository @Inject constructor(
                     Result.Error("No pretest questions found")
                 }
             } else {
-                Result.Error(response.message() ?: "Failed to fetch pretest", response.code())
+                Result.Error(response.message() ?: "Failed to fetch pretest")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")
@@ -41,7 +41,7 @@ class PretestRepository @Inject constructor(
                     Result.Error("Invalid response from server")
                 }
             } else {
-                Result.Error(response.message() ?: "Failed to submit pretest", response.code())
+                Result.Error(response.message() ?: "Failed to submit pretest")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")

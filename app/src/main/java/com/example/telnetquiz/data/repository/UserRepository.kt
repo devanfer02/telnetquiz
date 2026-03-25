@@ -51,7 +51,7 @@ class UserRepository @Inject constructor(
                     Result.Error("Invalid upload response")
                 }
             } else {
-                Result.Error("Gagal mengunggah foto", response.code())
+                Result.Error("Gagal mengunggah foto")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")
@@ -69,7 +69,7 @@ class UserRepository @Inject constructor(
                     Result.Error("Invalid profile response")
                 }
             } else {
-                Result.Error("Failed to fetch profile", response.code())
+                Result.Error("Failed to fetch profile")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")
@@ -87,7 +87,7 @@ class UserRepository @Inject constructor(
                     Result.Error("Invalid profile response")
                 }
             } else {
-                Result.Error("Failed to update profile", response.code())
+                Result.Error("Failed to update profile")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")
@@ -105,7 +105,7 @@ class UserRepository @Inject constructor(
                     Result.Error("Invalid achievements response")
                 }
             } else {
-                Result.Error("Failed to fetch achievements", response.code())
+                Result.Error("Failed to fetch achievements")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")
@@ -123,7 +123,7 @@ class UserRepository @Inject constructor(
                     Result.Error("Invalid leaderboard response")
                 }
             } else {
-                Result.Error("Failed to fetch leaderboard", response.code())
+                Result.Error("Failed to fetch leaderboard")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")
@@ -141,7 +141,7 @@ class UserRepository @Inject constructor(
                     Result.Error("Invalid study material response")
                 }
             } else {
-                Result.Error("Failed to fetch study material", response.code())
+                Result.Error("Failed to fetch study material")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")
@@ -159,7 +159,7 @@ class UserRepository @Inject constructor(
                     Result.Error("Invalid recent activity response")
                 }
             } else {
-                Result.Error("Failed to fetch recent activity", response.code())
+                Result.Error("Failed to fetch recent activity")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")
@@ -177,7 +177,7 @@ class UserRepository @Inject constructor(
                     Result.Error("Invalid pretest status response")
                 }
             } else {
-                Result.Error("Failed to fetch pretest status", response.code())
+                Result.Error("Failed to fetch pretest status")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")

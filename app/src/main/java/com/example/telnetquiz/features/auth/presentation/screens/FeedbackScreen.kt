@@ -57,7 +57,6 @@ fun FeedbackScren(
     navController: NavController,
     chapterId: Int,
     level: Int,
-    id: Int,
     materialId: Int = 0,
     viewModel: StudyMaterialViewModel = hiltViewModel()
 ) {
@@ -274,8 +273,7 @@ fun PreviewFeedbackScren() {
         FeedbackScren(
             navController = rememberNavController(),
             chapterId = 0,
-            level = 1,
-            id = 1
+            level = 1
         )
     }
 }

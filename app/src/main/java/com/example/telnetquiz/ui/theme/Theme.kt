@@ -1,7 +1,6 @@
 package com.example.telnetquiz.ui.theme
 
 import android.app.Activity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -35,9 +34,7 @@ private val LitecartesColorScheme = lightColorScheme(
 
 @Composable
 fun LitecartesNativeTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
     // Disable dynamic color to use our custom theme
-    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     // Always use our custom color scheme
@@ -49,7 +46,6 @@ fun LitecartesNativeTheme(
             val window = (view.context as Activity).window
             // Set status bar color to match the surface
             window.statusBarColor = LitecartesColor.Surface.toArgb()
-            // Use dark icons on light background
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
         }
     }

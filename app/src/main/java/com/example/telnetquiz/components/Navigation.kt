@@ -224,7 +224,6 @@ private fun MainNavHost(
             FeedbackScren(
                 chapterId = chapterId,
                 level = level,
-                id = id,
                 materialId = materialId,
                 navController = navController
             )

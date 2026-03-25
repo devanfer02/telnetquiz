@@ -21,7 +21,7 @@ class ChapterRepository @Inject constructor(
                     Result.Error("No chapters found")
                 }
             } else {
-                Result.Error(response.message() ?: "Failed to fetch chapters", response.code())
+                Result.Error(response.message() ?: "Failed to fetch chapters")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")
@@ -39,7 +39,7 @@ class ChapterRepository @Inject constructor(
                     Result.Error("Chapter not found")
                 }
             } else {
-                Result.Error(response.message() ?: "Failed to fetch chapter", response.code())
+                Result.Error(response.message() ?: "Failed to fetch chapter")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")

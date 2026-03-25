@@ -77,7 +77,7 @@ class AuthRepository @Inject constructor(
             } else {
                 val errorBody = response.errorBody()?.string()
                 val errorMessage = parseValidationError(errorBody)
-                Result.Error(errorMessage, response.code())
+                Result.Error(errorMessage)
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")
@@ -100,7 +100,7 @@ class AuthRepository @Inject constructor(
             } else {
                 val errorBody = response.errorBody()?.string()
                 val errorMessage = parseLoginError(errorBody)
-                Result.Error(errorMessage, response.code())
+                Result.Error(errorMessage)
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")
@@ -122,7 +122,7 @@ class AuthRepository @Inject constructor(
                     Result.Error("Invalid schools response")
                 }
             } else {
-                Result.Error("Failed to fetch schools", response.code())
+                Result.Error("Failed to fetch schools")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")
@@ -144,7 +144,7 @@ class AuthRepository @Inject constructor(
                     Result.Error("Invalid schools response")
                 }
             } else {
-                Result.Error("Failed to search schools", response.code())
+                Result.Error("Failed to search schools")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")
@@ -163,7 +163,7 @@ class AuthRepository @Inject constructor(
                     Result.Error("Invalid profile response")
                 }
             } else {
-                Result.Error("Session invalid", response.code())
+                Result.Error("Session invalid")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")

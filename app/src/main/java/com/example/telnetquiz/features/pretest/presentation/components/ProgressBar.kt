@@ -22,15 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.constants.pretestsData
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
 @Composable
 fun ProgressBar(
-    navController: NavController,
     current: Int
 ) {
     var progress by remember {
@@ -124,7 +121,6 @@ fun ProgressBarFromApi(
 @Composable
 fun PreviewProgressBar() {
     ProgressBar(
-        navController = rememberNavController(),
         1
     )
 }
