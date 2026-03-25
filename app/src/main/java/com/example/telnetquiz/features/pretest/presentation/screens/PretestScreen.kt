@@ -38,11 +38,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.pretest.presentation.components.PretestButton
 import com.example.telnetquiz.features.pretest.presentation.components.ProgressBarFromApi
-import com.example.telnetquiz.features.pretest.presentation.viewmodel.PretestViewModel
 import com.example.telnetquiz.features.pretest.presentation.singletons.PretestResultHolder
-import com.example.telnetquiz.constants.Screen
+import com.example.telnetquiz.features.pretest.presentation.viewmodel.PretestViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 

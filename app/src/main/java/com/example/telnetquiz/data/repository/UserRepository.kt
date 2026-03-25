@@ -3,7 +3,13 @@ package com.example.telnetquiz.data.repository
 import android.content.Context
 import android.net.Uri
 import com.example.telnetquiz.data.remote.api.TelNetQuizApi
-import com.example.telnetquiz.data.remote.dto.*
+import com.example.telnetquiz.data.remote.dto.AchievementsResponse
+import com.example.telnetquiz.data.remote.dto.LeaderboardResponse
+import com.example.telnetquiz.data.remote.dto.PretestStatusResponse
+import com.example.telnetquiz.data.remote.dto.RecentActivityResponse
+import com.example.telnetquiz.data.remote.dto.StudyMaterialDto
+import com.example.telnetquiz.data.remote.dto.UpdateProfileRequest
+import com.example.telnetquiz.data.remote.dto.UserProfileDto
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody

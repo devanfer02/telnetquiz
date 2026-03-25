@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.telnetquiz.BuildConfig
 import com.example.telnetquiz.data.local.TokenManager
 import com.example.telnetquiz.data.remote.api.TelNetQuizApi
-import com.example.telnetquiz.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

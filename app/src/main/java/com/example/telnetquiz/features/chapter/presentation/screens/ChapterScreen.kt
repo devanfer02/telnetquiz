@@ -36,13 +36,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.telnetquiz.features.quiz.presentation.components.ProfileTopBar
 import com.example.telnetquiz.components.Navbar
+import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.chapter.presentation.components.ChapterCardFromApi
 import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterViewModel
-import com.example.telnetquiz.features.user.presentations.viewmodel.ProfileViewModel
+import com.example.telnetquiz.features.quiz.presentation.components.ProfileTopBar
 import com.example.telnetquiz.features.quiz.presentation.singletons.ProfileCache
-import com.example.telnetquiz.constants.Screen
+import com.example.telnetquiz.features.user.presentations.viewmodel.ProfileViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily

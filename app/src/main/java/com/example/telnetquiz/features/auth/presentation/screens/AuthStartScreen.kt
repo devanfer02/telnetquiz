@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
-import com.example.telnetquiz.constants.Screen
-import com.example.telnetquiz.components.StrokedText
 import com.example.telnetquiz.components.Button
+import com.example.telnetquiz.components.StrokedText
+import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily

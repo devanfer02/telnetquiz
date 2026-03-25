@@ -42,9 +42,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
+import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.auth.presentation.components.AuthTopBar
-import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.features.auth.presentation.components.Input
 import com.example.telnetquiz.features.auth.presentation.components.PasswordInput
 import com.example.telnetquiz.features.auth.presentation.viewmodel.AuthViewModel

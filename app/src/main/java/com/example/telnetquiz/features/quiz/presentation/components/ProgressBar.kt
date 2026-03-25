@@ -1,9 +1,7 @@
 package com.example.telnetquiz.features.quiz.presentation.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,7 +33,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
 import com.example.telnetquiz.constants.Screen
-import com.example.telnetquiz.constants.pretestsData
 import com.example.telnetquiz.ui.theme.LitecartesColor
 
 @Composable

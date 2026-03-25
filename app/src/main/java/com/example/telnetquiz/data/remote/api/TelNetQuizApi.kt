@@ -1,9 +1,42 @@
 package com.example.telnetquiz.data.remote.api
 
-import com.example.telnetquiz.data.remote.dto.*
+import com.example.telnetquiz.data.remote.dto.AchievementsResponse
+import com.example.telnetquiz.data.remote.dto.ApiResponse
+import com.example.telnetquiz.data.remote.dto.AuthResponse
+import com.example.telnetquiz.data.remote.dto.AvatarResponse
+import com.example.telnetquiz.data.remote.dto.ChapterDetailDto
+import com.example.telnetquiz.data.remote.dto.ChaptersResponse
+import com.example.telnetquiz.data.remote.dto.LeaderboardResponse
+import com.example.telnetquiz.data.remote.dto.LoginRequest
+import com.example.telnetquiz.data.remote.dto.PaginatedSchoolsResponse
+import com.example.telnetquiz.data.remote.dto.PretestQuestionsResponse
+import com.example.telnetquiz.data.remote.dto.PretestResultDto
+import com.example.telnetquiz.data.remote.dto.PretestStatusResponse
+import com.example.telnetquiz.data.remote.dto.QuizDto
+import com.example.telnetquiz.data.remote.dto.QuizMaterialsRequest
+import com.example.telnetquiz.data.remote.dto.QuizMaterialsResponse
+import com.example.telnetquiz.data.remote.dto.QuizResultDto
+import com.example.telnetquiz.data.remote.dto.RecentActivityResponse
+import com.example.telnetquiz.data.remote.dto.RegisterRequest
+import com.example.telnetquiz.data.remote.dto.SchoolsResponse
+import com.example.telnetquiz.data.remote.dto.StudyMaterialDto
+import com.example.telnetquiz.data.remote.dto.SubmitPretestRequest
+import com.example.telnetquiz.data.remote.dto.SubmitQuizRequest
+import com.example.telnetquiz.data.remote.dto.UpdateProfileRequest
+import com.example.telnetquiz.data.remote.dto.UserProfileDto
+import com.example.telnetquiz.data.remote.dto.VerifyAnswerRequest
+import com.example.telnetquiz.data.remote.dto.VerifyAnswerResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.Multipart
+import retrofit2.http.PATCH
+import retrofit2.http.POST
+import retrofit2.http.Part
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface TelNetQuizApi {
 

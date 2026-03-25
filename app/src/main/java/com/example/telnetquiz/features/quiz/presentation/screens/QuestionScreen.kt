@@ -44,9 +44,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -56,9 +56,9 @@ import coil.compose.AsyncImage
 import com.example.telnetquiz.R
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.pretest.presentation.components.PretestButton
-import com.example.telnetquiz.features.quiz.presentation.components.ProgressBarFromApi
 import com.example.telnetquiz.features.quiz.presentation.components.OptionButton
 import com.example.telnetquiz.features.quiz.presentation.components.OptionFeedback
+import com.example.telnetquiz.features.quiz.presentation.components.ProgressBarFromApi
 import com.example.telnetquiz.features.quiz.presentation.singletons.QuizResultHolder
 import com.example.telnetquiz.features.quiz.presentation.singletons.RemedialHolder
 import com.example.telnetquiz.features.quiz.presentation.viewmodel.QuizViewModel

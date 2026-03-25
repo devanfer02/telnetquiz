@@ -1,7 +1,5 @@
 package com.example.telnetquiz.constants
 
-import com.example.telnetquiz.R
-import com.example.telnetquiz.features.quiz.domain.model.Chapter
 import com.example.telnetquiz.features.quiz.domain.model.LevelData
 
 // Fractions calculated based on Pixel 8 dimensions (~412dp width, ~800dp content height)

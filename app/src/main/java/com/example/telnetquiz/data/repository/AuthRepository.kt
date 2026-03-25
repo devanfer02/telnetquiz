@@ -2,13 +2,13 @@ package com.example.telnetquiz.data.repository
 
 import com.example.telnetquiz.data.local.TokenManager
 import com.example.telnetquiz.data.remote.api.TelNetQuizApi
+import com.example.telnetquiz.data.remote.dto.LoginErrorResponse
 import com.example.telnetquiz.data.remote.dto.LoginRequest
-import com.example.telnetquiz.data.remote.dto.RegisterRequest
 import com.example.telnetquiz.data.remote.dto.PaginatedSchoolsResponse
+import com.example.telnetquiz.data.remote.dto.RegisterRequest
 import com.example.telnetquiz.data.remote.dto.SchoolDto
 import com.example.telnetquiz.data.remote.dto.UserProfileDto
 import com.example.telnetquiz.data.remote.dto.ValidationErrorResponse
-import com.example.telnetquiz.data.remote.dto.LoginErrorResponse
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

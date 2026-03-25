@@ -3,10 +3,10 @@ package com.example.telnetquiz.data.repository
 import com.example.telnetquiz.data.remote.api.TelNetQuizApi
 import com.example.telnetquiz.data.remote.dto.QuizAnswerDto
 import com.example.telnetquiz.data.remote.dto.QuizDto
-import com.example.telnetquiz.data.remote.dto.QuizResultDto
-import com.example.telnetquiz.data.remote.dto.SubmitQuizRequest
 import com.example.telnetquiz.data.remote.dto.QuizMaterialsRequest
 import com.example.telnetquiz.data.remote.dto.QuizMaterialsResponse
+import com.example.telnetquiz.data.remote.dto.QuizResultDto
+import com.example.telnetquiz.data.remote.dto.SubmitQuizRequest
 import com.example.telnetquiz.data.remote.dto.VerifyAnswerRequest
 import com.example.telnetquiz.data.remote.dto.VerifyAnswerResponse
 import javax.inject.Inject

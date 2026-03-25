@@ -2,7 +2,6 @@ package com.example.telnetquiz.data.repository
 
 import com.example.telnetquiz.data.remote.api.TelNetQuizApi
 import com.example.telnetquiz.data.remote.dto.ChapterDetailDto
-import com.example.telnetquiz.data.remote.dto.ChapterDto
 import com.example.telnetquiz.data.remote.dto.ChaptersResponse
 import javax.inject.Inject
 import javax.inject.Singleton

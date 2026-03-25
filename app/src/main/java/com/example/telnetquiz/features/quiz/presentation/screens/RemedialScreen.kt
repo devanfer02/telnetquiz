@@ -2,7 +2,6 @@ package com.example.telnetquiz.features.quiz.presentation.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,7 +30,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.constants.Screen
-import com.example.telnetquiz.features.quiz.presentation.singletons.RemedialHolder
 import com.example.telnetquiz.features.quiz.presentation.singletons.WrongQuizManager
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
