@@ -235,10 +235,7 @@ fun ProfileScreen(
                         }
                     }
                 }
-                Spacer(
-                    modifier = Modifier
-                        .padding(10.dp)
-                )
+
             }
             // Stats row
             state.profile?.stats?.let { stats ->

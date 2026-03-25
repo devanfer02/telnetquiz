@@ -24,12 +24,17 @@ class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ProfileState())
+    private val _state = MutableStateFlow(
+        ProfileCache.profile?.let { ProfileState(profile = it) } ?: ProfileState()
+    )
     val state: StateFlow<ProfileState> = _state.asStateFlow()
 
     fun loadProfile() {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true, error = null)
+            val hasCached = _state.value.profile != null
+            if (!hasCached) {
+                _state.value = _state.value.copy(isLoading = true, error = null)
+            }
             when (val result = userRepository.getUserProfile()) {
                 is Result.Success -> {
                     ProfileCache.profile = result.data

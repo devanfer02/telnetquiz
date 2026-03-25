@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,9 +18,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -270,88 +271,93 @@ fun LevelScreen(
                             )
                         }
                     } else {
-                        Text(
-                            text = "Mau belajar materi dulu atau langsung main kuis?",
-                            fontFamily = nunitosFontFamily
-                        )
-                    }
-                },
-                confirmButton = {
-                    OutlinedButton(
-                        onClick = {
-                            showLevelDialog = false
-                            navController.navigate(
-                                "${Screen.QuestionScreen.route}/${selectedQuizId}"
+                        Column {
+                            Text(
+                                text = "Mau belajar materi dulu atau langsung main kuis?",
+                                fontFamily = nunitosFontFamily
                             )
-                        },
-                        enabled = !isFetchingMaterials,
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = LitecartesColor.Secondary
-                        )
-                    ) {
-                        Text(
-                            text = "Langsung Main",
-                            fontFamily = nunitosFontFamily,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                },
-                dismissButton = {
-                    OutlinedButton(
-                        onClick = {
-                            isFetchingMaterials = true
-                            coroutineScope.launch {
-                                when (val result = viewModel.fetchQuizMaterials(selectedQuizId)) {
-                                    is Result.Success -> {
-                                        val materials = result.data.materials
-                                        if (materials.isNotEmpty()) {
-                                            LearnFirstHolder.setup(
-                                                quizId = selectedQuizId,
-                                                chapterId = chapterId,
-                                                level = selectedQuizLevel,
-                                                materials = materials
-                                            )
-                                            val firstMaterial = LearnFirstHolder.next()!!
-                                            showLevelDialog = false
-                                            isFetchingMaterials = false
-                                            navController.navigate(
-                                                "${Screen.FeedbackScreen.route}/${chapterId}/levels/${selectedQuizLevel}/questions/0?materialId=${firstMaterial.id}"
-                                            )
-                                        } else {
-                                            // No materials — go straight to quiz
-                                            showLevelDialog = false
-                                            isFetchingMaterials = false
-                                            navController.navigate(
-                                                "${Screen.QuestionScreen.route}/${selectedQuizId}"
-                                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(
+                                onClick = {
+                                    isFetchingMaterials = true
+                                    coroutineScope.launch {
+                                        when (val result = viewModel.fetchQuizMaterials(selectedQuizId)) {
+                                            is Result.Success -> {
+                                                val materials = result.data.materials
+                                                if (materials.isNotEmpty()) {
+                                                    LearnFirstHolder.setup(
+                                                        quizId = selectedQuizId,
+                                                        chapterId = chapterId,
+                                                        level = selectedQuizLevel,
+                                                        materials = materials
+                                                    )
+                                                    val firstMaterial = LearnFirstHolder.next()!!
+                                                    showLevelDialog = false
+                                                    isFetchingMaterials = false
+                                                    navController.navigate(
+                                                        "${Screen.FeedbackScreen.route}/${chapterId}/levels/${selectedQuizLevel}/questions/0?materialId=${firstMaterial.id}"
+                                                    )
+                                                } else {
+                                                    showLevelDialog = false
+                                                    isFetchingMaterials = false
+                                                    navController.navigate(
+                                                        "${Screen.QuestionScreen.route}/${selectedQuizId}"
+                                                    )
+                                                }
+                                            }
+                                            is Result.Error -> {
+                                                showLevelDialog = false
+                                                isFetchingMaterials = false
+                                                navController.navigate(
+                                                    "${Screen.QuestionScreen.route}/${selectedQuizId}"
+                                                )
+                                            }
+                                            is Result.Loading -> {}
                                         }
                                     }
-                                    is Result.Error -> {
-                                        // Fetch failed — go straight to quiz
-                                        showLevelDialog = false
-                                        isFetchingMaterials = false
-                                        navController.navigate(
-                                            "${Screen.QuestionScreen.route}/${selectedQuizId}"
-                                        )
-                                    }
-                                    is Result.Loading -> {}
-                                }
+                                },
+                                enabled = !isFetchingMaterials,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = LitecartesColor.Primary,
+                                    contentColor = Color.White
+                                )
+                            ) {
+                                Text(
+                                    text = "Belajar Dulu",
+                                    fontFamily = nunitosFontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                )
                             }
-                        },
-                        enabled = !isFetchingMaterials,
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = LitecartesColor.Primary
-                        )
-                    ) {
-                        Text(
-                            text = "Belajar Dulu",
-                            fontFamily = nunitosFontFamily,
-                            fontWeight = FontWeight.Bold
-                        )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(
+                                onClick = {
+                                    showLevelDialog = false
+                                    navController.navigate(
+                                        "${Screen.QuestionScreen.route}/${selectedQuizId}"
+                                    )
+                                },
+                                enabled = !isFetchingMaterials,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = LitecartesColor.Secondary,
+                                    contentColor = Color.White
+                                )
+                            ) {
+                                Text(
+                                    text = "Langsung Main",
+                                    fontFamily = nunitosFontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                )
+                            }
+                        }
                     }
-                }
+                },
+                confirmButton = {},
             )
         }
     }

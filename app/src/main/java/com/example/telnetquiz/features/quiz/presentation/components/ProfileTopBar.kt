@@ -122,11 +122,13 @@ fun ProfileTopBar(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     BoxPoints(
+                        modifier = Modifier.weight(1f),
                         imageId = R.drawable.diamon,
                         points = "$totalScore",
                     )
-
+                    Spacer(modifier = Modifier.padding(horizontal = 4.dp))
                     BoxPoints(
+                        modifier = Modifier.weight(1f),
                         imageId = R.drawable.lightning,
                         points = "$dailyStreak"
                     )

@@ -2,8 +2,10 @@ package com.example.telnetquiz.features.quiz.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,11 +24,12 @@ import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
 @Composable
 fun BoxPoints(
+    modifier: Modifier = Modifier,
     imageId: Int,
     points: String
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .shadow(
                 elevation = 8.dp,
@@ -39,7 +42,8 @@ fun BoxPoints(
                 vertical = 2.dp
             )
 ,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
         Image(
             painter = painterResource(id = imageId),

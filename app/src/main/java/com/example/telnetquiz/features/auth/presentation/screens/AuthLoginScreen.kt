@@ -143,7 +143,7 @@ fun AuthLoginScreen(
                         .fillMaxWidth()
                         .padding(
                             top = 4.dp,
-                            bottom = 16.dp
+                            bottom = 2.dp
                         ),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ){
