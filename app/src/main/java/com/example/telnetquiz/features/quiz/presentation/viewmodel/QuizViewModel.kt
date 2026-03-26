@@ -7,6 +7,7 @@ import com.example.telnetquiz.data.remote.dto.QuizDto
 import com.example.telnetquiz.data.remote.dto.QuizResultDto
 import com.example.telnetquiz.data.remote.dto.VerifyAnswerResponse
 import com.example.telnetquiz.data.repository.QuizRepository
+import com.example.telnetquiz.data.repository.MaterialRepository
 import com.example.telnetquiz.data.repository.Result
 import com.example.telnetquiz.data.tts.TtsProvider
 import com.example.telnetquiz.features.quiz.domain.model.QuizIndex
@@ -34,6 +35,7 @@ data class QuizState(
 @HiltViewModel
 class QuizViewModel @Inject constructor(
     private val quizRepository: QuizRepository,
+    private val materialRepository: MaterialRepository,
     private val ttsProvider: TtsProvider
 ) : ViewModel() {
 
@@ -171,16 +173,29 @@ class QuizViewModel @Inject constructor(
 
                         // Populate WrongQuizManager queue for FeedbackScreen chain
                         WrongQuizManager.reset()
+                        val materialIds = mutableListOf<Int>()
                         for (wrongQId in wrongIds) {
                             val question = quiz.questions.find { it.id == wrongQId }
+                            val matId = question?.materialId ?: 0
                             WrongQuizManager.queue.addLast(
                                 QuizIndex(
                                     chapterId = quiz.chapterId,
                                     level = quiz.level,
                                     id = wrongQId,
-                                    materialId = question?.materialId ?: 0
+                                    materialId = matId
                                 )
                             )
+                            if (matId > 0) materialIds.add(matId)
+                        }
+
+                        val uniqueMaterialIds = materialIds.distinct()
+                        if (uniqueMaterialIds.isNotEmpty()) {
+                            when (val matResult = materialRepository.bulkGetMaterials(uniqueMaterialIds)) {
+                                is Result.Success -> {
+                                    RemedialHolder.materialsCache = matResult.data.associateBy { it.id }
+                                }
+                                else -> {}
+                            }
                         }
                     }
 

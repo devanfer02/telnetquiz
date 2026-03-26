@@ -13,6 +13,8 @@ import com.example.telnetquiz.data.remote.dto.PretestQuestionsResponse
 import com.example.telnetquiz.data.remote.dto.PretestResultDto
 import com.example.telnetquiz.data.remote.dto.PretestStatusResponse
 import com.example.telnetquiz.data.remote.dto.QuizDto
+import com.example.telnetquiz.data.remote.dto.BulkMaterialsRequest
+import com.example.telnetquiz.data.remote.dto.BulkMaterialsResponse
 import com.example.telnetquiz.data.remote.dto.QuizMaterialsRequest
 import com.example.telnetquiz.data.remote.dto.QuizMaterialsResponse
 import com.example.telnetquiz.data.remote.dto.QuizResultDto
@@ -150,4 +152,10 @@ interface TelNetQuizApi {
     suspend fun getQuizMaterials(
         @Body request: QuizMaterialsRequest
     ): Response<ApiResponse<QuizMaterialsResponse>>
+
+    @Headers("Content-Type: application/json")
+    @POST("api/materials/bulk-get")
+    suspend fun bulkGetMaterials(
+        @Body request: BulkMaterialsRequest
+    ): Response<ApiResponse<BulkMaterialsResponse>>
 }

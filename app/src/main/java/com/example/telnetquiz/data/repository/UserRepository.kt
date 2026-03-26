@@ -7,7 +7,6 @@ import com.example.telnetquiz.data.remote.dto.AchievementsResponse
 import com.example.telnetquiz.data.remote.dto.LeaderboardResponse
 import com.example.telnetquiz.data.remote.dto.PretestStatusResponse
 import com.example.telnetquiz.data.remote.dto.RecentActivityResponse
-import com.example.telnetquiz.data.remote.dto.StudyMaterialDto
 import com.example.telnetquiz.data.remote.dto.UpdateProfileRequest
 import com.example.telnetquiz.data.remote.dto.UserProfileDto
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -124,24 +123,6 @@ class UserRepository @Inject constructor(
                 }
             } else {
                 Result.Error("Failed to fetch leaderboard")
-            }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
-        }
-    }
-
-    suspend fun getStudyMaterial(id: Int): Result<StudyMaterialDto> {
-        return try {
-            val response = api.getStudyMaterial(id)
-            if (response.isSuccessful) {
-                val material = response.body()?.data
-                if (material != null) {
-                    Result.Success(material)
-                } else {
-                    Result.Error("Invalid study material response")
-                }
-            } else {
-                Result.Error("Failed to fetch study material")
             }
         } catch (e: Exception) {
             Result.Error(e.message ?: "Network error")

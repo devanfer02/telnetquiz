@@ -228,3 +228,11 @@ data class QuizMaterialsRequest(
 data class QuizMaterialsResponse(
     @SerializedName("materials") val materials: List<StudyMaterialDto>
 )
+
+data class BulkMaterialsRequest(
+    @SerializedName("material_ids") val materialIds: List<Int>
+)
+
+data class BulkMaterialsResponse(
+    @SerializedName("materials") val materials: List<StudyMaterialDto>
+)

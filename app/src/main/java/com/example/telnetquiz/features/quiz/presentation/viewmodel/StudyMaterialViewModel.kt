@@ -3,9 +3,10 @@ package com.example.telnetquiz.features.quiz.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.telnetquiz.data.remote.dto.StudyMaterialDto
+import com.example.telnetquiz.data.repository.MaterialRepository
 import com.example.telnetquiz.data.repository.Result
-import com.example.telnetquiz.data.repository.UserRepository
 import com.example.telnetquiz.data.tts.TtsProvider
+import com.example.telnetquiz.features.quiz.presentation.singletons.RemedialHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +22,7 @@ data class StudyMaterialState(
 
 @HiltViewModel
 class StudyMaterialViewModel @Inject constructor(
-    private val userRepository: UserRepository,
+    private val materialRepository: MaterialRepository,
     private val ttsProvider: TtsProvider
 ) : ViewModel() {
 
@@ -32,9 +33,15 @@ class StudyMaterialViewModel @Inject constructor(
     val state: StateFlow<StudyMaterialState> = _state.asStateFlow()
 
     fun loadMaterial(materialId: Int) {
+        val cached = RemedialHolder.materialsCache[materialId]
+        if (cached != null) {
+            _state.value = _state.value.copy(isLoading = false, material = cached)
+            return
+        }
+
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
-            when (val result = userRepository.getStudyMaterial(materialId)) {
+            when (val result = materialRepository.getStudyMaterial(materialId)) {
                 is Result.Success -> {
                     _state.value = _state.value.copy(
                         isLoading = false,
