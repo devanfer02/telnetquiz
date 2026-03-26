@@ -2,8 +2,10 @@ package com.example.telnetquiz.features.auth.presentation.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.telnetquiz.BuildConfig
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.components.StrokedText
@@ -115,6 +118,17 @@ fun AuthStartScreen(
 
                     )
             }
+//            if (BuildConfig.DEBUG) {
+//                Spacer(modifier = Modifier.height(24.dp))
+//                Text(
+//                    text = "Test Crash (Debug Only)",
+//                    fontFamily = nunitosFontFamily,
+//                    color = Color.Red,
+//                    modifier = Modifier.clickable {
+//                        throw RuntimeException("Crashlytics test crash")
+//                    }
+//                )
+//            }
         }
 
     }
