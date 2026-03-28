@@ -18,14 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
-import com.example.telnetquiz.components.rememberShimmerColor
-import com.example.telnetquiz.components.rememberSurfaceShimmerColor
+import com.example.telnetquiz.components.shimmerEffect
+import com.example.telnetquiz.components.shimmerOnPrimary
 import com.example.telnetquiz.ui.theme.LitecartesColor
 
 @Composable
 fun ProfileHeaderSkeleton(modifier: Modifier = Modifier) {
-    val shimmer = rememberShimmerColor()
-
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -35,7 +33,7 @@ fun ProfileHeaderSkeleton(modifier: Modifier = Modifier) {
                 .width(140.dp)
                 .height(20.dp)
                 .clip(RoundedCornerShape(6.dp))
-                .background(shimmer)
+                .shimmerOnPrimary()
         )
         Spacer(modifier = Modifier.height(4.dp))
         Box(
@@ -43,7 +41,7 @@ fun ProfileHeaderSkeleton(modifier: Modifier = Modifier) {
                 .width(180.dp)
                 .height(14.dp)
                 .clip(RoundedCornerShape(4.dp))
-                .background(shimmer)
+                .shimmerOnPrimary()
         )
         Spacer(modifier = Modifier.height(4.dp))
         Box(
@@ -51,15 +49,13 @@ fun ProfileHeaderSkeleton(modifier: Modifier = Modifier) {
                 .width(160.dp)
                 .height(12.dp)
                 .clip(RoundedCornerShape(4.dp))
-                .background(shimmer)
+                .shimmerOnPrimary()
         )
     }
 }
 
 @Composable
 fun AchievementCardSkeleton(modifier: Modifier = Modifier) {
-    val shimmer = rememberSurfaceShimmerColor()
-
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -77,7 +73,7 @@ fun AchievementCardSkeleton(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(50.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(shimmer)
+                .shimmerEffect()
         )
         Spacer(modifier = Modifier.padding(8.dp))
         Column(
@@ -88,7 +84,7 @@ fun AchievementCardSkeleton(modifier: Modifier = Modifier) {
                     .fillMaxWidth(0.6f)
                     .height(16.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .background(shimmer)
+                    .shimmerEffect()
             )
             Spacer(modifier = Modifier.height(4.dp))
             Box(
@@ -96,14 +92,14 @@ fun AchievementCardSkeleton(modifier: Modifier = Modifier) {
                     .fillMaxWidth(0.8f)
                     .height(12.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .background(shimmer)
+                    .shimmerEffect()
             )
         }
         Box(
             modifier = Modifier
                 .size(20.dp)
                 .clip(CircleShape)
-                .background(shimmer)
+                .shimmerEffect()
         )
     }
 }

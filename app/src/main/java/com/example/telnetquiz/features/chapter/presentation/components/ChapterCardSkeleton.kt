@@ -17,13 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
-import com.example.telnetquiz.components.rememberSurfaceShimmerColor
+import com.example.telnetquiz.components.shimmerEffect
 import com.example.telnetquiz.ui.theme.LitecartesColor
 
 @Composable
 fun ChapterCardSkeleton(modifier: Modifier = Modifier) {
-    val shimmer = rememberSurfaceShimmerColor()
-
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -55,7 +53,7 @@ fun ChapterCardSkeleton(modifier: Modifier = Modifier) {
                         .fillMaxWidth(0.6f)
                         .height(22.dp)
                         .clip(RoundedCornerShape(6.dp))
-                        .background(shimmer)
+                        .shimmerEffect()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Box(
@@ -63,7 +61,7 @@ fun ChapterCardSkeleton(modifier: Modifier = Modifier) {
                         .fillMaxWidth(0.85f)
                         .height(14.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .background(shimmer)
+                        .shimmerEffect()
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Box(
@@ -71,7 +69,7 @@ fun ChapterCardSkeleton(modifier: Modifier = Modifier) {
                         .fillMaxWidth(0.7f)
                         .height(14.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .background(shimmer)
+                        .shimmerEffect()
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Box(
@@ -79,7 +77,7 @@ fun ChapterCardSkeleton(modifier: Modifier = Modifier) {
                         .fillMaxWidth(0.4f)
                         .height(12.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .background(shimmer)
+                        .shimmerEffect()
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Box(
@@ -87,7 +85,7 @@ fun ChapterCardSkeleton(modifier: Modifier = Modifier) {
                         .fillMaxWidth()
                         .height(8.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .background(shimmer)
+                        .shimmerEffect()
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Box(
@@ -95,7 +93,7 @@ fun ChapterCardSkeleton(modifier: Modifier = Modifier) {
                         .fillMaxWidth(0.5f)
                         .height(36.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(shimmer)
+                        .shimmerEffect()
                 )
             }
             Box(
@@ -109,7 +107,7 @@ fun ChapterCardSkeleton(modifier: Modifier = Modifier) {
                         .fillMaxWidth()
                         .height(120.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(shimmer)
+                        .shimmerEffect()
                 )
             }
         }
