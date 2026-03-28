@@ -64,6 +64,7 @@ fun LeaderboardScreen(
     val state by viewModel.state.collectAsState()
     val selectedTab by viewModel.selectedTab.collectAsState()
     val activityState by viewModel.activityState.collectAsState()
+    val localAvatarResId by viewModel.localAvatarResId.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadRecentActivity()
@@ -157,7 +158,8 @@ fun LeaderboardScreen(
                                         modifier = Modifier.padding(top = 18.dp)
                                     ) {
                                         Top3Profile(
-                                            user = top3[1].toUser()
+                                            user = top3[1].toUser(),
+                                            avatarResIdOverride = if (top3[1].rank == state.currentUser?.rank) localAvatarResId else null
                                         )
                                     }
                                     Spacer(modifier = Modifier.padding(5.dp))
@@ -166,7 +168,8 @@ fun LeaderboardScreen(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Top3Profile(
-                                            user = top3[0].toUser()
+                                            user = top3[0].toUser(),
+                                            avatarResIdOverride = if (top3[0].rank == state.currentUser?.rank) localAvatarResId else null
                                         )
                                     }
                                     Spacer(modifier = Modifier.padding(5.dp))
@@ -176,7 +179,8 @@ fun LeaderboardScreen(
                                         modifier = Modifier.padding(top = 28.dp)
                                     ) {
                                         Top3Profile(
-                                            user = top3[2].toUser()
+                                            user = top3[2].toUser(),
+                                            avatarResIdOverride = if (top3[2].rank == state.currentUser?.rank) localAvatarResId else null
                                         )
                                     }
                                 }
@@ -293,7 +297,8 @@ fun LeaderboardScreen(
                                     Spacer(modifier = Modifier.padding(6.dp))
                                     PositionCard(
                                         user = entry.toUser(),
-                                        rank = entry.rank
+                                        rank = entry.rank,
+                                        avatarResIdOverride = if (entry.rank == state.currentUser?.rank) localAvatarResId else null
                                     )
                                     Spacer(modifier = Modifier.padding(2.dp))
                                 }
