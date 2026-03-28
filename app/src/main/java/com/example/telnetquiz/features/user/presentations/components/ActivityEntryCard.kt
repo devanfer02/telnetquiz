@@ -16,7 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.telnetquiz.data.remote.dto.ActivityEntryDto
@@ -65,7 +68,15 @@ fun ActivityEntryCard(index: Int, entry: ActivityEntryDto) {
                 color = LitecartesColor.Secondary
             )
             Text(
-                text = "Level ${entry.quizLevel} · ${entry.retryCount}x percobaan",
+                text = buildAnnotatedString {
+                    val highlightStyle = SpanStyle(
+                        fontWeight = FontWeight.Bold,
+                        color = LitecartesColor.Secondary
+                    )
+                    withStyle(highlightStyle) { append("Level") }
+                    append(" ${entry.quizLevel} · ${entry.retryCount}x ")
+                    withStyle(highlightStyle) { append("Percobaan") }
+                },
                 fontFamily = nunitosFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 12.sp,
