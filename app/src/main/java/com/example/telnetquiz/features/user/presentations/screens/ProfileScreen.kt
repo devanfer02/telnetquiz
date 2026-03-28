@@ -19,8 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.VolumeOff
-import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -31,6 +30,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,11 +53,13 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.ErrorRetryBox
+import com.example.telnetquiz.data.local.AudioSettings
 import com.example.telnetquiz.components.GenderAvatar
 import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.user.presentations.components.AchievementCardSkeleton
 import com.example.telnetquiz.features.user.presentations.components.ProfileHeaderSkeleton
+import com.example.telnetquiz.features.user.presentations.components.SoundSettingsDialog
 import com.example.telnetquiz.features.user.presentations.viewmodel.AchievementViewModel
 import com.example.telnetquiz.features.user.presentations.viewmodel.ProfileViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
@@ -70,12 +74,24 @@ fun ProfileScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val achievementState by achievementViewModel.state.collectAsState()
-    val isMuted by viewModel.audioManager.isMutedFlow.collectAsState(initial = false)
+    val audioSettings by viewModel.audioManager.audioSettingsFlow.collectAsState(initial = AudioSettings())
+    var showSoundSettings by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.loadProfile()
         achievementViewModel.loadAchievements()
+    }
+
+    if (showSoundSettings) {
+        SoundSettingsDialog(
+            audioSettings = audioSettings,
+            onDismiss = { showSoundSettings = false },
+            onMutedChange = { viewModel.audioManager.toggleMute() },
+            onGlobalVolumeChange = { viewModel.audioManager.setGlobalVolume(it) },
+            onSfxVolumeChange = { viewModel.audioManager.setSfxVolume(it) },
+            onBgMusicVolumeChange = { viewModel.audioManager.setBgMusicVolume(it) }
+        )
     }
 
     Scaffold { innerPadding ->
@@ -116,19 +132,16 @@ fun ProfileScreen(
                     horizontalArrangement = Arrangement.End
                 ) {
                     IconButton(
-                        onClick = { viewModel.audioManager.toggleMute() },
+                        onClick = { showSoundSettings = true },
                         modifier = Modifier
                             .size(32.dp)
                             .clip(CircleShape)
-                            .background(
-                                if (isMuted) Color.Gray.copy(alpha = 0.6f)
-                                else LitecartesColor.Secondary
-                            )
+                            .background(LitecartesColor.Secondary)
                             .padding(4.dp)
                     ) {
                         Icon(
-                            imageVector = if (isMuted) Icons.Default.VolumeOff else Icons.Default.VolumeUp,
-                            contentDescription = if (isMuted) "Unmute" else "Mute",
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Sound Settings",
                             tint = LitecartesColor.Surface,
                             modifier = Modifier.size(18.dp)
                         )
