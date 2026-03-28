@@ -1,8 +1,7 @@
 package com.example.telnetquiz.features.chapter.presentation.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Button
+import com.example.telnetquiz.components.CardWithShadow
 import com.example.telnetquiz.data.remote.dto.ChapterDto
 import com.example.telnetquiz.features.quiz.domain.model.Chapter
 import com.example.telnetquiz.ui.theme.LitecartesColor
@@ -37,36 +36,21 @@ fun ChapterCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ){
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 12.dp,
-                shape = RoundedCornerShape(20.dp),
-                clip = false,
-                ambientColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f),
-                spotColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f)
-            )
-            .clip(RoundedCornerShape(20.dp))
-            .background(LitecartesColor.DarkerSurface)
-            .border(
-                width = 1.dp,
-                color = LitecartesColor.Secondary.copy(alpha = 0.2f),
-                shape = RoundedCornerShape(20.dp)
-            )
+    CardWithShadow(
+        modifier = modifier.fillMaxWidth(),
+        elevation = 12.dp,
+        cornerRadius = 20.dp,
+        ambientColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f),
+        spotColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f),
+        borderStroke = BorderStroke(1.dp, LitecartesColor.Secondary.copy(alpha = 0.2f))
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    horizontal = 20.dp,
-                    vertical = 10.dp
-                )
-
+                .padding(horizontal = 20.dp, vertical = 10.dp)
         ) {
             Column(
-                modifier = Modifier
-                    .weight(1f)
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = chapter.title,
@@ -95,8 +79,7 @@ fun ChapterCard(
                 )
             }
             Box(
-                modifier = Modifier
-                    .weight(0.5f),
+                modifier = Modifier.weight(0.5f),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -121,31 +104,18 @@ fun ChapterCardFromApi(
         chapter.completedQuizzes.toFloat() / chapter.quizCount.toFloat()
     } else 0f
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 12.dp,
-                shape = RoundedCornerShape(20.dp),
-                clip = false,
-                ambientColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f),
-                spotColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f)
-            )
-            .clip(RoundedCornerShape(20.dp))
-            .background(LitecartesColor.DarkerSurface)
-            .border(
-                width = 1.dp,
-                color = LitecartesColor.Secondary.copy(alpha = 0.2f),
-                shape = RoundedCornerShape(20.dp)
-            )
+    CardWithShadow(
+        modifier = modifier.fillMaxWidth(),
+        elevation = 12.dp,
+        cornerRadius = 20.dp,
+        ambientColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f),
+        spotColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f),
+        borderStroke = BorderStroke(1.dp, LitecartesColor.Secondary.copy(alpha = 0.2f))
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    horizontal = 20.dp,
-                    vertical = 10.dp
-                )
+                .padding(horizontal = 20.dp, vertical = 10.dp)
         ) {
             Column(
                 modifier = Modifier

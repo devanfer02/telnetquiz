@@ -1,29 +1,22 @@
 package com.example.telnetquiz.features.user.presentations.components
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.Image
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import com.example.telnetquiz.components.shimmerOnPrimary
-import com.example.telnetquiz.constants.AvatarConstants
+import com.example.telnetquiz.components.AvatarImage
+import com.example.telnetquiz.components.SkeletonBox
 import com.example.telnetquiz.features.user.domain.model.User
-import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
 @Composable
@@ -31,15 +24,15 @@ fun Top3Profile(
     user: User,
     avatarResIdOverride: Int? = null
 ) {
-    Image(
-        painter = painterResource(id = avatarResIdOverride ?: AvatarConstants.getDefaultAvatarResId(user.gender, user.fullname)),
-        contentDescription = "avatar",
-        contentScale = ContentScale.Crop,
+    AvatarImage(
+        localAvatarResId = avatarResIdOverride,
+        gender = user.gender,
+        nameSeed = user.fullname,
+        shape = CircleShape,
         modifier = Modifier
             .padding(4.dp)
             .size(100.dp)
             .shadow(elevation = 12.dp, shape = CircleShape, clip = false)
-            .clip(CircleShape)
     )
     Text(
         text = user.fullname,
@@ -65,31 +58,17 @@ fun Top3Profile(
 
 @Composable
 fun Top3ProfileSkeleton() {
-    Box(
+    SkeletonBox(
+        height = 100.dp,
+        width = 100.dp,
+        cornerRadius = 50.dp,
+        onPrimary = true,
         modifier = Modifier
             .padding(4.dp)
-            .size(100.dp)
-            .shadow(
-                elevation = 12.dp,
-                shape = RoundedCornerShape(100.dp)
-            )
-            .clip(CircleShape)
-            .shimmerOnPrimary()
+            .shadow(elevation = 12.dp, shape = CircleShape)
     )
     Spacer(modifier = Modifier.height(4.dp))
-    Box(
-        modifier = Modifier
-            .width(72.dp)
-            .height(14.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .shimmerOnPrimary()
-    )
+    SkeletonBox(height = 14.dp, width = 72.dp, onPrimary = true)
     Spacer(modifier = Modifier.height(4.dp))
-    Box(
-        modifier = Modifier
-            .width(48.dp)
-            .height(16.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .shimmerOnPrimary()
-    )
+    SkeletonBox(height = 16.dp, width = 48.dp, onPrimary = true)
 }

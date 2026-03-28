@@ -1,6 +1,5 @@
 package com.example.telnetquiz.features.user.presentations.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,16 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.example.telnetquiz.constants.AvatarConstants
+import com.example.telnetquiz.components.AvatarImage
 import com.example.telnetquiz.data.remote.dto.UserProfileDto
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -48,8 +42,6 @@ fun ProfileHeaderSection(
     onEditProfile: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-
     Column(
         modifier = modifier
             .shadow(
@@ -99,56 +91,16 @@ fun ProfileHeaderSection(
             modifier = Modifier.size(100.dp),
             contentAlignment = Alignment.BottomEnd
         ) {
-            when {
-                profile?.image != null -> {
-                    AsyncImage(
-                        model = ImageRequest.Builder(context)
-                            .data(profile.image)
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = "profile",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(100.dp)
-                            .shadow(
-                                elevation = 20.dp,
-                                shape = CircleShape
-                            )
-                            .clip(CircleShape)
-                            .background(
-                                LitecartesColor.Surface,
-                                shape = CircleShape
-                            )
-                    )
-                }
-                localAvatarResId != null -> {
-                    Image(
-                        painter = painterResource(id = localAvatarResId),
-                        contentDescription = "avatar",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(100.dp)
-                            .shadow(
-                                elevation = 20.dp,
-                                shape = CircleShape
-                            )
-                            .clip(CircleShape)
-                    )
-                }
-                else -> {
-                    Image(
-                        painter = painterResource(
-                            id = AvatarConstants.getDefaultAvatarResId(profile?.gender, profile?.fullname ?: "")
-                        ),
-                        contentDescription = "avatar",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(100.dp)
-                            .shadow(elevation = 20.dp, shape = CircleShape)
-                            .clip(CircleShape)
-                    )
-                }
-            }
+            AvatarImage(
+                imageUrl = profile?.image,
+                localAvatarResId = localAvatarResId,
+                gender = profile?.gender,
+                nameSeed = profile?.fullname ?: "",
+                shape = CircleShape,
+                modifier = Modifier
+                    .size(100.dp)
+                    .shadow(elevation = 20.dp, shape = CircleShape)
+            )
             IconButton(
                 onClick = onEditProfile,
                 modifier = Modifier

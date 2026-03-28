@@ -1,4 +1,4 @@
-package com.example.telnetquiz.features.auth.presentation.components
+package com.example.telnetquiz.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -6,6 +6,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -21,19 +22,27 @@ fun Input(
     value: String,
     label: String,
     onValueChange: (String) -> Unit,
-    leadingIcon: Painter? = null
+    modifier: Modifier = Modifier,
+    leadingIcon: Painter? = null,
+    singleLine: Boolean = true,
+    textStyle: TextStyle = TextStyle(
+        fontFamily = nunitosFontFamily,
+        color = LitecartesColor.DarkBrown,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp
+    ),
+    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = LitecartesColor.Secondary,
+        unfocusedBorderColor = LitecartesColor.Secondary,
+        focusedContainerColor = LitecartesColor.DarkerSurface.copy(alpha = 0.5f),
+        unfocusedContainerColor = LitecartesColor.DarkerSurface.copy(alpha = 0.3f)
+    )
 ) {
     OutlinedTextField(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         value = value,
         onValueChange = onValueChange,
-        textStyle = TextStyle(
-            fontFamily = nunitosFontFamily,
-            color = LitecartesColor.DarkBrown,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 16.sp
-        ),
+        textStyle = textStyle,
         label = {
             Text(
                 text = label,
@@ -51,13 +60,8 @@ fun Input(
                 )
             }
         } else null,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = LitecartesColor.Secondary,
-            unfocusedBorderColor = LitecartesColor.Secondary,
-            focusedContainerColor = LitecartesColor.DarkerSurface.copy(alpha = 0.5f),
-            unfocusedContainerColor = LitecartesColor.DarkerSurface.copy(alpha = 0.3f)
-        ),
+        colors = colors,
         shape = RoundedCornerShape(16.dp),
-        singleLine = true
+        singleLine = singleLine
     )
 }
