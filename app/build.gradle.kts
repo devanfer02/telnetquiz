@@ -52,7 +52,8 @@ android {
             buildConfigField("String", "API_KEY", "\"$apiKey\"")
             buildConfigField("String", "GOOGLE_TTS_API_KEY", "\"${apiProperties.getProperty("GOOGLE_TTS_API_KEY", "")}\"")
             buildConfigField("String", "TTS_PROVIDER", "\"${apiProperties.getProperty("TTS_PROVIDER", "local")}\"")
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
