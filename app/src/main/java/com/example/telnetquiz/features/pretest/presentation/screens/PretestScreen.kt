@@ -31,7 +31,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,6 +57,7 @@ fun PretestScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val currentQuestion = viewModel.currentQuestion
+    val haptic = LocalHapticFeedback.current
 
     DisposableEffect(Unit) {
         onDispose { viewModel.stopTts() }
@@ -158,6 +161,7 @@ fun PretestScreen(
                             PretestButton(
                                 text = option.text,
                                 onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                     viewModel.selectAnswer(currentQuestion.id, option.id)
                                 },
                                 isActive = selectedOptionId == option.id
@@ -174,11 +178,14 @@ fun PretestScreen(
                         backgroundColor = if (hasSelectedAnswer) LitecartesColor.Secondary else Color.Gray,
                         textColor = if (hasSelectedAnswer) LitecartesColor.Surface else Color.White,
                         onClick = {
+
                             if (hasSelectedAnswer) {
                                 if (isLastQuestion) {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     viewModel.audioManager.playSfx(SfxType.PRETEST_SUBMIT)
                                     viewModel.submitPretest()
                                 } else {
+                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                     viewModel.nextQuestion()
                                 }
                             }

@@ -13,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,6 +30,8 @@ import com.example.telnetquiz.ui.theme.LitecartesColor
 fun Navbar(
     navController: NavController
 ) {
+    val haptic = LocalHapticFeedback.current
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -56,6 +61,7 @@ fun Navbar(
                 BottomNavigationItem(
                     selected = currentRoute == item.route,
                     onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         navController.navigate(item.route)
                     },
                     icon = {
