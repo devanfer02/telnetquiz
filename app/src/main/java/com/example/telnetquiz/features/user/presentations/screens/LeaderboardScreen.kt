@@ -1,9 +1,7 @@
 package com.example.telnetquiz.features.user.presentations.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -29,9 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
+import com.example.telnetquiz.components.EmptyStateBox
 import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.data.remote.dto.LeaderboardEntryDto
@@ -46,7 +42,9 @@ import com.example.telnetquiz.features.user.domain.model.User
 import com.example.telnetquiz.features.user.presentations.components.ActivityDateHeaderSkeleton
 import com.example.telnetquiz.features.user.presentations.components.ActivityEntryCard
 import com.example.telnetquiz.features.user.presentations.components.ActivityEntryCardSkeleton
+import com.example.telnetquiz.features.user.presentations.components.CurrentUserRankBox
 import com.example.telnetquiz.features.user.presentations.components.PositionCard
+import com.example.telnetquiz.features.user.presentations.components.SegmentedToggle
 import com.example.telnetquiz.features.user.presentations.components.Top3Profile
 import com.example.telnetquiz.features.user.presentations.components.Top3ProfileSkeleton
 import com.example.telnetquiz.features.user.presentations.viewmodel.LeaderboardTab
@@ -216,35 +214,14 @@ fun LeaderboardScreen(
                             )
                         }
                         activityState.days.all { it.entries.isEmpty() } -> {
-                            Column(
+                            EmptyStateBox(
+                                title = "Belum ada aktivitas",
+                                subtitle = "Yuk mainkan level pertamamu!",
+                                imageResId = R.drawable.start_screen,
                                 modifier = Modifier
                                     .weight(1f)
-                                    .fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.start_screen),
-                                    contentDescription = "Mascot",
-                                    modifier = Modifier.size(160.dp)
-                                )
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Text(
-                                    text = "Belum ada aktivitas",
-                                    color = LitecartesColor.Secondary,
-                                    fontFamily = nunitosFontFamily,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "Yuk mainkan level pertamamu!",
-                                    color = LitecartesColor.Secondary.copy(alpha = 0.7f),
-                                    fontFamily = nunitosFontFamily,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 14.sp
-                                )
-                            }
+                                    .fillMaxWidth()
+                            )
                         }
                         else -> {
                             LazyColumn(
@@ -305,34 +282,10 @@ fun LeaderboardScreen(
                                 state.currentUser?.let { currentUser ->
                                     item {
                                         Spacer(modifier = Modifier.padding(6.dp))
-                                        Box(
-                                            modifier = Modifier
-                                                .clip(RoundedCornerShape(12.dp))
-                                                .background(LitecartesColor.Secondary.copy(alpha = 0.1f))
-                                                .padding(8.dp)
-                                                .fillMaxWidth()
-                                        ) {
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                modifier = Modifier.fillMaxWidth()
-                                            ) {
-                                                Text(
-                                                    text = "Peringkat kamu: #${currentUser.rank}",
-                                                    fontFamily = nunitosFontFamily,
-                                                    fontWeight = FontWeight.Bold,
-                                                    color = LitecartesColor.Secondary,
-                                                    fontSize = 14.sp
-                                                )
-                                                Spacer(modifier = Modifier.weight(1f))
-                                                Text(
-                                                    text = "${currentUser.totalScore} XP",
-                                                    fontFamily = nunitosFontFamily,
-                                                    fontWeight = FontWeight.Bold,
-                                                    color = LitecartesColor.Primary,
-                                                    fontSize = 14.sp
-                                                )
-                                            }
-                                        }
+                                        CurrentUserRankBox(
+                                            rank = currentUser.rank,
+                                            totalScore = currentUser.totalScore
+                                        )
                                     }
                                 }
 
@@ -351,48 +304,6 @@ fun LeaderboardScreen(
             }
 
             Navbar(navController = navController)
-        }
-    }
-}
-
-@Composable
-private fun SegmentedToggle(
-    selectedTab: LeaderboardTab,
-    onTabSelected: (LeaderboardTab) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .padding(horizontal = 24.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(LitecartesColor.DarkerSurface)
-            .fillMaxWidth()
-    ) {
-        LeaderboardTab.entries.forEach { tab ->
-            val isSelected = tab == selectedTab
-            val label = when (tab) {
-                LeaderboardTab.PROGRESS -> "Aktivitas Harian"
-                LeaderboardTab.LEADERBOARD -> "Papan Peringkat"
-            }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(
-                        if (isSelected) LitecartesColor.Primary else Color.Transparent
-                    )
-                    .clickable { onTabSelected(tab) }
-                    .padding(vertical = 10.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = label,
-                    fontFamily = nunitosFontFamily,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    color = if (isSelected) Color.White else LitecartesColor.Secondary,
-                    textAlign = TextAlign.Center
-                )
-            }
         }
     }
 }

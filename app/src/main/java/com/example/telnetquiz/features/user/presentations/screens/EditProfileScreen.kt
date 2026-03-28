@@ -2,13 +2,8 @@ package com.example.telnetquiz.features.user.presentations.screens
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,17 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SnackbarHost
@@ -38,11 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,12 +34,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Button
-import com.example.telnetquiz.components.GenderAvatar
 import com.example.telnetquiz.constants.Screen
+import com.example.telnetquiz.features.user.presentations.components.CloseHeader
+import com.example.telnetquiz.features.user.presentations.components.ProfileImagePicker
 import com.example.telnetquiz.features.user.presentations.viewmodel.EditProfileViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
@@ -68,7 +50,6 @@ fun EditProfileScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val context = LocalContext.current
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -111,99 +92,17 @@ fun EditProfileScreen(
                 ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = { navController.popBackStack() },
-                    modifier = Modifier
-                        .size(25.dp)
-                        .background(
-                            color = LitecartesColor.DarkBrown,
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "close",
-                        tint = LitecartesColor.Surface,
-                        modifier = Modifier
-                            .size(25.dp)
-                    )
-                }
-                Text(
-                    text = "Edit Profil".uppercase(),
-                    color = LitecartesColor.DarkBrown,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 20.sp
-                )
-                Spacer(modifier = Modifier)
-            }
+            CloseHeader(
+                title = "Edit Profil".uppercase(),
+                onClose = { navController.popBackStack() }
+            )
 
             Spacer(modifier = Modifier.padding(16.dp))
 
-            // Profile image with camera overlay
-            Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clickable { imagePickerLauncher.launch("image/*") },
-                contentAlignment = Alignment.BottomEnd
-            ) {
-                val imageModel = state.selectedImageUri
-                    ?: state.profile?.image
-
-                if (imageModel != null) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(context)
-                            .data(imageModel)
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = "profile",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(100.dp)
-                            .shadow(
-                                elevation = 20.dp,
-                                shape = CircleShape
-                            )
-                            .clip(CircleShape)
-                            .background(
-                                LitecartesColor.Surface,
-                                shape = CircleShape
-                            )
-                    )
-                } else {
-                    GenderAvatar(
-                        gender = state.profile?.gender,
-                        size = 100.dp,
-                        shape = CircleShape
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .background(LitecartesColor.Secondary)
-                        .padding(4.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CameraAlt,
-                        contentDescription = "Change photo",
-                        tint = LitecartesColor.Surface,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
-            Text(
-                text = "Maks 2MB",
-                fontFamily = nunitosFontFamily,
-                fontSize = 11.sp,
-                color = LitecartesColor.Secondary.copy(alpha = 0.5f),
-                modifier = Modifier.padding(top = 4.dp)
+            ProfileImagePicker(
+                currentImageUrl = state.selectedImageUri ?: state.profile?.image,
+                gender = state.profile?.gender,
+                onClick = { imagePickerLauncher.launch("image/*") }
             )
 
             Spacer(modifier = Modifier.padding(24.dp))
