@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,14 +29,15 @@ import com.example.telnetquiz.ui.theme.LitecartesColor
 
 @Composable
 fun Navbar(
-    navController: NavController
+    navController: NavController,
+    backgroundColor: Color = LitecartesColor.Surface
 ) {
     val haptic = LocalHapticFeedback.current
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(LitecartesColor.Surface)
+            .background(backgroundColor)
     ) {
         BottomNavigation(
             backgroundColor = LitecartesColor.Primary,
@@ -49,17 +51,15 @@ fun Navbar(
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
 
+            val isOnLevelScreen = currentRoute?.startsWith(Screen.LevelScreen.route) == true
+
             NavItem.items.forEach { item ->
-                val icon = if(currentRoute == item.route) {
-                    item.activeIdIcon
-                } else if (currentRoute == NavItem.Level.route) {
-                    item.activeIdIcon
-                } else {
-                    item.idIcon
-                }
+                val isSelected = currentRoute == item.route ||
+                    (isOnLevelScreen && item == NavItem.Home)
+                val icon = if (isSelected) item.activeIdIcon else item.idIcon
 
                 BottomNavigationItem(
-                    selected = currentRoute == item.route,
+                    selected = isSelected,
                     onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         navController.navigate(item.route)
