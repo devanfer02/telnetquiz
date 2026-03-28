@@ -60,6 +60,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -123,6 +124,7 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-analytics")
 
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     ksp("com.google.dagger:hilt-compiler:2.51")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
