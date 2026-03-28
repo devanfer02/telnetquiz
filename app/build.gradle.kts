@@ -117,8 +117,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     implementation("androidx.lifecycle:lifecycle-process:2.7.0")
 
-    // DataStore for token storage
+    // DataStore for non-sensitive preferences
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // Encrypted storage for auth tokens
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
