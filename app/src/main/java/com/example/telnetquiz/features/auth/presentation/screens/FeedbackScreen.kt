@@ -169,7 +169,7 @@ fun FeedbackScren(
                                     <html>
                                     <head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
                                     <body style="color:white;font-family:sans-serif;margin:0;padding:0;">
-                                    ${material.content}
+                                    ${sanitizeHtml(material.content)}
                                     </body>
                                     </html>
                                 """.trimIndent()
@@ -277,4 +277,19 @@ fun PreviewFeedbackScren() {
             level = 1
         )
     }
+}
+
+private fun sanitizeHtml(input: String): String {
+    return input
+        .replace(Regex("<script[^>]*>[\\s\\S]*?</script>", RegexOption.IGNORE_CASE), "")
+        .replace(Regex("<script[^>]*/>", RegexOption.IGNORE_CASE), "")
+        .replace(Regex("<iframe[^>]*>[\\s\\S]*?</iframe>", RegexOption.IGNORE_CASE), "")
+        .replace(Regex("<iframe[^>]*/>", RegexOption.IGNORE_CASE), "")
+        .replace(Regex("<form[^>]*>[\\s\\S]*?</form>", RegexOption.IGNORE_CASE), "")
+        .replace(Regex("<object[^>]*>[\\s\\S]*?</object>", RegexOption.IGNORE_CASE), "")
+        .replace(Regex("<embed[^>]*>[\\s\\S]*?</embed>", RegexOption.IGNORE_CASE), "")
+        .replace(Regex("<embed[^>]*/>", RegexOption.IGNORE_CASE), "")
+        .replace(Regex("<link[^>]*>", RegexOption.IGNORE_CASE), "")
+        .replace(Regex("<style[^>]*>[\\s\\S]*?</style>", RegexOption.IGNORE_CASE), "")
+        .replace(Regex("on\\w+\\s*=", RegexOption.IGNORE_CASE), "data-removed=")
 }
