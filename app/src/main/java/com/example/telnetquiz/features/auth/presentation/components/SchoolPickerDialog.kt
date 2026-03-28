@@ -2,6 +2,7 @@ package com.example.telnetquiz.features.auth.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,6 +39,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -148,6 +150,35 @@ fun SchoolPickerDialog(
                             modifier = Modifier.size(32.dp),
                             color = LitecartesColor.Primary
                         )
+                    }
+                } else if (searchState.error != null) {
+                    val errorText = searchState.error!!
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = errorText,
+                            fontFamily = nunitosFontFamily,
+                            fontSize = 13.sp,
+                            color = LitecartesColor.Secondary.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        TextButton(
+                            onClick = { viewModel.searchSchools(searchState.searchQuery) }
+                        ) {
+                            Text(
+                                text = "Coba Lagi",
+                                fontFamily = nunitosFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                color = LitecartesColor.Primary
+                            )
+                        }
                     }
                 } else {
                     LazyColumn(

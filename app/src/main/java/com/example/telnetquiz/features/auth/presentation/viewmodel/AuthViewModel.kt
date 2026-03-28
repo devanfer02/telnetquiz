@@ -37,7 +37,8 @@ data class SchoolSearchState(
     val isLoadingMore: Boolean = false,
     val hasNextPage: Boolean = false,
     val currentOffset: Int = 0,
-    val searchQuery: String = ""
+    val searchQuery: String = "",
+    val error: String? = null
 )
 
 @HiltViewModel
@@ -184,7 +185,8 @@ class AuthViewModel @Inject constructor(
                 isLoading = true,
                 searchQuery = query,
                 currentOffset = 0,
-                schools = emptyList()
+                schools = emptyList(),
+                error = null
             )
             val search = query.ifBlank { null }
             when (val result = authRepository.searchSchools(search = search, limit = 20, offset = 0)) {
@@ -197,7 +199,10 @@ class AuthViewModel @Inject constructor(
                     )
                 }
                 is Result.Error -> {
-                    _schoolSearchState.value = _schoolSearchState.value.copy(isLoading = false)
+                    _schoolSearchState.value = _schoolSearchState.value.copy(
+                        isLoading = false,
+                        error = result.message
+                    )
                 }
                 is Result.Loading -> {}
             }
@@ -225,7 +230,10 @@ class AuthViewModel @Inject constructor(
                     )
                 }
                 is Result.Error -> {
-                    _schoolSearchState.value = _schoolSearchState.value.copy(isLoadingMore = false)
+                    _schoolSearchState.value = _schoolSearchState.value.copy(
+                        isLoadingMore = false,
+                        error = result.message
+                    )
                 }
                 is Result.Loading -> {}
             }
