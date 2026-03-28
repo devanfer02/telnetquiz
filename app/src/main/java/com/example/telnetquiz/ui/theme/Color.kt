@@ -19,5 +19,19 @@ object LitecartesColor {
     val DarkBrown = Color(0xFF662500)
     val PathColor = Color(0xFFF5E9B8)
     val GreenCactus = Color(0xFF588432)
+
+    val ScoreBlue = Color(0xFF2196F3)
+    val ScoreGreen = Color(0xFF4CAF50)
+    val ScoreYellow = Color(0xFFFFEB3B)
+    val ScoreOrange = Color(0xFFFF9800)
+    val ScoreRed = Color(0xFFE53935)
+}
+
+fun scoreColor(score: Int): Color = when {
+    score >= 100 -> LitecartesColor.ScoreBlue
+    score >= 80 -> LitecartesColor.ScoreGreen
+    score >= 60 -> LitecartesColor.ScoreYellow
+    score >= 40 -> LitecartesColor.ScoreOrange
+    else -> LitecartesColor.ScoreRed
 }
 

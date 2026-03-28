@@ -19,14 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
-
-fun scoreColor(score: Int): Color = when {
-    score >= 100 -> Color(0xFF2196F3)
-    score >= 80 -> Color(0xFF4CAF50)
-    score >= 60 -> Color(0xFFFFEB3B)
-    score >= 40 -> Color(0xFFFF9800)
-    else -> Color(0xFFE53935)
-}
+import com.example.telnetquiz.ui.theme.scoreColor
 
 @Composable
 fun LevelButton(
