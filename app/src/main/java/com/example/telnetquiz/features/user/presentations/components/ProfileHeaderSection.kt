@@ -67,7 +67,7 @@ fun ProfileHeaderSection(
             )
             .background(LitecartesColor.Primary)
             .padding(
-                top = 40.dp,
+                top = 35.dp,
                 bottom = 20.dp
             )
             .fillMaxWidth(),

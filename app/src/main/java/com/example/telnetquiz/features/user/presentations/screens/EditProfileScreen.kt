@@ -57,12 +57,6 @@ fun EditProfileScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var showAvatarPicker by remember { mutableStateOf(false) }
 
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        viewModel.onImageSelected(uri)
-    }
-
     LaunchedEffect(Unit) {
         viewModel.loadProfile()
     }
@@ -110,19 +104,8 @@ fun EditProfileScreen(
                     ?: state.profile?.image
                     ?: AvatarConstants.getAvatarResId(state.selectedAvatarIndex),
                 gender = state.profile?.gender,
-                onClick = { imagePickerLauncher.launch("image/*") }
-            )
-            TextButton(
                 onClick = { showAvatarPicker = true }
-            ) {
-                Text(
-                    text = "Atau pilih avatar",
-                    fontFamily = nunitosFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 13.sp,
-                    color = LitecartesColor.Primary
-                )
-            }
+            )
 
             if (showAvatarPicker) {
                 AvatarPickerDialog(

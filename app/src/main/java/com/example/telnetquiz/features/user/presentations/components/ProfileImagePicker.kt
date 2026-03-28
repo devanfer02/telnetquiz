@@ -98,13 +98,6 @@ fun ProfileImagePicker(
                 )
             }
         }
-        Text(
-            text = "Maks 2MB",
-            fontFamily = nunitosFontFamily,
-            fontSize = 11.sp,
-            color = LitecartesColor.Secondary.copy(alpha = 0.5f),
-            modifier = Modifier.padding(top = 4.dp)
-        )
     }
 }
 
