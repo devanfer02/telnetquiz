@@ -143,12 +143,21 @@ fun LevelScreen(
                     .fillMaxSize()
             ) {
                 if (detailState.chapter == null && detailState.error == null) {
-                    Image(
-                        painter = painterResource(id = R.drawable.level_background_no_path),
-                        contentDescription = "bg",
-                        contentScale = ContentScale.FillBounds,
-                        modifier = Modifier.fillMaxSize()
-                    )
+                    BoxWithConstraints(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        val loadingHeight = maxWidth * 1.94f
+                        Image(
+                            painter = painterResource(id = R.drawable.level_background_no_path),
+                            contentDescription = "bg",
+                            contentScale = ContentScale.FillBounds,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(loadingHeight)
+                        )
+                    }
                 }
                 when {
                     detailState.error != null -> {
