@@ -51,6 +51,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.ErrorRetryBox
+import com.example.telnetquiz.components.GenderAvatar
 import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.user.presentations.components.AchievementCardSkeleton
@@ -159,19 +160,10 @@ fun ProfileScreen(
                                 )
                         )
                     } else {
-                        Image(
-                            painter = painterResource(id = R.drawable.template_profile),
-                            contentDescription = "profile",
-                            modifier = Modifier
-                                .size(100.dp)
-                                .shadow(
-                                    elevation = 20.dp,
-                                    shape = CircleShape
-                                )
-                                .background(
-                                    LitecartesColor.Surface,
-                                    shape = CircleShape
-                                )
+                        GenderAvatar(
+                            gender = state.profile?.gender,
+                            size = 100.dp,
+                            shape = CircleShape
                         )
                     }
                     IconButton(
