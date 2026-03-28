@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +33,8 @@ import androidx.navigation.NavController
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.constants.Screen
+import com.example.telnetquiz.data.audio.AudioManager
+import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.features.pretest.presentation.singletons.PretestResultHolder
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -64,8 +67,13 @@ private fun getFeedback(scorePercentage: Double): PretestFeedback {
 
 @Composable
 fun PretestResultScreen(
-    navController: NavController
+    navController: NavController,
+    audioManager: AudioManager? = null
 ) {
+    LaunchedEffect(Unit) {
+        audioManager?.playSfx(SfxType.PRETEST_RESULT)
+    }
+
     val result = PretestResultHolder.lastResult
     val correctCount = result?.correctAnswers ?: 0
     val wrongCount = result?.incorrectAnswers ?: 0

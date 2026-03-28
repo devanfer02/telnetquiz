@@ -53,6 +53,7 @@ import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.repository.Result
+import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterViewModel
 import com.example.telnetquiz.features.quiz.domain.model.LevelData
 import com.example.telnetquiz.features.quiz.presentation.components.LevelButton
@@ -334,6 +335,7 @@ fun LevelScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             Button(
                                 onClick = {
+                                    viewModel.audioManager.playSfx(SfxType.START_LEVEL)
                                     showLevelDialog = false
                                     navController.navigate(
                                         "${Screen.QuestionScreen.route}/${selectedQuizId}"

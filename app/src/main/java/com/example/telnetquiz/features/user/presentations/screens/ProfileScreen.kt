@@ -19,6 +19,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.VolumeOff
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -65,6 +67,7 @@ fun ProfileScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val achievementState by achievementViewModel.state.collectAsState()
+    val isMuted by viewModel.audioManager.isMutedFlow.collectAsState(initial = false)
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -103,6 +106,31 @@ fun ProfileScreen(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    IconButton(
+                        onClick = { viewModel.audioManager.toggleMute() },
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (isMuted) Color.Gray.copy(alpha = 0.6f)
+                                else LitecartesColor.Secondary
+                            )
+                            .padding(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (isMuted) Icons.Default.VolumeOff else Icons.Default.VolumeUp,
+                            contentDescription = if (isMuted) "Unmute" else "Mute",
+                            tint = LitecartesColor.Surface,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
                 Box(
                     modifier = Modifier
                         .size(100.dp),

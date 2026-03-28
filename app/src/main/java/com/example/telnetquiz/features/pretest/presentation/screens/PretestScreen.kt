@@ -40,6 +40,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.telnetquiz.constants.Screen
+import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.features.pretest.presentation.components.PretestButton
 import com.example.telnetquiz.features.pretest.presentation.components.ProgressBarFromApi
 import com.example.telnetquiz.features.pretest.presentation.singletons.PretestResultHolder
@@ -175,6 +176,7 @@ fun PretestScreen(
                         onClick = {
                             if (hasSelectedAnswer) {
                                 if (isLastQuestion) {
+                                    viewModel.audioManager.playSfx(SfxType.PRETEST_SUBMIT)
                                     viewModel.submitPretest()
                                 } else {
                                     viewModel.nextQuestion()

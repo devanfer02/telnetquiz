@@ -97,6 +97,10 @@ fun QuestionScreen(
     LaunchedEffect(state.verifiedQuestions.size) {
         if (currentQuestion != null && state.verifiedQuestions.containsKey(currentQuestion.id)) {
             showDialog = true
+            val verification = state.verifiedQuestions[currentQuestion.id]
+            if (verification != null) {
+                viewModel.playAnswerSfx(verification.correct, isRetry)
+            }
         }
     }
 

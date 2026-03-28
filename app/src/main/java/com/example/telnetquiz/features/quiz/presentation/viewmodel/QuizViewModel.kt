@@ -6,6 +6,8 @@ import com.example.telnetquiz.data.remote.dto.QuizAnswerDto
 import com.example.telnetquiz.data.remote.dto.QuizDto
 import com.example.telnetquiz.data.remote.dto.QuizResultDto
 import com.example.telnetquiz.data.remote.dto.VerifyAnswerResponse
+import com.example.telnetquiz.data.audio.AudioManager
+import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.data.repository.QuizRepository
 import com.example.telnetquiz.data.repository.MaterialRepository
 import com.example.telnetquiz.data.repository.Result
@@ -36,11 +38,20 @@ data class QuizState(
 class QuizViewModel @Inject constructor(
     private val quizRepository: QuizRepository,
     private val materialRepository: MaterialRepository,
-    private val ttsProvider: TtsProvider
+    private val ttsProvider: TtsProvider,
+    private val audioManager: AudioManager
 ) : ViewModel() {
 
     fun speak(text: String) = ttsProvider.speak(text)
     fun stopTts() = ttsProvider.stop()
+
+    fun playAnswerSfx(isCorrect: Boolean, isRetry: Boolean) {
+        when {
+            isRetry && isCorrect -> audioManager.playSfx(SfxType.QUESTION_REMEDIAL_RIGHT)
+            isCorrect -> audioManager.playSfx(SfxType.QUESTION_RIGHT)
+            else -> audioManager.playSfx(SfxType.QUESTION_WRONG)
+        }
+    }
 
     private val _state = MutableStateFlow(QuizState())
     val state: StateFlow<QuizState> = _state.asStateFlow()

@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +31,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.constants.Screen
+import com.example.telnetquiz.data.audio.AudioManager
+import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.data.remote.dto.QuizResultDto
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
@@ -39,7 +42,8 @@ import com.example.telnetquiz.ui.theme.nunitosFontFamily
 fun ResultScreen(
     navController: NavController,
     chapterId: Int,
-    quizResult: QuizResultDto? = null
+    quizResult: QuizResultDto? = null,
+    audioManager: AudioManager? = null
 ) {
     val correctCount = quizResult?.correctAnswers ?: 0
     val wrongCount = (quizResult?.totalQuestions ?: 0) - correctCount
@@ -48,6 +52,11 @@ fun ResultScreen(
 
     val titleText = if (passed) "Sempurna" else "Coba Lagi"
     val diamondReward = if (passed) (scorePercentage * 0.15).toInt().coerceAtLeast(5) else 0
+
+    LaunchedEffect(Unit) {
+        if (passed) audioManager?.playSfx(SfxType.RESULT_SUCCESS)
+        else audioManager?.playSfx(SfxType.RESULT_FAIL)
+    }
 
     Scaffold { innerPadding ->
         Box(

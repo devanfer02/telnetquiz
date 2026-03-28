@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.telnetquiz.data.remote.dto.PretestQuestionDto
 import com.example.telnetquiz.data.remote.dto.PretestResultDto
 import com.example.telnetquiz.data.remote.dto.PretestSubmissionDto
+import com.example.telnetquiz.data.audio.AudioManager
+import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.data.repository.PretestRepository
 import com.example.telnetquiz.data.repository.Result
 import com.example.telnetquiz.data.tts.TtsProvider
@@ -30,7 +32,8 @@ data class PretestState(
 @HiltViewModel
 class PretestViewModel @Inject constructor(
     private val pretestRepository: PretestRepository,
-    private val ttsProvider: TtsProvider
+    private val ttsProvider: TtsProvider,
+    val audioManager: AudioManager
 ) : ViewModel() {
 
     fun speak(text: String) = ttsProvider.speak(text)
