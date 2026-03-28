@@ -6,6 +6,7 @@ import android.media.MediaPlayer
 import android.media.SoundPool
 import com.example.telnetquiz.R
 import com.example.telnetquiz.data.local.AudioPreferenceManager
+import com.example.telnetquiz.data.local.AudioSettings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,9 +25,11 @@ class AudioManager @Inject constructor(
 
     private var mediaPlayer: MediaPlayer? = null
     private var bgShouldPlay = false
-    private var isMuted = false
+    @Volatile
+    private var audioSettings = AudioSettings()
 
     val isMutedFlow: Flow<Boolean> = audioPreferenceManager.isMuted
+    val audioSettingsFlow: Flow<AudioSettings> = audioPreferenceManager.audioSettings
 
     private val audioAttributes = AudioAttributes.Builder()
         .setUsage(AudioAttributes.USAGE_GAME)
@@ -54,11 +57,13 @@ class AudioManager @Inject constructor(
         }
 
         scope.launch {
-            audioPreferenceManager.isMuted.collect { muted ->
-                isMuted = muted
-                if (muted) {
+            audioPreferenceManager.audioSettings.collect { settings ->
+                val wasMuted = audioSettings.isMuted
+                audioSettings = settings
+                applyBgVolume()
+                if (settings.isMuted && !wasMuted) {
                     mediaPlayer?.pause()
-                } else if (bgShouldPlay) {
+                } else if (!settings.isMuted && bgShouldPlay) {
                     ensureBgPlaying()
                 }
             }
@@ -77,7 +82,7 @@ class AudioManager @Inject constructor(
 
     fun resumeBgMusic() {
         bgShouldPlay = true
-        if (isMuted) return
+        if (audioSettings.isMuted) return
         ensureBgPlaying()
     }
 
@@ -89,19 +94,32 @@ class AudioManager @Inject constructor(
     }
 
     fun playSfx(type: SfxType) {
-        if (isMuted) return
+        val vol = audioSettings.effectiveSfxVolume
+        if (vol <= 0f) return
         val soundId = sfxMap[type] ?: return
-        soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
+        soundPool.play(soundId, vol, vol, 1, 0, 1f)
     }
 
     fun toggleMute() {
         scope.launch {
-            audioPreferenceManager.setMuted(!isMuted)
+            audioPreferenceManager.setMuted(!audioSettings.isMuted)
         }
     }
 
+    fun setGlobalVolume(volume: Float) {
+        scope.launch { audioPreferenceManager.setGlobalVolume(volume) }
+    }
+
+    fun setSfxVolume(volume: Float) {
+        scope.launch { audioPreferenceManager.setSfxVolume(volume) }
+    }
+
+    fun setBgMusicVolume(volume: Float) {
+        scope.launch { audioPreferenceManager.setBgMusicVolume(volume) }
+    }
+
     fun onAppForeground() {
-        if (bgShouldPlay && !isMuted) {
+        if (bgShouldPlay && !audioSettings.isMuted) {
             ensureBgPlaying()
         }
     }
@@ -112,13 +130,21 @@ class AudioManager @Inject constructor(
         }
     }
 
+    private fun applyBgVolume() {
+        val vol = audioSettings.effectiveBgMusicVolume
+        mediaPlayer?.setVolume(vol, vol)
+    }
+
     private fun ensureBgPlaying() {
         if (mediaPlayer == null) {
             mediaPlayer = MediaPlayer.create(context, R.raw.bgsound)?.apply {
+                val vol = audioSettings.effectiveBgMusicVolume
+                setVolume(vol, vol)
                 isLooping = true
                 start()
             }
         } else if (mediaPlayer?.isPlaying == false) {
+            applyBgVolume()
             mediaPlayer?.start()
         }
     }
