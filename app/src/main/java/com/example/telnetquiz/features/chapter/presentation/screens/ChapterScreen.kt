@@ -118,6 +118,7 @@ fun ChapterScreen(
                     name = profileState.profile?.fullname ?: "",
                     school = profileState.profile?.school?.name ?: "",
                     imageUrl = profileState.profile?.image,
+                    gender = profileState.profile?.gender,
                     totalScore = profileState.profile?.stats?.totalScore ?: 0,
                     dailyStreak = profileState.profile?.stats?.dailyStreak ?: 0,
                     tag = ProfileCache.getTag()

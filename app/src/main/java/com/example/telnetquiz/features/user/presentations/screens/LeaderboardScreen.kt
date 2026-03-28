@@ -412,7 +412,8 @@ private fun LeaderboardEntryDto.toUser(): User {
     return User(
         fullname = fullname ?: "User",
         handle = "",
-        exp = totalScore
+        exp = totalScore,
+        gender = gender
     )
 }
 

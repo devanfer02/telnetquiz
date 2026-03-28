@@ -6,5 +6,6 @@ data class User(
     val school: String = "",
     val email: String = "",
     val password: String = "",
-    val exp: Int = 0
+    val exp: Int = 0,
+    val gender: Boolean? = null
 )

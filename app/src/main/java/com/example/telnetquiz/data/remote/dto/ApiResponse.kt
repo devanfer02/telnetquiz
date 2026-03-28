@@ -165,6 +165,8 @@ data class LeaderboardEntryDto(
     val fullname: String?,
     @SerializedName("image")
     val image: String?,
+    @SerializedName("gender")
+    val gender: Boolean? = null,
     @SerializedName("totalScore")
     val totalScore: Int
 )
@@ -176,6 +178,8 @@ data class LeaderboardUserDto(
     val fullname: String?,
     @SerializedName("image")
     val image: String?,
+    @SerializedName("gender")
+    val gender: Boolean? = null,
     @SerializedName("totalScore")
     val totalScore: Int
 )
