@@ -29,6 +29,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.Navbar
+import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.local.AudioSettings
 import com.example.telnetquiz.features.user.presentations.components.AchievementCard
@@ -51,6 +52,7 @@ fun ProfileScreen(
     val state by viewModel.state.collectAsState()
     val achievementState by achievementViewModel.state.collectAsState()
     val audioSettings by viewModel.audioManager.audioSettingsFlow.collectAsState(initial = AudioSettings())
+    val selectedAvatarIndex by viewModel.selectedAvatarIndex.collectAsState()
     var showSoundSettings by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -81,6 +83,7 @@ fun ProfileScreen(
                 profile = state.profile,
                 isLoading = state.isLoading,
                 error = state.error,
+                localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
                 onSettingsClick = { showSoundSettings = true },
                 onEditProfile = { navController.navigate(Screen.EditProfileScreen.route) }
             )

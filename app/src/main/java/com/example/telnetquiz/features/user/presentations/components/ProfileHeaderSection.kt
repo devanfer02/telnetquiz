@@ -1,5 +1,6 @@
 package com.example.telnetquiz.features.user.presentations.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -41,6 +43,7 @@ fun ProfileHeaderSection(
     profile: UserProfileDto?,
     isLoading: Boolean,
     error: String?,
+    localAvatarResId: Int? = null,
     onSettingsClick: () -> Unit,
     onEditProfile: () -> Unit,
     modifier: Modifier = Modifier
@@ -96,32 +99,49 @@ fun ProfileHeaderSection(
             modifier = Modifier.size(100.dp),
             contentAlignment = Alignment.BottomEnd
         ) {
-            if (profile?.image != null) {
-                AsyncImage(
-                    model = ImageRequest.Builder(context)
-                        .data(profile.image)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = "profile",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(100.dp)
-                        .shadow(
-                            elevation = 20.dp,
-                            shape = CircleShape
-                        )
-                        .clip(CircleShape)
-                        .background(
-                            LitecartesColor.Surface,
-                            shape = CircleShape
-                        )
-                )
-            } else {
-                GenderAvatar(
-                    gender = profile?.gender,
-                    size = 100.dp,
-                    shape = CircleShape
-                )
+            when {
+                profile?.image != null -> {
+                    AsyncImage(
+                        model = ImageRequest.Builder(context)
+                            .data(profile.image)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = "profile",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .shadow(
+                                elevation = 20.dp,
+                                shape = CircleShape
+                            )
+                            .clip(CircleShape)
+                            .background(
+                                LitecartesColor.Surface,
+                                shape = CircleShape
+                            )
+                    )
+                }
+                localAvatarResId != null -> {
+                    Image(
+                        painter = painterResource(id = localAvatarResId),
+                        contentDescription = "avatar",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .shadow(
+                                elevation = 20.dp,
+                                shape = CircleShape
+                            )
+                            .clip(CircleShape)
+                    )
+                }
+                else -> {
+                    GenderAvatar(
+                        gender = profile?.gender,
+                        size = 100.dp,
+                        shape = CircleShape
+                    )
+                }
             }
             IconButton(
                 onClick = onEditProfile,
