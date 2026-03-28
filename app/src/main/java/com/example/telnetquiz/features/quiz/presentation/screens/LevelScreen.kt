@@ -64,6 +64,7 @@ import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterViewModel
 import com.example.telnetquiz.features.quiz.domain.model.LevelData
 import com.example.telnetquiz.features.quiz.presentation.components.LevelButton
+import com.example.telnetquiz.features.quiz.presentation.components.scoreColor
 import com.example.telnetquiz.features.quiz.presentation.components.ProfileTopBar
 import com.example.telnetquiz.features.quiz.presentation.singletons.LearnFirstHolder
 import com.example.telnetquiz.features.quiz.presentation.singletons.ProfileCache
@@ -88,6 +89,7 @@ fun LevelScreen(
     var showLevelDialog by remember { mutableStateOf(false) }
     var selectedQuizId by remember { mutableIntStateOf(0) }
     var selectedQuizLevel by remember { mutableIntStateOf(0) }
+    var selectedQuizScore by remember { mutableStateOf<Int?>(null) }
     var isFetchingMaterials by remember { mutableStateOf(false) }
 
     var pathAnimationTarget by remember { mutableFloatStateOf(0f) }
@@ -278,6 +280,7 @@ fun LevelScreen(
                                             onClick = {
                                                 selectedQuizId = quiz.id
                                                 selectedQuizLevel = quiz.level
+                                                selectedQuizScore = quizScores[quiz.id.toString()]
                                                 showLevelDialog = true
                                             },
                                             done = isCompleted,
@@ -297,8 +300,19 @@ fun LevelScreen(
                                                 .background(LitecartesColor.Surface)
                                         ) {
                                             Column(
-                                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                                horizontalAlignment = Alignment.CenterHorizontally
                                             ) {
+                                                if (selectedQuizScore != null) {
+                                                    Text(
+                                                        text = "Skor: $selectedQuizScore",
+                                                        color = scoreColor(selectedQuizScore!!),
+                                                        fontFamily = nunitosFontFamily,
+                                                        fontWeight = FontWeight.ExtraBold,
+                                                        fontSize = 16.sp
+                                                    )
+                                                    Spacer(modifier = Modifier.height(8.dp))
+                                                }
                                                 Button(
                                                     onClick = {
                                                         showLevelDialog = false
