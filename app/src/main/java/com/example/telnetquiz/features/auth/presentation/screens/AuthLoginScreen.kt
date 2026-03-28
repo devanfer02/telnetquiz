@@ -31,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
@@ -46,13 +47,13 @@ import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.constants.Screen
-import com.example.telnetquiz.features.auth.presentation.components.AuthTopBar
 import com.example.telnetquiz.features.auth.presentation.components.Input
 import com.example.telnetquiz.features.auth.presentation.components.PasswordInput
 import com.example.telnetquiz.features.auth.presentation.viewmodel.AuthViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import android.app.Activity
 import android.view.WindowManager
+import androidx.compose.foundation.layout.fillMaxHeight
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
@@ -113,11 +114,6 @@ fun AuthLoginScreen(
     }
 
     Scaffold(
-        topBar = {
-            AuthTopBar(
-                painter = painterResource(id = R.drawable.login_screen)
-            )
-        },
         modifier = Modifier.systemBarsPadding()
     ) { innerPadding ->
         Column(
@@ -128,12 +124,34 @@ fun AuthLoginScreen(
         ) {
             Column(
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.start_screen),
+                    contentDescription = null,
+                    modifier = Modifier.size(260.dp)
+                )
+                Text(
+                    text = "Mari jelajahi Media dan\nJaringan Telekomunikasi!",
+                    fontFamily = nunitosFontFamily,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = LitecartesColor.Secondary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            Column(
+                modifier = Modifier
                     .padding(
                         horizontal = 40.dp,
-                        vertical = 30.dp
+                        vertical = 16.dp
                     ),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Input(
                     value = email,
@@ -225,25 +243,21 @@ fun AuthLoginScreen(
                 }
             }
 
-
-            Column(
+            Box(
                 modifier = Modifier
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 20.dp,
+                            topEnd = 20.dp
+                        )
+                    )
+                    .background(LitecartesColor.Primary)
                     .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                contentAlignment = Alignment.TopStart
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.start_screen),
-                    contentDescription = null,
-                    modifier = Modifier.size(200.dp)
-                )
-                Text(
-                    text = "Mari jelajahi Media dan\nJaringan Telekomunikasi!",
-                    fontFamily = nunitosFontFamily,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = LitecartesColor.Secondary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 8.dp)
+                    painter = painterResource(id = R.drawable.login_screen),
+                    contentDescription = "Yuk Masuk"
                 )
             }
         }
