@@ -65,7 +65,7 @@ import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterVie
 import com.example.telnetquiz.features.quiz.domain.model.LevelData
 import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.features.quiz.presentation.components.LevelButton
-import com.example.telnetquiz.features.quiz.presentation.components.scoreColor
+import com.example.telnetquiz.ui.theme.scoreColor
 import com.example.telnetquiz.features.quiz.presentation.components.ProfileTopBar
 import com.example.telnetquiz.features.quiz.presentation.singletons.LearnFirstHolder
 import com.example.telnetquiz.features.quiz.presentation.singletons.ProfileCache
