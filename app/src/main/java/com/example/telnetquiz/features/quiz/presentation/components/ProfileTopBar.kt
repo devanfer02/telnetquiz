@@ -1,5 +1,6 @@
 package com.example.telnetquiz.features.quiz.presentation.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,6 +42,7 @@ fun ProfileTopBar(
     school: String = "",
     imageUrl: String? = null,
     gender: Boolean? = null,
+    localAvatarResId: Int? = null,
     totalScore: Int = 0,
     dailyStreak: Int = 0,
     tag: String = "Penjelajah"
@@ -90,6 +94,16 @@ fun ProfileTopBar(
                             .aspectRatio(1f)
                     )
                 }
+            } else if (localAvatarResId != null) {
+                Image(
+                    painter = painterResource(id = localAvatarResId),
+                    contentDescription = "avatar",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .height(55.dp)
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(18.dp))
+                )
             } else {
                 GenderAvatar(gender = gender, size = 55.dp)
             }

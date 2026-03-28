@@ -41,6 +41,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.MascotLoadingScreen
 import com.example.telnetquiz.components.Navbar
+import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.repository.Result
 import com.example.telnetquiz.data.audio.SfxType
@@ -68,6 +69,7 @@ fun LevelScreen(
     val scrollState = rememberScrollState()
     val detailState by viewModel.detailState.collectAsState()
     val profileState by profileViewModel.state.collectAsState()
+    val selectedAvatarIndex by profileViewModel.selectedAvatarIndex.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     var showLevelDialog by remember { mutableStateOf(false) }
@@ -113,6 +115,7 @@ fun LevelScreen(
                 school = profileState.profile?.school?.name ?: "",
                 imageUrl = profileState.profile?.image,
                 gender = profileState.profile?.gender,
+                localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
                 totalScore = profileState.profile?.stats?.totalScore ?: 0,
                 dailyStreak = profileState.profile?.stats?.dailyStreak ?: 0,
                 tag = ProfileCache.getTag()

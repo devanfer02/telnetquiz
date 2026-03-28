@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SnackbarHost
@@ -24,7 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -35,7 +38,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.components.Button
+import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.constants.Screen
+import com.example.telnetquiz.features.user.presentations.components.AvatarPickerDialog
 import com.example.telnetquiz.features.user.presentations.components.CloseHeader
 import com.example.telnetquiz.features.user.presentations.components.ProfileImagePicker
 import com.example.telnetquiz.features.user.presentations.viewmodel.EditProfileViewModel
@@ -50,6 +55,7 @@ fun EditProfileScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    var showAvatarPicker by remember { mutableStateOf(false) }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -100,10 +106,34 @@ fun EditProfileScreen(
             Spacer(modifier = Modifier.padding(16.dp))
 
             ProfileImagePicker(
-                currentImageUrl = state.selectedImageUri ?: state.profile?.image,
+                currentImageUrl = state.selectedImageUri
+                    ?: state.profile?.image
+                    ?: AvatarConstants.getAvatarResId(state.selectedAvatarIndex),
                 gender = state.profile?.gender,
                 onClick = { imagePickerLauncher.launch("image/*") }
             )
+            TextButton(
+                onClick = { showAvatarPicker = true }
+            ) {
+                Text(
+                    text = "Atau pilih avatar",
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 13.sp,
+                    color = LitecartesColor.Primary
+                )
+            }
+
+            if (showAvatarPicker) {
+                AvatarPickerDialog(
+                    selectedIndex = state.selectedAvatarIndex,
+                    onAvatarSelected = { index ->
+                        viewModel.onAvatarSelected(index)
+                        showAvatarPicker = false
+                    },
+                    onDismiss = { showAvatarPicker = false }
+                )
+            }
 
             Spacer(modifier = Modifier.padding(24.dp))
 

@@ -27,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.components.EmptyStateBox
 import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.Navbar
+import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.chapter.presentation.components.ChapterCardFromApi
 import com.example.telnetquiz.features.chapter.presentation.components.ChapterCardSkeleton
@@ -46,6 +47,7 @@ fun ChapterScreen(
 ) {
     val state by viewModel.listState.collectAsState()
     val profileState by profileViewModel.state.collectAsState()
+    val selectedAvatarIndex by profileViewModel.selectedAvatarIndex.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadChapters()
@@ -68,6 +70,7 @@ fun ChapterScreen(
                     school = profileState.profile?.school?.name ?: "",
                     imageUrl = profileState.profile?.image,
                     gender = profileState.profile?.gender,
+                    localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
                     totalScore = profileState.profile?.stats?.totalScore ?: 0,
                     dailyStreak = profileState.profile?.stats?.dailyStreak ?: 0,
                     tag = ProfileCache.getTag()

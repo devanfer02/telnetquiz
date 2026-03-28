@@ -2,6 +2,7 @@ package com.example.telnetquiz.features.user.presentations.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.telnetquiz.data.local.AvatarPreferenceManager
 import com.example.telnetquiz.data.remote.dto.UserProfileDto
 import com.example.telnetquiz.data.audio.AudioManager
 import com.example.telnetquiz.data.repository.Result
@@ -23,13 +24,25 @@ data class ProfileState(
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    val audioManager: AudioManager
+    val audioManager: AudioManager,
+    private val avatarPreferenceManager: AvatarPreferenceManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
         ProfileCache.profile?.let { ProfileState(profile = it) } ?: ProfileState()
     )
     val state: StateFlow<ProfileState> = _state.asStateFlow()
+
+    private val _selectedAvatarIndex = MutableStateFlow(-1)
+    val selectedAvatarIndex: StateFlow<Int> = _selectedAvatarIndex.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            avatarPreferenceManager.selectedAvatarIndex.collect { index ->
+                _selectedAvatarIndex.value = index
+            }
+        }
+    }
 
     fun loadProfile() {
         viewModelScope.launch {

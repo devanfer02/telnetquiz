@@ -3,6 +3,7 @@ package com.example.telnetquiz.features.user.presentations.viewmodel
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.telnetquiz.data.local.AvatarPreferenceManager
 import com.example.telnetquiz.data.remote.dto.UpdateProfileRequest
 import com.example.telnetquiz.data.remote.dto.UserProfileDto
 import com.example.telnetquiz.data.repository.Result
@@ -21,17 +22,27 @@ data class EditProfileState(
     val fullname: String = "",
     val bio: String = "",
     val selectedImageUri: Uri? = null,
+    val selectedAvatarIndex: Int = -1,
     val saveSuccess: Boolean = false,
     val error: String? = null
 )
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val avatarPreferenceManager: AvatarPreferenceManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditProfileState())
     val state: StateFlow<EditProfileState> = _state.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            avatarPreferenceManager.selectedAvatarIndex.collect { index ->
+                _state.value = _state.value.copy(selectedAvatarIndex = index)
+            }
+        }
+    }
 
     fun loadProfile() {
         viewModelScope.launch {
@@ -68,6 +79,18 @@ class EditProfileViewModel @Inject constructor(
 
     fun onImageSelected(uri: Uri?) {
         _state.value = _state.value.copy(selectedImageUri = uri)
+        if (uri != null) {
+            viewModelScope.launch {
+                avatarPreferenceManager.clearSelection()
+            }
+        }
+    }
+
+    fun onAvatarSelected(index: Int) {
+        viewModelScope.launch {
+            avatarPreferenceManager.setSelectedAvatarIndex(index)
+            _state.value = _state.value.copy(selectedImageUri = null)
+        }
     }
 
     fun saveProfile() {
