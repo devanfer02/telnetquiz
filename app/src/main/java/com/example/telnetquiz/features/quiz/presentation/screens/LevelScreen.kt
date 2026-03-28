@@ -174,6 +174,7 @@ fun LevelScreen(
                         val chapter = detailState.chapter!!
                         val quizzes = chapter.quizzes
                         val completedQuizIds = chapter.completedQuizIds
+                        val quizScores = chapter.quizScores
                         val dynamicLevels = generateLevelPositions(quizzes.size)
 
                         BoxWithConstraints(
@@ -280,7 +281,8 @@ fun LevelScreen(
                                                 showLevelDialog = true
                                             },
                                             done = isCompleted,
-                                            isLocked = !isUnlocked
+                                            isLocked = !isUnlocked,
+                                            score = quizScores[quiz.id.toString()]
                                         )
                                         MaterialTheme(
                                             shapes = MaterialTheme.shapes.copy(

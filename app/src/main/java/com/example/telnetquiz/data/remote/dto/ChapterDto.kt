@@ -42,7 +42,9 @@ data class ChapterDetailDto(
     @SerializedName("quizzes")
     val quizzes: List<QuizSummaryDto>,
     @SerializedName("completedQuizIds")
-    val completedQuizIds: List<Int> = emptyList()
+    val completedQuizIds: List<Int> = emptyList(),
+    @SerializedName("quizScores")
+    val quizScores: Map<String, Int> = emptyMap()
 )
 
 data class QuizSummaryDto(
