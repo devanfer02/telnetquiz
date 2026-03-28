@@ -3,6 +3,8 @@ package com.example.telnetquiz.features.quiz.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.telnetquiz.data.remote.dto.StudyMaterialDto
+import com.example.telnetquiz.data.audio.AudioManager
+import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.data.repository.MaterialRepository
 import com.example.telnetquiz.data.repository.Result
 import com.example.telnetquiz.data.tts.TtsProvider
@@ -23,7 +25,8 @@ data class StudyMaterialState(
 @HiltViewModel
 class StudyMaterialViewModel @Inject constructor(
     private val materialRepository: MaterialRepository,
-    private val ttsProvider: TtsProvider
+    private val ttsProvider: TtsProvider,
+    val audioManager: AudioManager
 ) : ViewModel() {
 
     fun speak(text: String) = ttsProvider.speak(text)

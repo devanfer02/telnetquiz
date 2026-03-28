@@ -44,6 +44,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.constants.Screen
+import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.features.quiz.presentation.singletons.LearnFirstHolder
 import com.example.telnetquiz.features.quiz.presentation.singletons.RemedialHolder
 import com.example.telnetquiz.features.quiz.presentation.singletons.WrongQuizManager
@@ -240,7 +241,7 @@ fun FeedbackScren(
                             popUpTo("${Screen.FeedbackScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}") { inclusive = true }
                         }
                     } else if (LearnFirstHolder.isActive()) {
-                        // Learn-first flow done: start the quiz
+                        viewModel.audioManager.playSfx(SfxType.START_LEVEL)
                         val quizId = LearnFirstHolder.quizId
                         LearnFirstHolder.clear()
                         navController.navigate(

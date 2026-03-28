@@ -3,6 +3,7 @@ package com.example.telnetquiz.features.user.presentations.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.telnetquiz.data.remote.dto.UserProfileDto
+import com.example.telnetquiz.data.audio.AudioManager
 import com.example.telnetquiz.data.repository.Result
 import com.example.telnetquiz.data.repository.UserRepository
 import com.example.telnetquiz.features.quiz.presentation.singletons.ProfileCache
@@ -21,7 +22,8 @@ data class ProfileState(
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    val audioManager: AudioManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(

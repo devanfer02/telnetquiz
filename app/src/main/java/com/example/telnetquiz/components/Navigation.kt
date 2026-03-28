@@ -6,14 +6,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -22,6 +26,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.telnetquiz.R
 import com.example.telnetquiz.constants.Screen
+import com.example.telnetquiz.data.audio.AudioManager
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import com.example.telnetquiz.features.auth.presentation.screens.AboutScreen
 import com.example.telnetquiz.features.auth.presentation.screens.AuthLoginScreen
 import com.example.telnetquiz.features.auth.presentation.screens.AuthRegisterScreen
@@ -44,6 +53,11 @@ import com.example.telnetquiz.features.user.presentations.screens.ProfileScreen
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import kotlinx.coroutines.flow.collectLatest
 
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface AudioManagerEntryPoint {
+    fun audioManager(): AudioManager
+}
 
 @Composable
 fun Navigation() {
@@ -99,6 +113,23 @@ private fun MainNavHost(
     navController: NavHostController,
     startDestination: String
 ) {
+    val context = LocalContext.current
+    val audioManager = remember {
+        EntryPointAccessors.fromApplication(context, AudioManagerEntryPoint::class.java).audioManager()
+    }
+
+    DisposableEffect(navController) {
+        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            destination.route?.let { route ->
+                audioManager.onScreenChanged(route)
+            }
+        }
+        navController.addOnDestinationChangedListener(listener)
+        onDispose {
+            navController.removeOnDestinationChangedListener(listener)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -154,7 +185,8 @@ private fun MainNavHost(
             route = Screen.PretestResultScreen.route
         ) {
             PretestResultScreen(
-                navController = navController
+                navController = navController,
+                audioManager = audioManager
             )
         }
         composable(
@@ -280,7 +312,8 @@ private fun MainNavHost(
             ResultScreen(
                 navController = navController,
                 chapterId = chapterId,
-                quizResult = quizResult
+                quizResult = quizResult,
+                audioManager = audioManager
             )
         }
         }

@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.telnetquiz.data.remote.dto.ChapterDetailDto
 import com.example.telnetquiz.data.remote.dto.ChapterDto
 import com.example.telnetquiz.data.remote.dto.QuizMaterialsResponse
+import com.example.telnetquiz.data.audio.AudioManager
+import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.data.repository.ChapterRepository
 import com.example.telnetquiz.data.repository.QuizRepository
 import com.example.telnetquiz.data.repository.Result
@@ -31,7 +33,8 @@ data class ChapterDetailState(
 @HiltViewModel
 class ChapterViewModel @Inject constructor(
     private val chapterRepository: ChapterRepository,
-    private val quizRepository: QuizRepository
+    private val quizRepository: QuizRepository,
+    val audioManager: AudioManager
 ) : ViewModel() {
 
     private val _listState = MutableStateFlow(ChapterListState())
