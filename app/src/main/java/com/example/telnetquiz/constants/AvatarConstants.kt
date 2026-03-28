@@ -5,42 +5,27 @@ import com.example.telnetquiz.R
 import kotlin.math.absoluteValue
 
 object AvatarConstants {
-    val avatarList: List<Int> = listOf(
-        R.drawable.avatar_02,
-        R.drawable.avatar_03,
-        R.drawable.avatar_04,
-        R.drawable.avatar_05,
-        R.drawable.avatar_06,
-        R.drawable.avatar_07,
-        R.drawable.avatar_08,
-        R.drawable.avatar_09,
-        R.drawable.avatar_10,
-        R.drawable.avatar_11,
-        R.drawable.avatar_12,
-        R.drawable.avatar_13,
-        R.drawable.avatar_14,
-        R.drawable.avatar_15,
-    )
-
     val maleAvatars: List<Int> = listOf(
-        R.drawable.avatar_04,
-        R.drawable.avatar_06,
-        R.drawable.avatar_08,
-        R.drawable.avatar_09,
-        R.drawable.avatar_12,
-        R.drawable.avatar_14,
-        R.drawable.avatar_15,
+        R.drawable.avatar_male_1,
+        R.drawable.avatar_male_2,
+        R.drawable.avatar_male_3,
+        R.drawable.avatar_male_4,
+        R.drawable.avatar_male_5,
+        R.drawable.avatar_male_6,
+        R.drawable.avatar_male_7,
     )
 
     val femaleAvatars: List<Int> = listOf(
-        R.drawable.avatar_02,
-        R.drawable.avatar_03,
-        R.drawable.avatar_05,
-        R.drawable.avatar_07,
-        R.drawable.avatar_10,
-        R.drawable.avatar_11,
-        R.drawable.avatar_13,
+        R.drawable.avatar_female_1,
+        R.drawable.avatar_female_2,
+        R.drawable.avatar_female_3,
+        R.drawable.avatar_female_4,
+        R.drawable.avatar_female_5,
+        R.drawable.avatar_female_6,
+        R.drawable.avatar_female_7,
     )
+
+    val avatarList: List<Int> = maleAvatars + femaleAvatars
 
     @DrawableRes
     fun getAvatarResId(index: Int): Int? {
