@@ -30,7 +30,7 @@ class QuizRepository @Inject constructor(
                 Result.Error(response.message() ?: "Failed to fetch quiz")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -48,7 +48,7 @@ class QuizRepository @Inject constructor(
                 Result.Error(response.message() ?: "Failed to submit quiz")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -72,7 +72,7 @@ class QuizRepository @Inject constructor(
                 Result.Error(response.message() ?: "Failed to verify answer")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -90,7 +90,7 @@ class QuizRepository @Inject constructor(
                 Result.Error(response.message() ?: "Failed to fetch materials")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 }

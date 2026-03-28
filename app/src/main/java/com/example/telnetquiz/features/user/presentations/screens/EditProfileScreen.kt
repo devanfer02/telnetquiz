@@ -54,6 +54,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Button
+import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.user.presentations.viewmodel.EditProfileViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
@@ -331,6 +332,9 @@ fun EditProfileScreen(
                             onClick = {
                                 if (!state.isSaving) {
                                     viewModel.saveProfile()
+                                    navController.navigate(
+                                        Screen.ProfileScreen.route,
+                                    )
                                 }
                             }
                         )

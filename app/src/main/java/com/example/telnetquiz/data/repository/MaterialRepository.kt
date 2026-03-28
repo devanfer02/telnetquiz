@@ -24,7 +24,7 @@ class MaterialRepository @Inject constructor(
                 Result.Error("Failed to fetch study material")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -42,7 +42,7 @@ class MaterialRepository @Inject constructor(
                 Result.Error("Failed to fetch materials")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 }

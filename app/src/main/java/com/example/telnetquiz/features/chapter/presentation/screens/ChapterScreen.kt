@@ -1,5 +1,6 @@
 package com.example.telnetquiz.features.chapter.presentation.screens
 
+import com.example.telnetquiz.components.ErrorRetryBox
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -144,15 +145,10 @@ fun ChapterScreen(
                         }
                     }
                     state.error != null -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = state.error ?: "An error occurred",
-                                color = LitecartesColor.Secondary
-                            )
-                        }
+                        ErrorRetryBox(
+                            message = state.error ?: "Terjadi kesalahan",
+                            onRetry = { viewModel.loadChapters() }
+                        )
                     }
                     state.chapters.isNotEmpty() -> {
                         LazyColumn {

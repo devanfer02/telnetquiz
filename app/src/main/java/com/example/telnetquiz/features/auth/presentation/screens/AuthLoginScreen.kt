@@ -291,13 +291,7 @@ fun AuthLoginScreen(
                     )
                     Spacer(modifier = Modifier.padding(4.dp))
                     Text(
-                        text = if (errorMessage.contains("password")) {
-                            "Email atau kata sandi tidak sesuai"
-                        } else if (errorMessage.contains("Failed to connect")) {
-                            "Gagak terkoneksi dengan server"
-                        } else {
-                            "Email yang digunakan tidak valid"
-                        },
+                        text = errorMessage,
                         fontFamily = nunitosFontFamily,
                         fontSize = 14.sp,
                         color = LitecartesColor.DarkBrown,
