@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.telnetquiz.components.GenderAvatar
+import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.data.remote.dto.UserProfileDto
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -136,10 +136,16 @@ fun ProfileHeaderSection(
                     )
                 }
                 else -> {
-                    GenderAvatar(
-                        gender = profile?.gender,
-                        size = 100.dp,
-                        shape = CircleShape
+                    Image(
+                        painter = painterResource(
+                            id = AvatarConstants.getDefaultAvatarResId(profile?.gender, profile?.fullname ?: "")
+                        ),
+                        contentDescription = "avatar",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .shadow(elevation = 20.dp, shape = CircleShape)
+                            .clip(CircleShape)
                     )
                 }
             }

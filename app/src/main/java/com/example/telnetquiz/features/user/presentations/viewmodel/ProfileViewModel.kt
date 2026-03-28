@@ -2,6 +2,7 @@ package com.example.telnetquiz.features.user.presentations.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.data.local.AvatarPreferenceManager
 import com.example.telnetquiz.data.remote.dto.UserProfileDto
 import com.example.telnetquiz.data.audio.AudioManager
@@ -57,6 +58,10 @@ class ProfileViewModel @Inject constructor(
                         isLoading = false,
                         profile = result.data
                     )
+                    if (_selectedAvatarIndex.value == -1) {
+                        val index = AvatarConstants.getRandomAvatarIndex(result.data.gender)
+                        avatarPreferenceManager.setSelectedAvatarIndex(index)
+                    }
                 }
                 is Result.Error -> {
                     _state.value = _state.value.copy(

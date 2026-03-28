@@ -17,8 +17,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.telnetquiz.components.GenderAvatar
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import com.example.telnetquiz.components.shimmerOnPrimary
+import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.features.user.domain.model.User
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -27,11 +30,15 @@ import com.example.telnetquiz.ui.theme.nunitosFontFamily
 fun Top3Profile(
     user: User
 ) {
-    GenderAvatar(
-        gender = user.gender,
-        size = 100.dp,
-        shape = CircleShape,
-        modifier = Modifier.padding(4.dp)
+    Image(
+        painter = painterResource(id = AvatarConstants.getDefaultAvatarResId(user.gender, user.fullname)),
+        contentDescription = "avatar",
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .padding(4.dp)
+            .size(100.dp)
+            .shadow(elevation = 12.dp, shape = CircleShape, clip = false)
+            .clip(CircleShape)
     )
     Text(
         text = user.fullname,

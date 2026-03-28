@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.telnetquiz.R
-import com.example.telnetquiz.components.GenderAvatar
+import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.components.shimmerOnPrimary
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -105,7 +105,17 @@ fun ProfileTopBar(
                         .clip(RoundedCornerShape(18.dp))
                 )
             } else {
-                GenderAvatar(gender = gender, size = 55.dp)
+                Image(
+                    painter = painterResource(
+                        id = AvatarConstants.getDefaultAvatarResId(gender, name)
+                    ),
+                    contentDescription = "avatar",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .height(55.dp)
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(18.dp))
+                )
             }
             Spacer(modifier = Modifier.padding(4.dp))
             if (isLoading) {
