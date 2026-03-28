@@ -53,7 +53,7 @@ class UserRepository @Inject constructor(
                 Result.Error("Gagal mengunggah foto")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -71,7 +71,7 @@ class UserRepository @Inject constructor(
                 Result.Error("Failed to fetch profile")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -89,7 +89,7 @@ class UserRepository @Inject constructor(
                 Result.Error("Failed to update profile")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -107,7 +107,7 @@ class UserRepository @Inject constructor(
                 Result.Error("Failed to fetch achievements")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -125,7 +125,7 @@ class UserRepository @Inject constructor(
                 Result.Error("Failed to fetch leaderboard")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -143,7 +143,7 @@ class UserRepository @Inject constructor(
                 Result.Error("Failed to fetch recent activity")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -161,7 +161,7 @@ class UserRepository @Inject constructor(
                 Result.Error("Failed to fetch pretest status")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 }

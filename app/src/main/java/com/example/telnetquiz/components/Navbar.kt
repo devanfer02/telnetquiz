@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.constants.NavItem
+import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.ui.theme.LitecartesColor
 
 @Composable
@@ -45,6 +46,8 @@ fun Navbar(
 
             NavItem.items.forEach { item ->
                 val icon = if(currentRoute == item.route) {
+                    item.activeIdIcon
+                } else if (currentRoute == NavItem.Level.route) {
                     item.activeIdIcon
                 } else {
                     item.idIcon

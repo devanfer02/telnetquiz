@@ -80,7 +80,7 @@ class AuthRepository @Inject constructor(
                 Result.Error(errorMessage)
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -103,7 +103,7 @@ class AuthRepository @Inject constructor(
                 Result.Error(errorMessage)
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -125,7 +125,7 @@ class AuthRepository @Inject constructor(
                 Result.Error("Failed to fetch schools")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -147,7 +147,7 @@ class AuthRepository @Inject constructor(
                 Result.Error("Failed to search schools")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -166,7 +166,7 @@ class AuthRepository @Inject constructor(
                 Result.Error("Session invalid")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 }

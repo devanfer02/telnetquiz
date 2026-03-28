@@ -1,5 +1,16 @@
 package com.example.telnetquiz.data.repository
 
+import java.io.IOException
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+
+fun Exception.toUserMessage(): String = when (this) {
+    is SocketTimeoutException -> "Koneksi ke server terlalu lama. Periksa koneksi internet Anda dan coba lagi."
+    is ConnectException -> "Tidak dapat terhubung ke server. Periksa koneksi internet Anda."
+    is IOException -> "Terjadi gangguan jaringan. Periksa koneksi internet Anda."
+    else -> message ?: "Terjadi kesalahan jaringan"
+}
+
 sealed class Result<out T> {
     data class Success<T>(val data: T) : Result<T>()
     data class Error(val message: String) : Result<Nothing>()

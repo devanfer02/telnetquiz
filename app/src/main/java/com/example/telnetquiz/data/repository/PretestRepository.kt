@@ -26,7 +26,7 @@ class PretestRepository @Inject constructor(
                 Result.Error(response.message() ?: "Failed to fetch pretest")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 
@@ -44,7 +44,7 @@ class PretestRepository @Inject constructor(
                 Result.Error(response.message() ?: "Failed to submit pretest")
             }
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Network error")
+            Result.Error(e.toUserMessage())
         }
     }
 }

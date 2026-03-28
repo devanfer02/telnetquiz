@@ -1,5 +1,6 @@
 package com.example.telnetquiz.features.pretest.presentation.screens
 
+import com.example.telnetquiz.components.ErrorRetryBox
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -99,15 +100,10 @@ fun PretestScreen(
                     }
                 }
                 state.error != null -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = state.error ?: "Terjadi kesalahan",
-                            color = LitecartesColor.Secondary
-                        )
-                    }
+                    ErrorRetryBox(
+                        message = state.error ?: "Terjadi kesalahan",
+                        onRetry = { viewModel.loadPretestQuestions() }
+                    )
                 }
                 currentQuestion != null -> {
                     val selectedOptionId = state.answers[currentQuestion.id]
