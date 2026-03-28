@@ -14,26 +14,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
-import com.example.telnetquiz.components.rememberSurfaceShimmerColor
+import com.example.telnetquiz.components.shimmerEffect
+import com.example.telnetquiz.ui.theme.LitecartesColor
 
 @Composable
 fun ActivityDateHeaderSkeleton(modifier: Modifier = Modifier) {
-    val shimmer = rememberSurfaceShimmerColor()
-
     Box(
         modifier = modifier
             .padding(vertical = 8.dp)
             .width(120.dp)
             .height(16.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(shimmer)
+            .shimmerEffect()
     )
 }
 
 @Composable
 fun ActivityEntryCardSkeleton(modifier: Modifier = Modifier) {
-    val shimmer = rememberSurfaceShimmerColor()
-
     Column(
         modifier = modifier
             .shadow(
@@ -41,7 +38,7 @@ fun ActivityEntryCardSkeleton(modifier: Modifier = Modifier) {
                 shape = RoundedCornerShape(20.dp)
             )
             .clip(RoundedCornerShape(20.dp))
-            .background(com.example.telnetquiz.ui.theme.LitecartesColor.DarkerSurface)
+            .background(LitecartesColor.DarkerSurface)
             .padding(horizontal = 20.dp, vertical = 16.dp)
             .fillMaxWidth()
     ) {
@@ -50,7 +47,7 @@ fun ActivityEntryCardSkeleton(modifier: Modifier = Modifier) {
                 .fillMaxWidth(0.7f)
                 .height(16.dp)
                 .clip(RoundedCornerShape(4.dp))
-                .background(shimmer)
+                .shimmerEffect()
         )
         Spacer(modifier = Modifier.height(4.dp))
         Box(
@@ -58,7 +55,7 @@ fun ActivityEntryCardSkeleton(modifier: Modifier = Modifier) {
                 .fillMaxWidth(0.5f)
                 .height(13.dp)
                 .clip(RoundedCornerShape(4.dp))
-                .background(shimmer)
+                .shimmerEffect()
         )
     }
 }

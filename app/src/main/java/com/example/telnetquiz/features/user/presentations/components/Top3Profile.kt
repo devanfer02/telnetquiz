@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.telnetquiz.R
-import com.example.telnetquiz.components.rememberShimmerColor
+import com.example.telnetquiz.components.shimmerOnPrimary
 import com.example.telnetquiz.features.user.domain.model.User
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -76,8 +76,6 @@ fun Top3Profile(
 
 @Composable
 fun Top3ProfileSkeleton() {
-    val shimmerColor = rememberShimmerColor()
-
     Box(
         modifier = Modifier
             .padding(4.dp)
@@ -86,7 +84,8 @@ fun Top3ProfileSkeleton() {
                 elevation = 12.dp,
                 shape = RoundedCornerShape(100.dp)
             )
-            .background(shimmerColor, shape = CircleShape)
+            .clip(CircleShape)
+            .shimmerOnPrimary()
     )
     Spacer(modifier = Modifier.height(4.dp))
     Box(
@@ -94,7 +93,7 @@ fun Top3ProfileSkeleton() {
             .width(72.dp)
             .height(14.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(shimmerColor)
+            .shimmerOnPrimary()
     )
     Spacer(modifier = Modifier.height(4.dp))
     Box(
@@ -102,6 +101,6 @@ fun Top3ProfileSkeleton() {
             .width(48.dp)
             .height(16.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(shimmerColor)
+            .shimmerOnPrimary()
     )
 }
