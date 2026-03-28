@@ -1,5 +1,8 @@
 package com.example.telnetquiz.features.quiz.presentation.screens
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -28,16 +31,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -83,6 +89,29 @@ fun LevelScreen(
     var selectedQuizLevel by remember { mutableIntStateOf(0) }
     var isFetchingMaterials by remember { mutableStateOf(false) }
 
+    var pathAnimationTarget by remember { mutableFloatStateOf(0f) }
+    var showButtons by remember { mutableStateOf(false) }
+    val pathAnimationProgress by animateFloatAsState(
+        targetValue = pathAnimationTarget,
+        animationSpec = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
+        label = "path_animation"
+    )
+    val buttonAlpha by animateFloatAsState(
+        targetValue = if (showButtons) 1f else 0f,
+        animationSpec = tween(durationMillis = 400),
+        label = "button_alpha"
+    )
+
+    LaunchedEffect(detailState.chapter) {
+        if (detailState.chapter != null) {
+            pathAnimationTarget = 1f
+            showButtons = true
+        } else {
+            pathAnimationTarget = 0f
+            showButtons = false
+        }
+    }
+
     LaunchedEffect(chapterId) {
         viewModel.loadChapterById(chapterId)
         profileViewModel.loadProfile()
@@ -113,15 +142,15 @@ fun LevelScreen(
                     .weight(1f)
                     .fillMaxSize()
             ) {
+                if (detailState.chapter == null && detailState.error == null) {
+                    Image(
+                        painter = painterResource(id = R.drawable.level_background_no_path),
+                        contentDescription = "bg",
+                        contentScale = ContentScale.FillBounds,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
                 when {
-                    detailState.isLoading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = LitecartesColor.Secondary)
-                        }
-                    }
                     detailState.error != null -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
@@ -164,47 +193,54 @@ fun LevelScreen(
                                     val canvasWidth = size.width
                                     val canvasHeight = size.height
 
-                                    for (i in 0 until dynamicLevels.size - 1) {
-                                        val from = dynamicLevels[i]
-                                        val to = dynamicLevels[i + 1]
+                                    clipRect(
+                                        top = 0f,
+                                        bottom = canvasHeight * pathAnimationProgress,
+                                        left = 0f,
+                                        right = canvasWidth
+                                    ) {
+                                        for (i in 0 until dynamicLevels.size - 1) {
+                                            val from = dynamicLevels[i]
+                                            val to = dynamicLevels[i + 1]
 
-                                        val startX = canvasWidth * from.xFraction
-                                        val startY = canvasHeight * from.yFraction + buttonCenterOffset
-                                        val endX = canvasWidth * to.xFraction
-                                        val endY = canvasHeight * to.yFraction + buttonCenterOffset
+                                            val startX = canvasWidth * from.xFraction
+                                            val startY = canvasHeight * from.yFraction + buttonCenterOffset
+                                            val endX = canvasWidth * to.xFraction
+                                            val endY = canvasHeight * to.yFraction + buttonCenterOffset
 
-                                        val midY = (startY + endY) / 2f
-                                        val path = Path().apply {
-                                            moveTo(startX, startY)
-                                            cubicTo(startX, midY, endX, midY, endX, endY)
-                                        }
+                                            val midY = (startY + endY) / 2f
+                                            val path = Path().apply {
+                                                moveTo(startX, startY)
+                                                cubicTo(startX, midY, endX, midY, endX, endY)
+                                            }
 
-                                        translate(top = 4f) {
+                                            translate(top = 4f) {
+                                                drawPath(
+                                                    path = path,
+                                                    color = Color.Black.copy(alpha = 0.12f),
+                                                    style = Stroke(
+                                                        width = 72f,
+                                                        cap = StrokeCap.Round
+                                                    )
+                                                )
+                                            }
                                             drawPath(
                                                 path = path,
-                                                color = Color.Black.copy(alpha = 0.12f),
+                                                color = LitecartesColor.PathColor.copy(alpha = 0.5f),
                                                 style = Stroke(
-                                                    width = 72f,
+                                                    width = 64f,
+                                                    cap = StrokeCap.Round
+                                                )
+                                            )
+                                            drawPath(
+                                                path = path,
+                                                color = LitecartesColor.PathColor,
+                                                style = Stroke(
+                                                    width = 44f,
                                                     cap = StrokeCap.Round
                                                 )
                                             )
                                         }
-                                        drawPath(
-                                            path = path,
-                                            color = LitecartesColor.PathColor.copy(alpha = 0.5f),
-                                            style = Stroke(
-                                                width = 64f,
-                                                cap = StrokeCap.Round
-                                            )
-                                        )
-                                        drawPath(
-                                            path = path,
-                                            color = LitecartesColor.PathColor,
-                                            style = Stroke(
-                                                width = 44f,
-                                                cap = StrokeCap.Round
-                                            )
-                                        )
                                     }
                                 }
 
@@ -216,8 +252,6 @@ fun LevelScreen(
                                     val levelPosition = dynamicLevels[index]
                                     val buttonOffset = with(LocalDensity.current) { 25.dp.toPx() }
 
-                                    // Level 1 (index 0) always unlocked
-                                    // Level N unlocked if quiz at index N-1 is completed
                                     val isCompleted = quiz.id in completedQuizIds
                                     val isUnlocked = index == 0 ||
                                         quizzes[index - 1].id in completedQuizIds
@@ -228,6 +262,7 @@ fun LevelScreen(
                                                 x = screenWidth * levelPosition.xFraction - with(LocalDensity.current) { buttonOffset.toDp() },
                                                 y = contentHeight * levelPosition.yFraction
                                             )
+                                            .alpha(buttonAlpha)
                                     ) {
                                         LevelButton(
                                             level = quiz.level,
