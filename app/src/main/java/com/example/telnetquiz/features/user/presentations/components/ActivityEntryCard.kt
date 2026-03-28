@@ -9,19 +9,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.telnetquiz.components.CardWithShadow
 import com.example.telnetquiz.data.remote.dto.ActivityEntryDto
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -31,19 +30,18 @@ import com.example.telnetquiz.ui.theme.scoreColor
 fun ActivityEntryCard(index: Int, entry: ActivityEntryDto) {
     val color = scoreColor(entry.latestScore)
 
-    Row(
-        modifier = Modifier
-            .shadow(
-                elevation = 6.dp,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .clip(RoundedCornerShape(16.dp))
-            .background(LitecartesColor.DarkerSurface)
-            .fillMaxWidth()
-            .padding(14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(14.dp)
+    CardWithShadow(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = 6.dp,
+        cornerRadius = 16.dp
     ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
         Box(
             modifier = Modifier
                 .size(44.dp)
@@ -82,6 +80,7 @@ fun ActivityEntryCard(index: Int, entry: ActivityEntryDto) {
                 fontSize = 12.sp,
                 color = LitecartesColor.Secondary.copy(alpha = 0.6f)
             )
+        }
         }
     }
 }

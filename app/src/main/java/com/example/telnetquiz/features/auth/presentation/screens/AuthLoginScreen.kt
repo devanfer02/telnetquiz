@@ -44,7 +44,7 @@ import com.example.telnetquiz.components.LoadingButton
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.auth.presentation.components.ErrorBottomSheet
 import com.example.telnetquiz.features.auth.presentation.components.ForgotPasswordDialog
-import com.example.telnetquiz.features.auth.presentation.components.Input
+import com.example.telnetquiz.components.Input
 import com.example.telnetquiz.features.auth.presentation.components.PasswordInput
 import com.example.telnetquiz.features.auth.presentation.viewmodel.AuthViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor

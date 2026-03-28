@@ -44,7 +44,7 @@ import coil.compose.AsyncImage
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.features.pretest.presentation.components.PretestButton
-import com.example.telnetquiz.features.pretest.presentation.components.ProgressBarFromApi
+import com.example.telnetquiz.components.ProgressBarFromApi
 import com.example.telnetquiz.features.pretest.presentation.singletons.PretestResultHolder
 import com.example.telnetquiz.features.pretest.presentation.viewmodel.PretestViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor

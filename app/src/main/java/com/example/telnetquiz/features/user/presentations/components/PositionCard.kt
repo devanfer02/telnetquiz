@@ -1,28 +1,22 @@
 package com.example.telnetquiz.features.user.presentations.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.size
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import com.example.telnetquiz.constants.AvatarConstants
+import com.example.telnetquiz.components.AvatarImage
+import com.example.telnetquiz.components.CardWithShadow
 import com.example.telnetquiz.features.user.domain.model.User
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -33,23 +27,17 @@ fun PositionCard(
     rank: Int,
     avatarResIdOverride: Int? = null
 ) {
-    Row(
-        modifier = Modifier
-            .shadow(
-                elevation = 10.dp,
-                shape = RoundedCornerShape(20.dp)
-            )
-            .clip(
-                RoundedCornerShape(20.dp)
-            )
-            .background(LitecartesColor.DarkerSurface)
-            .padding(
-                vertical = 10.dp,
-                horizontal = 20.dp
-            )
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+    CardWithShadow(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = 10.dp,
+        cornerRadius = 20.dp
     ) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 10.dp, horizontal = 20.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
         Text(
             text = "$rank",
             color = LitecartesColor.Secondary,
@@ -61,13 +49,12 @@ fun PositionCard(
             modifier = Modifier
                 .padding(10.dp)
         )
-        Image(
-            painter = painterResource(id = avatarResIdOverride ?: AvatarConstants.getDefaultAvatarResId(user.gender, user.fullname)),
-            contentDescription = "avatar",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(65.dp)
-                .clip(CircleShape)
+        AvatarImage(
+            localAvatarResId = avatarResIdOverride,
+            gender = user.gender,
+            nameSeed = user.fullname,
+            shape = CircleShape,
+            modifier = Modifier.size(65.dp)
         )
         Spacer(
             modifier = Modifier
@@ -99,6 +86,7 @@ fun PositionCard(
             color = LitecartesColor.Primary,
             fontWeight = FontWeight.Bold
         )
+        }
     }
 }
 

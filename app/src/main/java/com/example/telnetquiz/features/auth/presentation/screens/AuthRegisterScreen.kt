@@ -51,7 +51,7 @@ import com.example.telnetquiz.R
 import com.example.telnetquiz.components.LoadingButton
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.auth.presentation.components.AuthTopBar
-import com.example.telnetquiz.features.auth.presentation.components.Input
+import com.example.telnetquiz.components.Input
 import com.example.telnetquiz.features.auth.presentation.components.PasswordInput
 import com.example.telnetquiz.features.auth.presentation.components.GenderToggleButton
 import com.example.telnetquiz.features.auth.presentation.components.SchoolPickerDialog

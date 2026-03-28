@@ -34,7 +34,7 @@ import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.quiz.presentation.components.AnswerFeedbackSheet
 import com.example.telnetquiz.features.quiz.presentation.components.OptionButton
 import com.example.telnetquiz.features.quiz.presentation.components.OptionFeedback
-import com.example.telnetquiz.features.quiz.presentation.components.ProgressBarFromApi
+import com.example.telnetquiz.components.ProgressBarFromApi
 import com.example.telnetquiz.features.quiz.presentation.components.QuestionHeaderBox
 import com.example.telnetquiz.features.quiz.presentation.components.VerifyButton
 import com.example.telnetquiz.features.quiz.presentation.singletons.QuizResultHolder
@@ -112,7 +112,13 @@ fun QuestionScreen(
             if (state.quiz != null) {
                 ProgressBarFromApi(
                     current = state.currentQuestionIndex + 1,
-                    total = state.quiz!!.questions.size
+                    total = state.quiz!!.questions.size,
+                    containerColor = LitecartesColor.Primary,
+                    barColor = LitecartesColor.Surface,
+                    borderColor = LitecartesColor.Surface,
+                    useDashedBorder = true,
+                    showLabel = false,
+                    showDivider = true
                 )
             }
         },

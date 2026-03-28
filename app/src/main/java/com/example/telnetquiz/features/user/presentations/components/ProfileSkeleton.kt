@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
+import com.example.telnetquiz.components.SkeletonBox
 import com.example.telnetquiz.components.shimmerEffect
-import com.example.telnetquiz.components.shimmerOnPrimary
 import com.example.telnetquiz.ui.theme.LitecartesColor
 
 @Composable
@@ -28,29 +28,11 @@ fun ProfileHeaderSkeleton(modifier: Modifier = Modifier) {
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-            modifier = Modifier
-                .width(140.dp)
-                .height(20.dp)
-                .clip(RoundedCornerShape(6.dp))
-                .shimmerOnPrimary()
-        )
+        SkeletonBox(height = 20.dp, width = 140.dp, cornerRadius = 6.dp, onPrimary = true)
         Spacer(modifier = Modifier.height(4.dp))
-        Box(
-            modifier = Modifier
-                .width(180.dp)
-                .height(14.dp)
-                .clip(RoundedCornerShape(4.dp))
-                .shimmerOnPrimary()
-        )
+        SkeletonBox(height = 14.dp, width = 180.dp, onPrimary = true)
         Spacer(modifier = Modifier.height(4.dp))
-        Box(
-            modifier = Modifier
-                .width(160.dp)
-                .height(12.dp)
-                .clip(RoundedCornerShape(4.dp))
-                .shimmerOnPrimary()
-        )
+        SkeletonBox(height = 12.dp, width = 160.dp, onPrimary = true)
     }
 }
 
@@ -69,37 +51,15 @@ fun AchievementCardSkeleton(modifier: Modifier = Modifier) {
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(50.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .shimmerEffect()
-        )
+        SkeletonBox(height = 50.dp, width = 50.dp, cornerRadius = 12.dp)
         Spacer(modifier = Modifier.padding(8.dp))
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.6f)
-                    .height(16.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .shimmerEffect()
-            )
+            SkeletonBox(height = 16.dp, modifier = Modifier.fillMaxWidth(0.6f))
             Spacer(modifier = Modifier.height(4.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .height(12.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .shimmerEffect()
-            )
+            SkeletonBox(height = 12.dp, modifier = Modifier.fillMaxWidth(0.8f))
         }
-        Box(
-            modifier = Modifier
-                .size(20.dp)
-                .clip(CircleShape)
-                .shimmerEffect()
-        )
+        SkeletonBox(height = 20.dp, width = 20.dp, cornerRadius = 10.dp)
     }
 }

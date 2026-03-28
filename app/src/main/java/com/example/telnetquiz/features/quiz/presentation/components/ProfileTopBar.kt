@@ -1,6 +1,5 @@
 package com.example.telnetquiz.features.quiz.presentation.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,16 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.example.telnetquiz.R
-import com.example.telnetquiz.constants.AvatarConstants
-import com.example.telnetquiz.components.shimmerOnPrimary
+import com.example.telnetquiz.components.AvatarImage
+import com.example.telnetquiz.components.SkeletonBox
+import com.example.telnetquiz.components.TopBarContainer
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
@@ -47,74 +43,34 @@ fun ProfileTopBar(
     dailyStreak: Int = 0,
     tag: String = "Penjelajah"
 ) {
-    Box(
+    TopBarContainer(
         modifier = modifier
             .fillMaxWidth()
-            .background(backgroundColor)
-            .clip(
-                RoundedCornerShape(
-                    bottomStart = 24.dp,
-                    bottomEnd = 24.dp,
-                )
-            )
-            .background(LitecartesColor.Secondary)
-            .padding(
-                vertical = 20.dp,
-                horizontal = 18.dp
-            )
+            .background(backgroundColor),
+        cornerRadius = 24.dp,
+        backgroundColor = LitecartesColor.Secondary
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(vertical = 20.dp, horizontal = 18.dp)
         ) {
             if (isLoading) {
-                Box(
-                    modifier = Modifier
-                        .height(55.dp)
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(18.dp))
-                        .shimmerOnPrimary()
-                )
-            } else if (imageUrl != null) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(18.dp))
-                        .shadow(
-                            elevation = 20.dp,
-                            shape = RoundedCornerShape(18.dp),
-                            clip = false
-                        )
-                        .background(LitecartesColor.Primary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    AsyncImage(
-                        model = imageUrl,
-                        contentDescription = "profile image",
-                        modifier = Modifier
-                            .height(55.dp)
-                            .aspectRatio(1f)
-                    )
-                }
-            } else if (localAvatarResId != null) {
-                Image(
-                    painter = painterResource(id = localAvatarResId),
-                    contentDescription = "avatar",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .height(55.dp)
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(18.dp))
+                SkeletonBox(
+                    height = 55.dp,
+                    cornerRadius = 18.dp,
+                    onPrimary = true,
+                    modifier = Modifier.aspectRatio(1f)
                 )
             } else {
-                Image(
-                    painter = painterResource(
-                        id = AvatarConstants.getDefaultAvatarResId(gender, name)
-                    ),
-                    contentDescription = "avatar",
-                    contentScale = ContentScale.Crop,
+                AvatarImage(
+                    imageUrl = imageUrl,
+                    localAvatarResId = localAvatarResId,
+                    gender = gender,
+                    nameSeed = name,
+                    shape = RoundedCornerShape(18.dp),
                     modifier = Modifier
                         .height(55.dp)
                         .aspectRatio(1f)
-                        .clip(RoundedCornerShape(18.dp))
                 )
             }
             Spacer(modifier = Modifier.padding(4.dp))
@@ -122,21 +78,9 @@ fun ProfileTopBar(
                 Column(
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .width(100.dp)
-                            .height(18.dp)
-                            .clip(RoundedCornerShape(6.dp))
-                            .shimmerOnPrimary()
-                    )
+                    SkeletonBox(height = 18.dp, width = 100.dp, cornerRadius = 6.dp, onPrimary = true)
                     Spacer(modifier = Modifier.height(4.dp))
-                    Box(
-                        modifier = Modifier
-                            .width(70.dp)
-                            .height(10.dp)
-                            .clip(RoundedCornerShape(4.dp))
-                            .shimmerOnPrimary()
-                    )
+                    SkeletonBox(height = 10.dp, width = 70.dp, onPrimary = true)
                 }
             } else {
                 Column(
@@ -170,30 +114,12 @@ fun ProfileTopBar(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(22.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .shimmerOnPrimary()
-                        )
+                        SkeletonBox(height = 22.dp, cornerRadius = 12.dp, onPrimary = true, modifier = Modifier.weight(1f))
                         Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(22.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .shimmerOnPrimary()
-                        )
+                        SkeletonBox(height = 22.dp, cornerRadius = 12.dp, onPrimary = true, modifier = Modifier.weight(1f))
                     }
                     Spacer(modifier = Modifier.padding(2.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(20.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .shimmerOnPrimary()
-                    )
+                    SkeletonBox(height = 20.dp, cornerRadius = 12.dp, onPrimary = true, modifier = Modifier.fillMaxWidth())
                 } else {
                     Row(
                         modifier = Modifier

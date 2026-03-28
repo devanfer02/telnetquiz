@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,8 +22,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
+import com.example.telnetquiz.components.TopBarContainer
 import com.example.telnetquiz.components.EmptyStateBox
 import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.Navbar
@@ -78,24 +76,9 @@ fun LeaderboardScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Orange Header Box
-            Box(
-                modifier = Modifier
-                    .shadow(
-                        elevation = 20.dp,
-                        shape = RoundedCornerShape(
-                            bottomStart = 20.dp,
-                            bottomEnd = 20.dp
-                        )
-                    )
-                    .clip(
-                        RoundedCornerShape(
-                            bottomStart = 20.dp,
-                            bottomEnd = 20.dp
-                        )
-                    )
-                    .background(LitecartesColor.Primary)
-                    .fillMaxWidth(),
+            TopBarContainer(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = 20.dp,
                 contentAlignment = Alignment.Center
             ) {
                 Column(
