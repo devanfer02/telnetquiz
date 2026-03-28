@@ -58,6 +58,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.telnetquiz.R
 import com.example.telnetquiz.constants.Screen
+import com.example.telnetquiz.components.MascotLoadingScreen
 import com.example.telnetquiz.features.pretest.presentation.components.PretestButton
 import com.example.telnetquiz.features.quiz.presentation.components.OptionButton
 import com.example.telnetquiz.features.quiz.presentation.components.OptionFeedback
@@ -153,12 +154,7 @@ fun QuestionScreen(
         ) {
             when {
                 state.isLoading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = LitecartesColor.Secondary)
-                    }
+                    MascotLoadingScreen(modifier = Modifier.fillMaxSize())
                 }
                 state.error != null -> {
                     ErrorRetryBox(

@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -53,6 +52,8 @@ import coil.request.ImageRequest
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.constants.Screen
+import com.example.telnetquiz.features.user.presentations.components.AchievementCardSkeleton
+import com.example.telnetquiz.features.user.presentations.components.ProfileHeaderSkeleton
 import com.example.telnetquiz.features.user.presentations.viewmodel.AchievementViewModel
 import com.example.telnetquiz.features.user.presentations.viewmodel.ProfileViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
@@ -195,10 +196,7 @@ fun ProfileScreen(
                 )
                 when {
                     state.isLoading -> {
-                        CircularProgressIndicator(
-                            color = Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
+                        ProfileHeaderSkeleton()
                     }
                     state.error != null -> {
                         Text(
@@ -313,14 +311,10 @@ fun ProfileScreen(
 
                 when {
                     achievementState.isLoading -> {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                color = LitecartesColor.Secondary,
-                                modifier = Modifier.size(32.dp)
-                            )
+                        Column {
+                            repeat(4) {
+                                AchievementCardSkeleton()
+                            }
                         }
                     }
                     achievementState.error != null -> {

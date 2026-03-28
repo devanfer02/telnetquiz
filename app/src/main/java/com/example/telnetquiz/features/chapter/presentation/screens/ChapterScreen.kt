@@ -13,11 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -40,6 +40,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.chapter.presentation.components.ChapterCardFromApi
+import com.example.telnetquiz.features.chapter.presentation.components.ChapterCardSkeleton
 import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterViewModel
 import com.example.telnetquiz.features.quiz.presentation.components.ProfileTopBar
 import com.example.telnetquiz.features.quiz.presentation.singletons.ProfileCache
@@ -137,11 +138,16 @@ fun ChapterScreen(
             ) {
                 when {
                     state.isLoading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = LitecartesColor.Secondary)
+                        LazyColumn {
+                            items(3) {
+                                Spacer(modifier = Modifier.padding(5.dp))
+                                Box(
+                                    modifier = Modifier.padding(horizontal = 10.dp)
+                                ) {
+                                    ChapterCardSkeleton()
+                                }
+                                Spacer(modifier = Modifier.padding(5.dp))
+                            }
                         }
                     }
                     state.error != null -> {

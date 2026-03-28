@@ -18,7 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.VolumeUp
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -43,6 +42,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.telnetquiz.components.Button
+import com.example.telnetquiz.components.MascotLoadingScreen
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.features.quiz.presentation.singletons.LearnFirstHolder
@@ -90,12 +90,7 @@ fun FeedbackScren(
 
             when {
                 state.isLoading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = LitecartesColor.Secondary)
-                    }
+                    MascotLoadingScreen(modifier = Modifier.fillMaxSize())
                 }
                 state.error != null && materialId > 0 -> {
                     Box(

@@ -15,9 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,7 +42,9 @@ import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.data.remote.dto.LeaderboardEntryDto
 import com.example.telnetquiz.features.user.domain.model.User
+import com.example.telnetquiz.features.user.presentations.components.ActivityDateHeaderSkeleton
 import com.example.telnetquiz.features.user.presentations.components.ActivityEntryCard
+import com.example.telnetquiz.features.user.presentations.components.ActivityEntryCardSkeleton
 import com.example.telnetquiz.features.user.presentations.components.PositionCard
 import com.example.telnetquiz.features.user.presentations.components.Top3Profile
 import com.example.telnetquiz.features.user.presentations.components.Top3ProfileSkeleton
@@ -193,15 +195,17 @@ fun LeaderboardScreen(
                 LeaderboardTab.PROGRESS -> {
                     when {
                         activityState.isLoading -> {
-                            Box(
+                            LazyColumn(
                                 modifier = Modifier
+                                    .padding(start = 14.dp, end = 14.dp)
                                     .weight(1f)
-                                    .fillMaxWidth(),
-                                contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator(
-                                    color = LitecartesColor.Primary
-                                )
+                                item { Spacer(modifier = Modifier.height(12.dp)) }
+                                item { ActivityDateHeaderSkeleton() }
+                                items(4) {
+                                    ActivityEntryCardSkeleton()
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
                             }
                         }
                         activityState.error != null -> {
