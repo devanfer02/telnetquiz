@@ -2,7 +2,6 @@ package com.example.telnetquiz.data.repository
 
 import com.example.telnetquiz.data.local.TokenManager
 import com.example.telnetquiz.data.remote.api.TelNetQuizApi
-import com.example.telnetquiz.data.remote.dto.LoginErrorResponse
 import com.example.telnetquiz.data.remote.dto.LoginRequest
 import com.example.telnetquiz.data.remote.dto.PaginatedSchoolsResponse
 import com.example.telnetquiz.data.remote.dto.RegisterRequest
@@ -42,14 +41,39 @@ class AuthRepository @Inject constructor(
         }
     }
 
+    private val loginErrorTranslations = mapOf(
+        "email" to "Email yang diberikan tidak valid",
+        "password" to "Kata sandi tidak boleh kosong",
+        "invalid credentials" to "Email atau kata sandi salah",
+        "user not found" to "Akun tidak ditemukan",
+        "request body validation failed" to "Data yang diberikan tidak valid",
+    )
+
+    private fun translateError(message: String): String {
+        val lower = message.lowercase()
+        return loginErrorTranslations.entries
+            .firstOrNull { lower.contains(it.key) }?.value ?: message
+    }
+
     private fun parseLoginError(errorBody: String?): String {
-        if (errorBody.isNullOrBlank()) return "An error occurred"
+        if (errorBody.isNullOrBlank()) return "Terjadi kesalahan"
 
         return try {
-            val errorResponse = gson.fromJson(errorBody, LoginErrorResponse::class.java)
-            errorResponse.errors ?: errorResponse.message
+            val jsonObject = gson.fromJson(errorBody, com.google.gson.JsonObject::class.java)
+            val errors = jsonObject.get("errors")
+            when {
+                errors != null && errors.isJsonPrimitive -> translateError(errors.asString)
+                errors != null && errors.isJsonObject -> {
+                    errors.asJsonObject.entrySet().flatMap { (_, messages) ->
+                        messages.asJsonArray.map { translateError(it.asString) }
+                    }.joinToString("\n") { "• $it" }
+                }
+                else -> translateError(
+                    jsonObject.get("message")?.asString ?: errorBody
+                )
+            }
         } catch (e: Exception) {
-            errorBody
+            "Terjadi kesalahan"
         }
     }
 
