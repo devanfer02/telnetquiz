@@ -45,6 +45,7 @@ import com.example.telnetquiz.features.user.domain.model.User
 import com.example.telnetquiz.features.user.presentations.components.ActivityEntryCard
 import com.example.telnetquiz.features.user.presentations.components.PositionCard
 import com.example.telnetquiz.features.user.presentations.components.Top3Profile
+import com.example.telnetquiz.features.user.presentations.components.Top3ProfileSkeleton
 import com.example.telnetquiz.features.user.presentations.viewmodel.LeaderboardTab
 import com.example.telnetquiz.features.user.presentations.viewmodel.LeaderboardViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
@@ -125,12 +126,23 @@ fun LeaderboardScreen(
                     ) {
                         when {
                             state.isLoading -> {
-                                CircularProgressIndicator(
-                                    color = Color.White,
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .padding(bottom = 12.dp)
-                                )
+                                Row(
+                                    modifier = Modifier.padding(bottom = 12.dp)
+                                ) {
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = Modifier.padding(top = 18.dp)
+                                    ) { Top3ProfileSkeleton() }
+                                    Spacer(modifier = Modifier.padding(5.dp))
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) { Top3ProfileSkeleton() }
+                                    Spacer(modifier = Modifier.padding(5.dp))
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = Modifier.padding(top = 28.dp)
+                                    ) { Top3ProfileSkeleton() }
+                                }
                             }
                             state.leaderboard.size >= 3 -> {
                                 val top3 = state.leaderboard.take(3)
