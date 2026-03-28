@@ -38,12 +38,6 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideTokenManager(dataStore: DataStore<Preferences>): TokenManager {
-        return TokenManager(dataStore)
-    }
-
-    @Provides
-    @Singleton
     @Named("apiKey")
     fun provideApiKeyInterceptor(): Interceptor {
         return Interceptor { chain ->
