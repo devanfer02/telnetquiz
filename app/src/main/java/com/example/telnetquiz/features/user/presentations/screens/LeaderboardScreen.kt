@@ -39,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
+import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.data.remote.dto.LeaderboardEntryDto
 import com.example.telnetquiz.features.user.domain.model.User
@@ -209,18 +210,10 @@ fun LeaderboardScreen(
                             }
                         }
                         activityState.error != null -> {
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = activityState.error ?: "Terjadi kesalahan",
-                                    color = LitecartesColor.Secondary,
-                                    fontFamily = nunitosFontFamily
-                                )
-                            }
+                            ErrorRetryBox(
+                                message = activityState.error ?: "Terjadi kesalahan",
+                                modifier = Modifier.weight(1f)
+                            )
                         }
                         activityState.days.all { it.entries.isEmpty() } -> {
                             Column(
@@ -291,17 +284,10 @@ fun LeaderboardScreen(
                 LeaderboardTab.LEADERBOARD -> {
                     when {
                         state.error != null -> {
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = state.error ?: "Terjadi kesalahan",
-                                    color = LitecartesColor.Secondary
-                                )
-                            }
+                            ErrorRetryBox(
+                                message = state.error ?: "Terjadi kesalahan",
+                                modifier = Modifier.weight(1f)
+                            )
                         }
                         else -> {
                             val remainingEntries = if (state.leaderboard.size > 3) {
