@@ -30,7 +30,8 @@ import com.example.telnetquiz.ui.theme.nunitosFontFamily
 @Composable
 fun PositionCard(
     user: User,
-    rank: Int
+    rank: Int,
+    avatarResIdOverride: Int? = null
 ) {
     Row(
         modifier = Modifier
@@ -61,7 +62,7 @@ fun PositionCard(
                 .padding(10.dp)
         )
         Image(
-            painter = painterResource(id = AvatarConstants.getDefaultAvatarResId(user.gender, user.fullname)),
+            painter = painterResource(id = avatarResIdOverride ?: AvatarConstants.getDefaultAvatarResId(user.gender, user.fullname)),
             contentDescription = "avatar",
             contentScale = ContentScale.Crop,
             modifier = Modifier

@@ -28,10 +28,11 @@ import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
 @Composable
 fun Top3Profile(
-    user: User
+    user: User,
+    avatarResIdOverride: Int? = null
 ) {
     Image(
-        painter = painterResource(id = AvatarConstants.getDefaultAvatarResId(user.gender, user.fullname)),
+        painter = painterResource(id = avatarResIdOverride ?: AvatarConstants.getDefaultAvatarResId(user.gender, user.fullname)),
         contentDescription = "avatar",
         contentScale = ContentScale.Crop,
         modifier = Modifier

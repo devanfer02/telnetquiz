@@ -2,6 +2,8 @@ package com.example.telnetquiz.features.user.presentations.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.telnetquiz.constants.AvatarConstants
+import com.example.telnetquiz.data.local.AvatarPreferenceManager
 import com.example.telnetquiz.data.remote.dto.DayActivityDto
 import com.example.telnetquiz.data.remote.dto.LeaderboardEntryDto
 import com.example.telnetquiz.data.remote.dto.LeaderboardUserDto
@@ -9,8 +11,11 @@ import com.example.telnetquiz.data.repository.Result
 import com.example.telnetquiz.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,8 +40,13 @@ data class LeaderboardState(
 
 @HiltViewModel
 class LeaderboardViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    avatarPreferenceManager: AvatarPreferenceManager
 ) : ViewModel() {
+
+    val localAvatarResId: StateFlow<Int?> = avatarPreferenceManager.selectedAvatarIndex
+        .map { index -> AvatarConstants.getAvatarResId(index) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     private val _selectedTab = MutableStateFlow(LeaderboardTab.PROGRESS)
     val selectedTab: StateFlow<LeaderboardTab> = _selectedTab.asStateFlow()
