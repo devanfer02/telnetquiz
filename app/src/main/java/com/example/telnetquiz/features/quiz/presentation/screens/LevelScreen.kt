@@ -5,7 +5,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -93,12 +92,12 @@ fun LevelScreen(
     var showButtons by remember { mutableStateOf(false) }
     val pathAnimationProgress by animateFloatAsState(
         targetValue = pathAnimationTarget,
-        animationSpec = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = 2000, easing = FastOutSlowInEasing),
         label = "path_animation"
     )
     val buttonAlpha by animateFloatAsState(
         targetValue = if (showButtons) 1f else 0f,
-        animationSpec = tween(durationMillis = 400),
+        animationSpec = tween(durationMillis = 800),
         label = "button_alpha"
     )
 
@@ -131,15 +130,13 @@ fun LevelScreen(
         },
         modifier = Modifier.systemBarsPadding()
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween
+                .fillMaxSize()
         ) {
             Box(
                 modifier = Modifier
-                    .weight(1f)
                     .fillMaxSize()
             ) {
                 if (detailState.chapter == null && detailState.error == null) {
@@ -290,7 +287,14 @@ fun LevelScreen(
                     }
                 }
             }
-            Navbar(navController = navController)
+            Box(
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                Navbar(
+                    navController = navController,
+                    backgroundColor = Color.Transparent
+                )
+            }
         }
 
         if (showLevelDialog) {
