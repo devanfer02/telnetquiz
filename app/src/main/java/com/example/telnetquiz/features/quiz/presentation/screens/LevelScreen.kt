@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -14,15 +15,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,6 +56,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
+import com.example.telnetquiz.components.MascotLoadingScreen
 import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.repository.Result
@@ -280,6 +282,98 @@ fun LevelScreen(
                                             done = isCompleted,
                                             isLocked = !isUnlocked
                                         )
+                                        MaterialTheme(
+                                            shapes = MaterialTheme.shapes.copy(
+                                                extraSmall = RoundedCornerShape(16.dp)
+                                            )
+                                        ) {
+                                        DropdownMenu(
+                                            expanded = showLevelDialog && selectedQuizId == quiz.id,
+                                            onDismissRequest = { showLevelDialog = false },
+                                            modifier = Modifier
+                                                .width(200.dp)
+                                                .background(LitecartesColor.Surface)
+                                        ) {
+                                            Column(
+                                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                                            ) {
+                                                Button(
+                                                    onClick = {
+                                                        showLevelDialog = false
+                                                        isFetchingMaterials = true
+                                                        coroutineScope.launch {
+                                                            when (val result = viewModel.fetchQuizMaterials(selectedQuizId)) {
+                                                                is Result.Success -> {
+                                                                    val materials = result.data.materials
+                                                                    if (materials.isNotEmpty()) {
+                                                                        LearnFirstHolder.setup(
+                                                                            quizId = selectedQuizId,
+                                                                            chapterId = chapterId,
+                                                                            level = selectedQuizLevel,
+                                                                            materials = materials
+                                                                        )
+                                                                        val firstMaterial = LearnFirstHolder.next()!!
+                                                                        isFetchingMaterials = false
+                                                                        navController.navigate(
+                                                                            "${Screen.FeedbackScreen.route}/${chapterId}/levels/${selectedQuizLevel}/questions/0?materialId=${firstMaterial.id}"
+                                                                        )
+                                                                    } else {
+                                                                        isFetchingMaterials = false
+                                                                        navController.navigate(
+                                                                            "${Screen.QuestionScreen.route}/${selectedQuizId}"
+                                                                        )
+                                                                    }
+                                                                }
+                                                                is Result.Error -> {
+                                                                    isFetchingMaterials = false
+                                                                    navController.navigate(
+                                                                        "${Screen.QuestionScreen.route}/${selectedQuizId}"
+                                                                    )
+                                                                }
+                                                                is Result.Loading -> {}
+                                                            }
+                                                        }
+                                                    },
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    shape = RoundedCornerShape(12.dp),
+                                                    colors = ButtonDefaults.buttonColors(
+                                                        containerColor = LitecartesColor.Primary,
+                                                        contentColor = Color.White
+                                                    )
+                                                ) {
+                                                    Text(
+                                                        text = "Belajar Dulu",
+                                                        fontFamily = nunitosFontFamily,
+                                                        fontWeight = FontWeight.Bold,
+                                                        modifier = Modifier.padding(vertical = 2.dp)
+                                                    )
+                                                }
+                                                Spacer(modifier = Modifier.height(6.dp))
+                                                Button(
+                                                    onClick = {
+                                                        viewModel.audioManager.playSfx(SfxType.START_LEVEL)
+                                                        showLevelDialog = false
+                                                        navController.navigate(
+                                                            "${Screen.QuestionScreen.route}/${selectedQuizId}"
+                                                        )
+                                                    },
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    shape = RoundedCornerShape(12.dp),
+                                                    colors = ButtonDefaults.buttonColors(
+                                                        containerColor = LitecartesColor.Secondary,
+                                                        contentColor = Color.White
+                                                    )
+                                                ) {
+                                                    Text(
+                                                        text = "Langsung Main",
+                                                        fontFamily = nunitosFontFamily,
+                                                        fontWeight = FontWeight.Bold,
+                                                        modifier = Modifier.padding(vertical = 2.dp)
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        }
                                     }
                                 }
                             }
@@ -297,118 +391,14 @@ fun LevelScreen(
             }
         }
 
-        if (showLevelDialog) {
-            AlertDialog(
-                onDismissRequest = { showLevelDialog = false },
-                title = {
-                    Text(
-                        text = "Level $selectedQuizLevel",
-                        fontFamily = nunitosFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
-                },
-                text = {
-                    if (isFetchingMaterials) {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                color = LitecartesColor.Secondary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    } else {
-                        Column {
-                            Text(
-                                text = "Mau belajar materi dulu atau langsung main kuis?",
-                                fontFamily = nunitosFontFamily
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(
-                                onClick = {
-                                    isFetchingMaterials = true
-                                    coroutineScope.launch {
-                                        when (val result = viewModel.fetchQuizMaterials(selectedQuizId)) {
-                                            is Result.Success -> {
-                                                val materials = result.data.materials
-                                                if (materials.isNotEmpty()) {
-                                                    LearnFirstHolder.setup(
-                                                        quizId = selectedQuizId,
-                                                        chapterId = chapterId,
-                                                        level = selectedQuizLevel,
-                                                        materials = materials
-                                                    )
-                                                    val firstMaterial = LearnFirstHolder.next()!!
-                                                    showLevelDialog = false
-                                                    isFetchingMaterials = false
-                                                    navController.navigate(
-                                                        "${Screen.FeedbackScreen.route}/${chapterId}/levels/${selectedQuizLevel}/questions/0?materialId=${firstMaterial.id}"
-                                                    )
-                                                } else {
-                                                    showLevelDialog = false
-                                                    isFetchingMaterials = false
-                                                    navController.navigate(
-                                                        "${Screen.QuestionScreen.route}/${selectedQuizId}"
-                                                    )
-                                                }
-                                            }
-                                            is Result.Error -> {
-                                                showLevelDialog = false
-                                                isFetchingMaterials = false
-                                                navController.navigate(
-                                                    "${Screen.QuestionScreen.route}/${selectedQuizId}"
-                                                )
-                                            }
-                                            is Result.Loading -> {}
-                                        }
-                                    }
-                                },
-                                enabled = !isFetchingMaterials,
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = LitecartesColor.Primary,
-                                    contentColor = Color.White
-                                )
-                            ) {
-                                Text(
-                                    text = "Belajar Dulu",
-                                    fontFamily = nunitosFontFamily,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Button(
-                                onClick = {
-                                    viewModel.audioManager.playSfx(SfxType.START_LEVEL)
-                                    showLevelDialog = false
-                                    navController.navigate(
-                                        "${Screen.QuestionScreen.route}/${selectedQuizId}"
-                                    )
-                                },
-                                enabled = !isFetchingMaterials,
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = LitecartesColor.Secondary,
-                                    contentColor = Color.White
-                                )
-                            ) {
-                                Text(
-                                    text = "Langsung Main",
-                                    fontFamily = nunitosFontFamily,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                )
-                            }
-                        }
-                    }
-                },
-                confirmButton = {},
-            )
+        if (isFetchingMaterials) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(LitecartesColor.Surface)
+            ) {
+                MascotLoadingScreen(modifier = Modifier.fillMaxSize())
+            }
         }
     }
 }
