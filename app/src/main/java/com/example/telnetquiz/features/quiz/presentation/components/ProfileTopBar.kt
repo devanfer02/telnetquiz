@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.telnetquiz.R
+import com.example.telnetquiz.components.shimmerOnPrimary
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
@@ -33,7 +35,8 @@ import com.example.telnetquiz.ui.theme.nunitosFontFamily
 fun ProfileTopBar(
     modifier: Modifier = Modifier,
     backgroundColor: Color = LitecartesColor.Surface,
-    name: String = "...",
+    isLoading: Boolean = false,
+    name: String = "",
     school: String = "",
     imageUrl: String? = null,
     totalScore: Int = 0,
@@ -59,55 +62,85 @@ fun ProfileTopBar(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(18.dp))
-                    .shadow(
-                        elevation = 20.dp,
-                        shape = RoundedCornerShape(18.dp),
-                        clip = false
-                    )
-                    .background(LitecartesColor.Primary),
-                contentAlignment = Alignment.Center
-            ) {
-                if (imageUrl != null) {
-                    AsyncImage(
-                        model = imageUrl,
-                        contentDescription = "profile image",
-                        modifier = Modifier
-                            .height(55.dp)
-                            .aspectRatio(1f)
-                    )
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.template_profile),
-                        contentDescription = "profile image",
-                        modifier = Modifier
-                            .height(55.dp)
-                            .aspectRatio(1f)
-                    )
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .height(55.dp)
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(18.dp))
+                        .shimmerOnPrimary()
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(18.dp))
+                        .shadow(
+                            elevation = 20.dp,
+                            shape = RoundedCornerShape(18.dp),
+                            clip = false
+                        )
+                        .background(LitecartesColor.Primary),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (imageUrl != null) {
+                        AsyncImage(
+                            model = imageUrl,
+                            contentDescription = "profile image",
+                            modifier = Modifier
+                                .height(55.dp)
+                                .aspectRatio(1f)
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.template_profile),
+                            contentDescription = "profile image",
+                            modifier = Modifier
+                                .height(55.dp)
+                                .aspectRatio(1f)
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.padding(4.dp))
-            Column(
-                verticalArrangement = Arrangement.Center,
-
-                modifier = Modifier
-            ) {
-                Text(
-                    text = name,
-                    fontFamily = nunitosFontFamily,
-                    color = LitecartesColor.Surface,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-                Text(
-                    text = school,
-                    fontFamily = nunitosFontFamily,
-                    color = LitecartesColor.Surface,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 10.sp
-                )
+            if (isLoading) {
+                Column(
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(100.dp)
+                            .height(18.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .shimmerOnPrimary()
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Box(
+                        modifier = Modifier
+                            .width(70.dp)
+                            .height(10.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .shimmerOnPrimary()
+                    )
+                }
+            } else {
+                Column(
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = name,
+                        fontFamily = nunitosFontFamily,
+                        color = LitecartesColor.Surface,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                    Text(
+                        text = school,
+                        fontFamily = nunitosFontFamily,
+                        color = LitecartesColor.Surface,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 10.sp
+                    )
+                }
             }
             Spacer(modifier = Modifier.padding(4.dp))
             Column(
@@ -116,45 +149,75 @@ fun ProfileTopBar(
                         horizontal = 12.dp
                     )
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    BoxPoints(
-                        modifier = Modifier.weight(1f),
-                        imageId = R.drawable.diamon,
-                        points = "$totalScore",
-                    )
-                    Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-                    BoxPoints(
-                        modifier = Modifier.weight(1f),
-                        imageId = R.drawable.lightning,
-                        points = "$dailyStreak"
-                    )
-                }
-                Spacer(modifier = Modifier.padding(2.dp))
-                Box(
-                    modifier = Modifier
-                        .shadow(
-                            elevation = 8.dp,
-                            shape = RoundedCornerShape(20.dp),
-                            clip = false
+                if (isLoading) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(22.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .shimmerOnPrimary()
                         )
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(LitecartesColor.Surface)
-                        .fillMaxWidth()
-                        .padding(2.dp)
-                        ,
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = tag,
-                        fontFamily = nunitosFontFamily,
-                        color = LitecartesColor.Secondary,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
+                        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(22.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .shimmerOnPrimary()
+                        )
+                    }
+                    Spacer(modifier = Modifier.padding(2.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(20.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .shimmerOnPrimary()
                     )
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        BoxPoints(
+                            modifier = Modifier.weight(1f),
+                            imageId = R.drawable.diamon,
+                            points = "$totalScore",
+                        )
+                        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+                        BoxPoints(
+                            modifier = Modifier.weight(1f),
+                            imageId = R.drawable.lightning,
+                            points = "$dailyStreak"
+                        )
+                    }
+                    Spacer(modifier = Modifier.padding(2.dp))
+                    Box(
+                        modifier = Modifier
+                            .shadow(
+                                elevation = 8.dp,
+                                shape = RoundedCornerShape(20.dp),
+                                clip = false
+                            )
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(LitecartesColor.Surface)
+                            .fillMaxWidth()
+                            .padding(2.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = tag,
+                            fontFamily = nunitosFontFamily,
+                            color = LitecartesColor.Secondary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
             }
         }
