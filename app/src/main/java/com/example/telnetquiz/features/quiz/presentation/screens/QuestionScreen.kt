@@ -150,7 +150,6 @@ fun QuestionScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
                 .background(LitecartesColor.Surface),
-            verticalArrangement = Arrangement.SpaceBetween
         ) {
             when {
                 state.isLoading -> {
@@ -255,23 +254,24 @@ fun QuestionScreen(
                             .weight(1f)
                             .fillMaxSize()
                             .background(LitecartesColor.Surface)
-                            .padding(top = 16.dp)
                     ) {
-                        Text(
-                            text = currentQuestion.question,
-                            textAlign = TextAlign.Center,
-                            color = LitecartesColor.Secondary,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFamily = nunitosFontFamily,
-                            fontSize = 15.sp,
-                            modifier = Modifier.padding(horizontal = 18.dp)
-                        )
-                        Spacer(modifier = Modifier.padding(8.dp))
                         LazyColumn(
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(horizontal = 12.dp)
+                                .padding(top = 16.dp)
                         ) {
+                            item {
+                                Text(
+                                    text = currentQuestion.question,
+                                    textAlign = TextAlign.Center,
+                                    color = LitecartesColor.Secondary,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = nunitosFontFamily,
+                                    fontSize = 15.sp,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 8.dp)
+                                )
+                            }
                             itemsIndexed(currentQuestion.options) { index, option ->
                                 val optionFeedback = when {
                                     verification == null -> OptionFeedback.NONE
