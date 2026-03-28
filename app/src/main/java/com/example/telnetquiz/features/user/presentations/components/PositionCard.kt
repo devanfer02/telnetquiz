@@ -18,7 +18,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.telnetquiz.components.GenderAvatar
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.features.user.domain.model.User
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -56,10 +60,13 @@ fun PositionCard(
             modifier = Modifier
                 .padding(10.dp)
         )
-        GenderAvatar(
-            gender = user.gender,
-            size = 65.dp,
-            shape = CircleShape
+        Image(
+            painter = painterResource(id = AvatarConstants.getDefaultAvatarResId(user.gender, user.fullname)),
+            contentDescription = "avatar",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(65.dp)
+                .clip(CircleShape)
         )
         Spacer(
             modifier = Modifier

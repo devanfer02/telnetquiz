@@ -23,7 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.telnetquiz.components.GenderAvatar
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -68,10 +70,16 @@ fun ProfileImagePicker(
                         )
                 )
             } else {
-                GenderAvatar(
-                    gender = gender,
-                    size = 100.dp,
-                    shape = CircleShape
+                Image(
+                    painter = painterResource(
+                        id = AvatarConstants.getDefaultAvatarResId(gender, "")
+                    ),
+                    contentDescription = "avatar",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .shadow(elevation = 20.dp, shape = CircleShape)
+                        .clip(CircleShape)
                 )
             }
             Box(
