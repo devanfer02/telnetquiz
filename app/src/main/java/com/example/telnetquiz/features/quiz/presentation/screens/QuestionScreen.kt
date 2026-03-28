@@ -43,7 +43,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -77,6 +79,7 @@ fun QuestionScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val currentQuestion = viewModel.currentQuestion
+    val haptic = LocalHapticFeedback.current
 
     var showDialog by remember { mutableStateOf(false) }
 
@@ -288,7 +291,8 @@ fun QuestionScreen(
                                     feedback = optionFeedback,
                                     onClick = {
                                         viewModel.selectAnswer(currentQuestion.id, option.id)
-                                    }
+                                    },
+                                    haptic = haptic
                                 )
                             }
                         }
@@ -381,12 +385,10 @@ fun QuestionScreen(
                                             onClick = {
                                                 showDialog = false
                                                 if (viewModel.isLastQuestion) {
-                                                    if (isRetry) {
-                                                        viewModel.submitRetry()
-                                                    } else {
-                                                        viewModel.submitQuiz()
-                                                    }
+                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                    if (isRetry) viewModel.submitRetry() else viewModel.submitQuiz()
                                                 } else {
+                                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                                     viewModel.nextQuestion()
                                                 }
                                             }

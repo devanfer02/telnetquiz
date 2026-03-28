@@ -22,6 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,7 +43,8 @@ fun OptionButton(
     letter: Char = ' ',
     isActive: Boolean = false,
     feedback: OptionFeedback = OptionFeedback.NONE,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    haptic: HapticFeedback? = null
 ) {
     val scale by animateFloatAsState(
         targetValue = if (isActive || feedback != OptionFeedback.NONE) 1.02f else 1f,
@@ -101,7 +105,10 @@ fun OptionButton(
         }
         OutlinedButton(
             modifier = Modifier.weight(1f),
-            onClick = onClick,
+            onClick = {
+                haptic?.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                onClick()
+            },
             enabled = feedback == OptionFeedback.NONE,
             shape = RoundedCornerShape(12.dp),
             border = BorderStroke(
