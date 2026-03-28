@@ -2,7 +2,6 @@ package com.example.telnetquiz.features.quiz.presentation.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +29,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Button
+import com.example.telnetquiz.components.ScoreCountRow
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.audio.AudioManager
 import com.example.telnetquiz.data.audio.SfxType
@@ -96,61 +96,10 @@ fun ResultScreen(
                     modifier = Modifier
                         .size(300.dp)
                 )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(LitecartesColor.Surface)
-                            .padding(
-                                horizontal = 30.dp,
-                                vertical = 10.dp
-                            ),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.icon_benar),
-                            contentDescription = "correct icon",
-                            modifier = Modifier
-                                .size(35.dp)
-                        )
-                        Text(
-                            text = "$correctCount",
-                            color = LitecartesColor.Primary,
-                            fontSize = 30.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Spacer(
-                        modifier = Modifier
-                            .padding(24.dp)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(LitecartesColor.Surface)
-                            .padding(
-                                horizontal = 30.dp,
-                                vertical = 10.dp
-                            ),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.icon_salah),
-                            contentDescription = "wrong icon",
-                            modifier = Modifier
-                                .size(35.dp)
-                        )
-                        Text(
-                            text = "$wrongCount",
-                            color = LitecartesColor.Primary,
-                            fontSize = 30.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
+                ScoreCountRow(
+                    correctCount = correctCount,
+                    wrongCount = wrongCount
+                )
                 Spacer(
                     modifier = Modifier
                         .padding(10.dp)

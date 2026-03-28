@@ -1,8 +1,6 @@
 package com.example.telnetquiz.features.chapter.presentation.screens
 
-import com.example.telnetquiz.components.ErrorRetryBox
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,84 +8,35 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.telnetquiz.components.EmptyStateBox
+import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.chapter.presentation.components.ChapterCardFromApi
 import com.example.telnetquiz.features.chapter.presentation.components.ChapterCardSkeleton
+import com.example.telnetquiz.features.chapter.presentation.components.ComingSoonCard
 import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterViewModel
 import com.example.telnetquiz.features.quiz.presentation.components.ProfileTopBar
 import com.example.telnetquiz.features.quiz.presentation.singletons.ProfileCache
 import com.example.telnetquiz.features.user.presentations.viewmodel.ProfileViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
-import com.example.telnetquiz.ui.theme.nunitosFontFamily
-
-@Composable
-fun ComingSoonCard() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 10.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(LitecartesColor.DarkerSurface.copy(alpha = 0.5f))
-            .border(
-                width = 2.dp,
-                color = LitecartesColor.Secondary.copy(alpha = 0.3f),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .padding(vertical = 24.dp, horizontal = 20.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Info,
-                contentDescription = "Coming soon",
-                tint = LitecartesColor.Secondary.copy(alpha = 0.7f),
-                modifier = Modifier.size(40.dp)
-            )
-            Text(
-                text = "Konten baru sedang dalam proses,\nnantikan ya!",
-                textAlign = TextAlign.Center,
-                color = LitecartesColor.Secondary.copy(alpha = 0.7f),
-                fontFamily = nunitosFontFamily,
-                fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
-                lineHeight = 20.sp
-            )
-        }
-    }
-}
 
 @Composable
 fun ChapterScreen(
@@ -190,29 +139,10 @@ fun ChapterScreen(
                         }
                     }
                     else -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "Belum ada materi tersedia",
-                                    color = LitecartesColor.Secondary,
-                                    fontFamily = nunitosFontFamily,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 16.sp
-                                )
-                                Spacer(modifier = Modifier.padding(4.dp))
-                                Text(
-                                    text = "Silakan coba lagi nanti",
-                                    color = LitecartesColor.Secondary.copy(alpha = 0.6f),
-                                    fontFamily = nunitosFontFamily,
-                                    fontSize = 14.sp
-                                )
-                            }
-                        }
+                        EmptyStateBox(
+                            title = "Belum ada materi tersedia",
+                            subtitle = "Silakan coba lagi nanti"
+                        )
                     }
                 }
             }

@@ -13,15 +13,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -45,27 +40,25 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
-import com.example.telnetquiz.components.Button
+import com.example.telnetquiz.components.LoadingButton
 import com.example.telnetquiz.constants.Screen
+import com.example.telnetquiz.features.auth.presentation.components.ErrorBottomSheet
+import com.example.telnetquiz.features.auth.presentation.components.ForgotPasswordDialog
 import com.example.telnetquiz.features.auth.presentation.components.Input
 import com.example.telnetquiz.features.auth.presentation.components.PasswordInput
 import com.example.telnetquiz.features.auth.presentation.viewmodel.AuthViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import android.app.Activity
 import android.view.WindowManager
-import androidx.compose.foundation.layout.fillMaxHeight
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthLoginScreen(
     navController: NavController,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val errorSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
     val view = LocalView.current
     DisposableEffect(Unit) {
         val window = (view.context as Activity).window
@@ -214,33 +207,13 @@ fun AuthLoginScreen(
                         )
                     }
                 }
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Button(
-                        text = if (state.isLoading) "" else "masuk".uppercase(),
-                        borderColor = LitecartesColor.Secondary,
-                        color = LitecartesColor.Surface,
-                        backgroundColor = LitecartesColor.Secondary,
-                        shadowEnabled = !state.isLoading,
-                        shadowHeight = 55.dp,
-                        shadowColor = LitecartesColor.DarkBrown,
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            if (!state.isLoading && email.isNotBlank() && password.isNotBlank()) {
-                                viewModel.login(email, password)
-                            }
-                        },
-                        textModifier = Modifier.padding(8.dp)
-                    )
-                    if (state.isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = LitecartesColor.Surface
-                        )
-                    }
-                }
+                LoadingButton(
+                    text = "masuk".uppercase(),
+                    isLoading = state.isLoading,
+                    enabled = email.isNotBlank() && password.isNotBlank(),
+                    onClick = { viewModel.login(email, password) },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
             Box(
@@ -263,85 +236,15 @@ fun AuthLoginScreen(
         }
 
         if (showForgotPasswordDialog) {
-            AlertDialog(
-                onDismissRequest = { showForgotPasswordDialog = false },
-                title = {
-                    Text(
-                        text = "Lupa Kata Sandi?",
-                        fontFamily = nunitosFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        color = LitecartesColor.Secondary
-                    )
-                },
-                text = {
-                    Text(
-                        text = "Kontak tim admin apabila lupa password",
-                        fontFamily = nunitosFontFamily,
-                        color = LitecartesColor.DarkBrown
-                    )
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = { showForgotPasswordDialog = false },
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = LitecartesColor.Secondary
-                        )
-                    ) {
-                        Text(
-                            text = "OK",
-                            fontFamily = nunitosFontFamily,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                },
-                containerColor = LitecartesColor.Surface
-            )
+            ForgotPasswordDialog(onDismiss = { showForgotPasswordDialog = false })
         }
 
         if (showErrorSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showErrorSheet = false },
-                sheetState = errorSheetState,
-                containerColor = LitecartesColor.Surface,
-                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp)
-                        .padding(bottom = 32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Login Gagal",
-                        fontFamily = nunitosFontFamily,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 18.sp,
-                        color = LitecartesColor.Secondary
-                    )
-                    Spacer(modifier = Modifier.padding(4.dp))
-                    Text(
-                        text = errorMessage,
-                        fontFamily = nunitosFontFamily,
-                        fontSize = 14.sp,
-                        color = LitecartesColor.DarkBrown,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.padding(6.dp))
-                    Button(
-                        text = "OK",
-                        borderColor = LitecartesColor.Secondary,
-                        color = LitecartesColor.Surface,
-                        backgroundColor = LitecartesColor.Secondary,
-                        shadowEnabled = true,
-                        shadowHeight = 45.dp,
-                        shadowColor = LitecartesColor.DarkBrown,
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { showErrorSheet = false },
-                        textModifier = Modifier.padding(8.dp)
-                    )
-                }
-            }
+            ErrorBottomSheet(
+                title = "Login Gagal",
+                message = errorMessage,
+                onDismiss = { showErrorSheet = false }
+            )
         }
     }
 }

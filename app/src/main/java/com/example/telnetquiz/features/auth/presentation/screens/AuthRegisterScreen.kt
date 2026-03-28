@@ -4,14 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,7 +19,6 @@ import androidx.compose.material.icons.filled.Female
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Male
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -51,11 +48,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
-import com.example.telnetquiz.components.Button
+import com.example.telnetquiz.components.LoadingButton
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.auth.presentation.components.AuthTopBar
 import com.example.telnetquiz.features.auth.presentation.components.Input
 import com.example.telnetquiz.features.auth.presentation.components.PasswordInput
+import com.example.telnetquiz.features.auth.presentation.components.GenderToggleButton
 import com.example.telnetquiz.features.auth.presentation.components.SchoolPickerDialog
 import com.example.telnetquiz.features.auth.presentation.viewmodel.AuthViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
@@ -278,88 +276,23 @@ fun AuthRegisterScreen(
                         )
                     }
                 }
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Button(
-                        text = if (state.isLoading) "" else "daftar".uppercase(),
-                        borderColor = LitecartesColor.Secondary,
-                        color = LitecartesColor.Surface,
-                        backgroundColor = LitecartesColor.Secondary,
-                        shadowEnabled = !state.isLoading,
-                        shadowHeight = 55.dp,
-                        shadowColor = LitecartesColor.DarkBrown,
-                        modifier = Modifier.fillMaxWidth(),
-                        textModifier = Modifier.padding(8.dp),
-                        onClick = {
-                            if (!state.isLoading && fullname.isNotBlank() && email.isNotBlank()
-                                && password.isNotBlank() && selectedSchoolId > 0
-                                && gender != null && grade.isNotBlank()
-                            ) {
-                                viewModel.register(
-                                    fullname, email, password,
-                                    selectedSchoolId, gender!!, grade
-                                )
-                            }
-                        }
-                    )
-                    if (state.isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = LitecartesColor.Surface
+                LoadingButton(
+                    text = "daftar".uppercase(),
+                    isLoading = state.isLoading,
+                    enabled = fullname.isNotBlank() && email.isNotBlank()
+                        && password.isNotBlank() && selectedSchoolId > 0
+                        && gender != null && grade.isNotBlank(),
+                    onClick = {
+                        viewModel.register(
+                            fullname, email, password,
+                            selectedSchoolId, gender!!, grade
                         )
-                    }
-                }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
             Spacer(modifier = Modifier.padding(16.dp))
-        }
-    }
-}
-
-@Composable
-private fun GenderToggleButton(
-    text: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .border(
-                width = if (selected) 2.dp else 1.dp,
-                color = if (selected) LitecartesColor.Primary else LitecartesColor.Secondary.copy(alpha = 0.3f),
-                shape = RoundedCornerShape(12.dp)
-            )
-            .background(
-                if (selected) LitecartesColor.Primary.copy(alpha = 0.1f)
-                else LitecartesColor.Surface
-            )
-            .clickable(onClick = onClick)
-            .padding(vertical = 12.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = text,
-                tint = if (selected) LitecartesColor.Primary else LitecartesColor.Secondary,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.padding(horizontal = 2.dp))
-            Text(
-                text = text,
-                fontFamily = nunitosFontFamily,
-                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
-                color = if (selected) LitecartesColor.Primary else LitecartesColor.Secondary,
-                fontSize = 14.sp
-            )
         }
     }
 }

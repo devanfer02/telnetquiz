@@ -1,25 +1,14 @@
 package com.example.telnetquiz.features.auth.presentation.screens
 
-import android.webkit.WebView
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.VolumeUp
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -28,31 +17,24 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
 import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.MascotLoadingScreen
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.audio.SfxType
+import com.example.telnetquiz.features.auth.presentation.components.MaterialContentCard
 import com.example.telnetquiz.features.quiz.presentation.singletons.LearnFirstHolder
 import com.example.telnetquiz.features.quiz.presentation.singletons.RemedialHolder
 import com.example.telnetquiz.features.quiz.presentation.singletons.WrongQuizManager
 import com.example.telnetquiz.features.quiz.presentation.viewmodel.StudyMaterialViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
-import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
 @Composable
 fun FeedbackScren(
@@ -100,104 +82,23 @@ fun FeedbackScren(
                 }
                 state.material != null -> {
                     val material = state.material!!
-                    Column(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .fillMaxWidth()
-                            .background(LitecartesColor.Primary)
-                            .padding(
-                                vertical = 10.dp,
-                                horizontal = 20.dp
-                            ),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            IconButton(
-                                onClick = {
-                                    val plainContent = material.content.replace(Regex("<[^>]*>"), "")
-                                    viewModel.speak("${material.title}. $plainContent")
-                                },
-                                modifier = Modifier.size(32.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.VolumeUp,
-                                    contentDescription = "Baca materi",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
+                    MaterialContentCard(
+                        title = material.title,
+                        content = material.content,
+                        imageLink = material.imageLink,
+                        onSpeakClick = {
+                            val plainContent = material.content.replace(Regex("<[^>]*>"), "")
+                            viewModel.speak("${material.title}. $plainContent")
                         }
-                        Text(
-                            text = material.title,
-                            fontFamily = nunitosFontFamily,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 24.sp,
-                            textAlign = TextAlign.Center
-                        )
-                        if (!material.imageLink.isNullOrEmpty()) {
-                            AsyncImage(
-                                model = material.imageLink,
-                                contentDescription = material.title,
-                                modifier = Modifier.size(200.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                        }
-                        AndroidView(
-                            factory = { ctx ->
-                                WebView(ctx).apply {
-                                    settings.javaScriptEnabled = false
-                                    settings.setSupportZoom(false)
-                                    setBackgroundColor(android.graphics.Color.TRANSPARENT)
-                                }
-                            },
-                            update = { webView ->
-                                val html = """
-                                    <html>
-                                    <head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-                                    <body style="color:white;font-family:sans-serif;margin:0;padding:0;">
-                                    ${sanitizeHtml(material.content)}
-                                    </body>
-                                    </html>
-                                """.trimIndent()
-                                webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null)
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                    )
                 }
                 else -> {
-                    // Fallback when no materialId is provided
-                    Column(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .fillMaxWidth()
-                            .background(LitecartesColor.Primary)
-                            .padding(
-                                vertical = 10.dp,
-                                horizontal = 20.dp
-                            ),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Pelajari Materi",
-                            fontFamily = nunitosFontFamily,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 24.sp,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.padding(8.dp))
-                        Text(
-                            text = "Materi pembelajaran akan ditampilkan di sini. Silakan coba lagi setelah mempelajari materi.",
-                            color = Color.White,
-                            fontFamily = nunitosFontFamily,
-                            textAlign = TextAlign.Justify
-                        )
-                    }
+                    MaterialContentCard(
+                        title = "Pelajari Materi",
+                        content = "Materi pembelajaran akan ditampilkan di sini. Silakan coba lagi setelah mempelajari materi.",
+                        imageLink = null,
+                        onSpeakClick = {}
+                    )
                 }
             }
 
@@ -267,19 +168,4 @@ fun PreviewFeedbackScren() {
             level = 1
         )
     }
-}
-
-private fun sanitizeHtml(input: String): String {
-    return input
-        .replace(Regex("<script[^>]*>[\\s\\S]*?</script>", RegexOption.IGNORE_CASE), "")
-        .replace(Regex("<script[^>]*/>", RegexOption.IGNORE_CASE), "")
-        .replace(Regex("<iframe[^>]*>[\\s\\S]*?</iframe>", RegexOption.IGNORE_CASE), "")
-        .replace(Regex("<iframe[^>]*/>", RegexOption.IGNORE_CASE), "")
-        .replace(Regex("<form[^>]*>[\\s\\S]*?</form>", RegexOption.IGNORE_CASE), "")
-        .replace(Regex("<object[^>]*>[\\s\\S]*?</object>", RegexOption.IGNORE_CASE), "")
-        .replace(Regex("<embed[^>]*>[\\s\\S]*?</embed>", RegexOption.IGNORE_CASE), "")
-        .replace(Regex("<embed[^>]*/>", RegexOption.IGNORE_CASE), "")
-        .replace(Regex("<link[^>]*>", RegexOption.IGNORE_CASE), "")
-        .replace(Regex("<style[^>]*>[\\s\\S]*?</style>", RegexOption.IGNORE_CASE), "")
-        .replace(Regex("on\\w+\\s*=", RegexOption.IGNORE_CASE), "data-removed=")
 }
