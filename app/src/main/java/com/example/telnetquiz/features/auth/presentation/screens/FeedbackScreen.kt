@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.telnetquiz.components.Button
+import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.MascotLoadingScreen
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.audio.SfxType
@@ -93,15 +94,9 @@ fun FeedbackScren(
                     MascotLoadingScreen(modifier = Modifier.fillMaxSize())
                 }
                 state.error != null && materialId > 0 -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = state.error ?: "Gagal memuat materi",
-                            color = LitecartesColor.Secondary
-                        )
-                    }
+                    ErrorRetryBox(
+                        message = state.error ?: "Gagal memuat materi"
+                    )
                 }
                 state.material != null -> {
                     val material = state.material!!

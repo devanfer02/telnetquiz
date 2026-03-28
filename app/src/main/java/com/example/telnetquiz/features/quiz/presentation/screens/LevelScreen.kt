@@ -63,6 +63,7 @@ import com.example.telnetquiz.data.repository.Result
 import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterViewModel
 import com.example.telnetquiz.features.quiz.domain.model.LevelData
+import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.features.quiz.presentation.components.LevelButton
 import com.example.telnetquiz.features.quiz.presentation.components.scoreColor
 import com.example.telnetquiz.features.quiz.presentation.components.ProfileTopBar
@@ -162,15 +163,10 @@ fun LevelScreen(
                 }
                 when {
                     detailState.error != null -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = detailState.error ?: "An error occurred",
-                                color = LitecartesColor.Secondary
-                            )
-                        }
+                        ErrorRetryBox(
+                            message = detailState.error ?: "Terjadi kesalahan",
+                            onRetry = { viewModel.loadChapterById(chapterId) }
+                        )
                     }
                     detailState.chapter != null -> {
                         val chapter = detailState.chapter!!
