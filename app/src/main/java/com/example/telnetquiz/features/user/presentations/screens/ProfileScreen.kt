@@ -101,7 +101,7 @@ fun ProfileScreen(
                     )
                     .background(LitecartesColor.Primary)
                     .padding(
-                        top = 50.dp,
+                        top = 40.dp,
                         bottom = 20.dp
                     )
                     .fillMaxWidth(),
@@ -263,32 +263,7 @@ fun ProfileScreen(
                 }
 
             }
-            // Stats row
-            state.profile?.stats?.let { stats ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    StatCard(
-                        label = "Total Skor",
-                        value = "${stats.totalScore}",
-                        modifier = Modifier.weight(1f)
-                    )
-                    StatCard(
-                        label = "Level Selesai",
-                        value = "${stats.levelsCompleted}",
-                        modifier = Modifier.weight(1f)
-                    )
-                    StatCard(
-                        label = "Bab Selesai",
-                        value = "${stats.chaptersCompleted}",
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .padding(
                         top = 8.dp,
@@ -297,52 +272,80 @@ fun ProfileScreen(
                     )
                     .weight(1f)
             ) {
-                Text(
-                    text = "Pencapaian",
-                    fontFamily = nunitosFontFamily,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = LitecartesColor.Secondary,
-                    modifier = Modifier
-                        .padding(
-                            bottom = 12.dp
-                        )
-                )
+                state.profile?.stats?.let { stats ->
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp, vertical = 12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            StatCard(
+                                label = "Total Skor",
+                                value = "${stats.totalScore}",
+                                modifier = Modifier.weight(1f)
+                            )
+                            StatCard(
+                                label = "Level Selesai",
+                                value = "${stats.levelsCompleted}",
+                                modifier = Modifier.weight(1f)
+                            )
+                            StatCard(
+                                label = "Bab Selesai",
+                                value = "${stats.chaptersCompleted}",
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                }
+                item {
+                    Text(
+                        text = "Pencapaian",
+                        fontFamily = nunitosFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = LitecartesColor.Secondary,
+                        modifier = Modifier
+                            .padding(
+                                bottom = 12.dp
+                            )
+                    )
+                }
 
                 when {
                     achievementState.isLoading -> {
-                        Column {
-                            repeat(4) {
-                                AchievementCardSkeleton()
-                            }
+                        items(4) {
+                            AchievementCardSkeleton()
                         }
                     }
                     achievementState.error != null -> {
-                        Text(
-                            text = achievementState.error ?: "Gagal memuat pencapaian",
-                            color = LitecartesColor.Secondary,
-                            fontSize = 14.sp
-                        )
+                        item {
+                            Text(
+                                text = achievementState.error ?: "Gagal memuat pencapaian",
+                                color = LitecartesColor.Secondary,
+                                fontSize = 14.sp
+                            )
+                        }
                     }
                     achievementState.achievements.isEmpty() -> {
-                        Text(
-                            text = "Belum ada pencapaian. Selesaikan quiz untuk mendapatkan pencapaian!",
-                            color = LitecartesColor.Secondary.copy(alpha = 0.7f),
-                            fontFamily = nunitosFontFamily,
-                            fontSize = 14.sp,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        item {
+                            Text(
+                                text = "Belum ada pencapaian. Selesaikan quiz untuk mendapatkan pencapaian!",
+                                color = LitecartesColor.Secondary.copy(alpha = 0.7f),
+                                fontFamily = nunitosFontFamily,
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                     else -> {
-                        LazyColumn {
-                            items(achievementState.achievements) { achievement ->
-                                AchievementCard(
-                                    title = achievement.title,
-                                    description = achievement.description,
-                                    unlocked = achievement.unlocked
-                                )
-                            }
+                        items(achievementState.achievements) { achievement ->
+                            AchievementCard(
+                                title = achievement.title,
+                                description = achievement.description,
+                                unlocked = achievement.unlocked
+                            )
                         }
                     }
                 }
