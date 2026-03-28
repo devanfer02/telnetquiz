@@ -108,7 +108,8 @@ fun LevelScreen(
         topBar = {
             ProfileTopBar(
                 backgroundColor = LitecartesColor.DarkerSurface,
-                name = profileState.profile?.fullname ?: "...",
+                isLoading = profileState.isLoading,
+                name = profileState.profile?.fullname ?: "",
                 school = profileState.profile?.school?.name ?: "",
                 imageUrl = profileState.profile?.image,
                 totalScore = profileState.profile?.stats?.totalScore ?: 0,
