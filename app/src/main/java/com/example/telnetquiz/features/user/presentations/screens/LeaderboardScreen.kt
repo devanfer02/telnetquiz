@@ -248,7 +248,7 @@ fun LeaderboardScreen(
                             ) {
                                 item { Spacer(modifier = Modifier.height(12.dp)) }
                                 activityState.days.forEach { day ->
-                                    if (!day.entries.isEmpty()) {
+                                    if (day.entries.isNotEmpty()) {
                                         item {
                                             Text(
                                                 text = formatDateHeader(day.date),
@@ -270,7 +270,6 @@ fun LeaderboardScreen(
                                         }
                                     }
                                 }
-                                item { Spacer(modifier = Modifier.height(4.dp)) }
                             }
                         }
                     }
@@ -307,13 +306,13 @@ fun LeaderboardScreen(
                                 }
 
                                 itemsIndexed(remainingEntries) { _, entry ->
-                                    Spacer(modifier = Modifier.padding(6.dp))
+                                    Spacer(modifier = Modifier.padding(4.dp))
                                     PositionCard(
                                         user = entry.toUser(),
                                         rank = entry.rank,
                                         avatarResIdOverride = if (entry.rank == state.currentUser?.rank) localAvatarResId else null
                                     )
-                                    Spacer(modifier = Modifier.padding(2.dp))
+                                    Spacer(modifier = Modifier.padding(4.dp))
                                 }
                             }
                         }
