@@ -12,7 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
@@ -28,7 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -82,12 +88,12 @@ fun LevelScreen(
     var showButtons by remember { mutableStateOf(false) }
     val pathAnimationProgress by animateFloatAsState(
         targetValue = pathAnimationTarget,
-        animationSpec = tween(durationMillis = 2000, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = 1400, easing = FastOutSlowInEasing),
         label = "path_animation"
     )
     val buttonAlpha by animateFloatAsState(
         targetValue = if (showButtons) 1f else 0f,
-        animationSpec = tween(durationMillis = 800),
+        animationSpec = tween(durationMillis = 600, delayMillis = 800),
         label = "button_alpha"
     )
 
@@ -138,7 +144,7 @@ fun LevelScreen(
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
-                        val loadingHeight = maxWidth * 1.94f
+                        val loadingHeight = maxWidth * 1.94f + 72.dp
                         Image(
                             painter = painterResource(id = R.drawable.level_background_no_path),
                             contentDescription = "bg",
@@ -171,8 +177,14 @@ fun LevelScreen(
                                 .verticalScroll(scrollState)
                         ) {
                             val screenWidth = maxWidth
-                            val contentHeight = screenWidth * 1.94f
-                            val buttonCenterOffset = with(LocalDensity.current) { 25.dp.toPx() }
+                            val contentHeight = screenWidth * 1.94f + 72.dp
+                            val density = LocalDensity.current
+                            val buttonCenterOffset = remember(density) {
+                                with(density) { 25.dp.toPx() }
+                            }
+                            val buttonCenterDp = remember(density) {
+                                with(density) { buttonCenterOffset.toDp() }
+                            }
 
                             Box(
                                 modifier = Modifier
@@ -188,7 +200,7 @@ fun LevelScreen(
 
                                 LevelPath(
                                     levels = dynamicLevels,
-                                    pathAnimationProgress = pathAnimationProgress,
+                                    pathAnimationProgress = { pathAnimationProgress },
                                     buttonCenterOffsetPx = buttonCenterOffset,
                                     modifier = Modifier.fillMaxSize()
                                 )
@@ -204,10 +216,10 @@ fun LevelScreen(
                                     Box(
                                         modifier = Modifier
                                             .offset(
-                                                x = screenWidth * levelPosition.xFraction - with(LocalDensity.current) { buttonCenterOffset.toDp() },
+                                                x = screenWidth * levelPosition.xFraction - buttonCenterDp,
                                                 y = contentHeight * levelPosition.yFraction
                                             )
-                                            .alpha(buttonAlpha)
+                                            .graphicsLayer { alpha = buttonAlpha }
                                     ) {
                                         LevelButton(
                                             level = quiz.level,
@@ -221,60 +233,95 @@ fun LevelScreen(
                                             isLocked = !isUnlocked,
                                             score = quizScores[quiz.id.toString()]
                                         )
-                                        LevelOptionMenu(
-                                            expanded = showLevelDialog && selectedQuizId == quiz.id,
-                                            onDismiss = { showLevelDialog = false },
-                                            score = quizScores[quiz.id.toString()],
-                                            onLearnFirst = {
-                                                showLevelDialog = false
-                                                isFetchingMaterials = true
-                                                coroutineScope.launch {
-                                                    when (val result = viewModel.fetchQuizMaterials(selectedQuizId)) {
-                                                        is Result.Success -> {
-                                                            val materials = result.data.materials
-                                                            if (materials.isNotEmpty()) {
-                                                                LearnFirstHolder.setup(
-                                                                    quizId = selectedQuizId,
-                                                                    chapterId = chapterId,
-                                                                    level = selectedQuizLevel,
-                                                                    materials = materials
-                                                                )
-                                                                val firstMaterial = LearnFirstHolder.next()!!
-                                                                isFetchingMaterials = false
-                                                                navController.navigate(
-                                                                    "${Screen.FeedbackScreen.route}/${chapterId}/levels/${selectedQuizLevel}/questions/0?materialId=${firstMaterial.id}"
-                                                                )
-                                                            } else {
+                                    }
+                                }
+
+                                if (showLevelDialog) {
+                                    val selectedQuiz = quizzes.find { it.id == selectedQuizId }
+                                    val selectedIndex = quizzes.indexOfFirst { it.id == selectedQuizId }
+                                    if (selectedQuiz != null && selectedIndex in dynamicLevels.indices) {
+                                        val levelPosition = dynamicLevels[selectedIndex]
+                                        Box(
+                                            modifier = Modifier.offset(
+                                                x = screenWidth * levelPosition.xFraction - buttonCenterDp,
+                                                y = contentHeight * levelPosition.yFraction
+                                            )
+                                        ) {
+                                            LevelOptionMenu(
+                                                expanded = true,
+                                                onDismiss = { showLevelDialog = false },
+                                                score = selectedQuizScore,
+                                                onLearnFirst = {
+                                                    showLevelDialog = false
+                                                    isFetchingMaterials = true
+                                                    coroutineScope.launch {
+                                                        when (val result = viewModel.fetchQuizMaterials(selectedQuizId)) {
+                                                            is Result.Success -> {
+                                                                val materials = result.data.materials
+                                                                if (materials.isNotEmpty()) {
+                                                                    LearnFirstHolder.setup(
+                                                                        quizId = selectedQuizId,
+                                                                        chapterId = chapterId,
+                                                                        level = selectedQuizLevel,
+                                                                        materials = materials
+                                                                    )
+                                                                    val firstMaterial = LearnFirstHolder.next()!!
+                                                                    isFetchingMaterials = false
+                                                                    navController.navigate(
+                                                                        "${Screen.FeedbackScreen.route}/${chapterId}/levels/${selectedQuizLevel}/questions/0?materialId=${firstMaterial.id}"
+                                                                    )
+                                                                } else {
+                                                                    isFetchingMaterials = false
+                                                                    navController.navigate(
+                                                                        "${Screen.QuestionScreen.route}/${selectedQuizId}"
+                                                                    )
+                                                                }
+                                                            }
+                                                            is Result.Error -> {
                                                                 isFetchingMaterials = false
                                                                 navController.navigate(
                                                                     "${Screen.QuestionScreen.route}/${selectedQuizId}"
                                                                 )
                                                             }
+                                                            is Result.Loading -> {}
                                                         }
-                                                        is Result.Error -> {
-                                                            isFetchingMaterials = false
-                                                            navController.navigate(
-                                                                "${Screen.QuestionScreen.route}/${selectedQuizId}"
-                                                            )
-                                                        }
-                                                        is Result.Loading -> {}
                                                     }
+                                                },
+                                                onPlayDirectly = {
+                                                    viewModel.audioManager.playSfx(SfxType.START_LEVEL)
+                                                    showLevelDialog = false
+                                                    navController.navigate(
+                                                        "${Screen.QuestionScreen.route}/${selectedQuizId}"
+                                                    )
                                                 }
-                                            },
-                                            onPlayDirectly = {
-                                                viewModel.audioManager.playSfx(SfxType.START_LEVEL)
-                                                showLevelDialog = false
-                                                navController.navigate(
-                                                    "${Screen.QuestionScreen.route}/${selectedQuizId}"
-                                                )
-                                            }
-                                        )
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+            }
+            IconButton(
+                onClick = {
+                    navController.navigate(Screen.HomeScreen.route) {
+                        popUpTo(Screen.HomeScreen.route) { inclusive = true }
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 16.dp, bottom = 80.dp)
+                    .size(48.dp),
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = LitecartesColor.Primary,
+                    contentColor = Color.White
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back to chapters"
+                )
             }
             Box(
                 modifier = Modifier.align(Alignment.BottomCenter)
