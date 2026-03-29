@@ -54,7 +54,7 @@ fun ActivityEntryCard(index: Int, entry: ActivityEntryDto) {
                 fontFamily = nunitosFontFamily,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 14.sp,
-                color = LitecartesColor.PathColor
+                color = LitecartesColor.DarkerSurface
             )
         }
         Column(modifier = Modifier.weight(1f)) {
