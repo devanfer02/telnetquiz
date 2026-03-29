@@ -1,7 +1,11 @@
 package com.example.telnetquiz.features.pretest.presentation.screens
 
 import com.example.telnetquiz.components.ErrorRetryBox
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,9 +13,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +33,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -111,6 +120,7 @@ fun PretestScreen(
                 }
                 currentQuestion != null -> {
                     val selectedOptionId = state.answers[currentQuestion.id]
+                    var isQuestionExpanded by remember { mutableStateOf(true) }
 
                     Spacer(modifier = Modifier.padding(5.dp))
                     Column(
@@ -118,7 +128,8 @@ fun PretestScreen(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(20.dp))
                             .background(LitecartesColor.Primary)
-                            .padding(20.dp),
+                            .padding(horizontal = 20.dp)
+                            .padding(top = 20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Row(
@@ -139,19 +150,45 @@ fun PretestScreen(
                                 )
                             }
                         }
-                        if (!currentQuestion.imageLink.isNullOrEmpty()) {
-                            AsyncImage(
-                                model = currentQuestion.imageLink,
-                                contentDescription = "",
-                                modifier = Modifier.size(250.dp),
-                                contentScale = ContentScale.Fit
+                        AnimatedVisibility(
+                            visible = isQuestionExpanded,
+                            enter = expandVertically(expandFrom = Alignment.Top),
+                            exit = shrinkVertically(shrinkTowards = Alignment.Top)
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                if (!currentQuestion.imageLink.isNullOrEmpty()) {
+                                    AsyncImage(
+                                        model = currentQuestion.imageLink,
+                                        contentDescription = "",
+                                        modifier = Modifier.size(250.dp),
+                                        contentScale = ContentScale.Fit
+                                    )
+                                }
+                                Text(
+                                    text = currentQuestion.question,
+                                    textAlign = TextAlign.Center,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { isQuestionExpanded = !isQuestionExpanded }
+                                .padding(vertical = 6.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .width(40.dp)
+                                    .height(4.dp)
+                                    .clip(RoundedCornerShape(2.dp))
+                                    .background(Color.White.copy(alpha = 0.5f))
                             )
                         }
-                        Text(
-                            text = currentQuestion.question,
-                            textAlign = TextAlign.Center,
-                            color = Color.White
-                        )
                     }
                     Spacer(modifier = Modifier.padding(14.dp))
                     LazyColumn(
