@@ -31,27 +31,21 @@ fun Top3Profile(
         shape = CircleShape,
         modifier = Modifier
             .padding(4.dp)
-            .size(100.dp)
+            .size(75.dp)
             .shadow(elevation = 12.dp, shape = CircleShape, clip = false)
     )
     Text(
         text = user.fullname,
         fontFamily = nunitosFontFamily,
+        fontSize = 14.sp,
         color = Color.White,
         fontWeight = FontWeight.SemiBold
     )
-    Text(
-        text = user.handle,
-        fontFamily = nunitosFontFamily,
-        color = Color.White,
-        fontWeight = FontWeight.SemiBold
-    )
-    Spacer(modifier = Modifier.padding(1.dp))
     Text(
         text = "${user.exp} XP",
         fontFamily = nunitosFontFamily,
         color = Color.White,
-        fontSize = 16.sp,
+        fontSize = 12.sp,
         fontWeight = FontWeight.ExtraBold
     )
 }

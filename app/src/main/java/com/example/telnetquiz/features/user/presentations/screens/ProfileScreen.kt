@@ -1,14 +1,22 @@
 package com.example.telnetquiz.features.user.presentations.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +26,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,6 +65,7 @@ fun ProfileScreen(
     val audioSettings by viewModel.audioManager.audioSettingsFlow.collectAsState(initial = AudioSettings())
     val selectedAvatarIndex by viewModel.selectedAvatarIndex.collectAsState()
     var showSoundSettings by remember { mutableStateOf(false) }
+    var isHeaderExpanded by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         viewModel.loadProfile()
@@ -79,14 +91,35 @@ fun ProfileScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            ProfileHeaderSection(
-                profile = state.profile,
-                isLoading = state.isLoading,
-                error = state.error,
-                localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
-                onSettingsClick = { showSoundSettings = true },
-                onEditProfile = { navController.navigate(Screen.EditProfileScreen.route) }
-            )
+            AnimatedVisibility(
+                visible = isHeaderExpanded,
+                enter = expandVertically(expandFrom = Alignment.Top),
+                exit = shrinkVertically(shrinkTowards = Alignment.Top)
+            ) {
+                ProfileHeaderSection(
+                    profile = state.profile,
+                    isLoading = state.isLoading,
+                    error = state.error,
+                    localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
+                    onSettingsClick = { showSoundSettings = true },
+                    onEditProfile = { navController.navigate(Screen.EditProfileScreen.route) }
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { isHeaderExpanded = !isHeaderExpanded }
+                    .padding(vertical = 6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(40.dp)
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(Color.Gray.copy(alpha = 0.3f))
+                )
+            }
             LazyColumn(
                 modifier = Modifier
                     .padding(
@@ -101,7 +134,7 @@ fun ProfileScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 20.dp, vertical = 12.dp),
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             StatCard(
@@ -110,12 +143,12 @@ fun ProfileScreen(
                                 modifier = Modifier.weight(1f)
                             )
                             StatCard(
-                                label = "Level Selesai",
+                                label = "Level Usai",
                                 value = "${stats.levelsCompleted}",
                                 modifier = Modifier.weight(1f)
                             )
                             StatCard(
-                                label = "Bab Selesai",
+                                label = "Bab Usai",
                                 value = "${stats.chaptersCompleted}",
                                 modifier = Modifier.weight(1f)
                             )
