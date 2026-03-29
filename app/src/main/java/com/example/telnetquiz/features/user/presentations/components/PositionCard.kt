@@ -41,13 +41,13 @@ fun PositionCard(
         Text(
             text = "$rank",
             color = LitecartesColor.Secondary,
-            fontSize = 30.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = nunitosFontFamily
         )
         Spacer(
             modifier = Modifier
-                .padding(10.dp)
+                .padding(5.dp)
         )
         AvatarImage(
             localAvatarResId = avatarResIdOverride,
@@ -69,22 +69,15 @@ fun PositionCard(
                 fontWeight = FontWeight.ExtraBold
             )
             Text(
-                text = "${user.handle}",
-                fontFamily = nunitosFontFamily,
-                fontSize = 12.sp,
-                color = LitecartesColor.Secondary,
+                text = "${user.exp} XP",
+                fontSize = 18.sp,
+                color = LitecartesColor.Primary,
                 fontWeight = FontWeight.Bold
             )
         }
         Spacer(
             modifier = Modifier
                 .padding(20.dp)
-        )
-        Text(
-            text = "${user.exp} XP",
-            fontSize = 22.sp,
-            color = LitecartesColor.Primary,
-            fontWeight = FontWeight.Bold
         )
         }
     }
