@@ -1,5 +1,10 @@
 package com.example.telnetquiz.components
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -108,6 +114,22 @@ private fun SplashLoadingScreen() {
     }
 }
 
+private fun tabIndexOf(route: String?): Int? = when {
+    route == null -> null
+    route == Screen.HomeScreen.route -> 0
+    route.startsWith(Screen.LevelScreen.route) -> 0
+    route == Screen.LeaderboardScreen.route -> 1
+    route == Screen.ProfileScreen.route -> 2
+    else -> null
+}
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.tabSlideDirection(): SlideDirection? {
+    val from = tabIndexOf(initialState.destination.route)
+    val to = tabIndexOf(targetState.destination.route)
+    if (from == null || to == null || from == to) return null
+    return if (to > from) SlideDirection.Left else SlideDirection.Right
+}
+
 @Composable
 private fun MainNavHost(
     navController: NavHostController,
@@ -137,7 +159,27 @@ private fun MainNavHost(
     ) {
         NavHost(
             navController = navController,
-            startDestination = startDestination
+            startDestination = startDestination,
+            enterTransition = {
+                tabSlideDirection()?.let {
+                    slideIntoContainer(towards = it, animationSpec = tween(300))
+                } ?: fadeIn(animationSpec = tween(200))
+            },
+            exitTransition = {
+                tabSlideDirection()?.let {
+                    slideOutOfContainer(towards = it, animationSpec = tween(300))
+                } ?: fadeOut(animationSpec = tween(200))
+            },
+            popEnterTransition = {
+                tabSlideDirection()?.let {
+                    slideIntoContainer(towards = it, animationSpec = tween(300))
+                } ?: fadeIn(animationSpec = tween(200))
+            },
+            popExitTransition = {
+                tabSlideDirection()?.let {
+                    slideOutOfContainer(towards = it, animationSpec = tween(300))
+                } ?: fadeOut(animationSpec = tween(200))
+            }
         ) {
         composable(
             route = Screen.AuthStartScreen.route
