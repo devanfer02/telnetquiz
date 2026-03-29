@@ -57,9 +57,9 @@ fun ProfileTopBar(
             if (isLoading) {
                 SkeletonBox(
                     height = 55.dp,
+                    width = 55.dp,
                     cornerRadius = 18.dp,
-                    onPrimary = true,
-                    modifier = Modifier.aspectRatio(1f)
+                    onPrimary = true
                 )
             } else {
                 AvatarImage(
