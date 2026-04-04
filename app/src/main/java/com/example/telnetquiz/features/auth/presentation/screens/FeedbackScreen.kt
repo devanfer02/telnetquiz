@@ -108,7 +108,7 @@ fun FeedbackScren(
                     WrongQuizManager.queue.isNotEmpty() -> "Lanjut Belajar"
                     LearnFirstHolder.hasNext() -> "Lanjut Belajar"
                     LearnFirstHolder.isActive() -> "Mulai Kuis"
-                    else -> "Coba Lagi"
+                    else -> "Ayo Coba Lagi!"
                 },
                 borderColor = LitecartesColor.Secondary,
                 color = LitecartesColor.Surface,

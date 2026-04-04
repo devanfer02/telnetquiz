@@ -50,7 +50,7 @@ fun ResultScreen(
     val scorePercentage = quizResult?.scorePercentage ?: 0.0
     val passed = quizResult?.passed ?: true
 
-    val titleText = if (passed) "Sempurna" else "Coba Lagi"
+    val titleText = if (passed) "Sempurna" else "Hampir Berhasil!"
     val diamondReward = if (passed) (scorePercentage * 0.15).toInt().coerceAtLeast(5) else 0
 
     LaunchedEffect(Unit) {
