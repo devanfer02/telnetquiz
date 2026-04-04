@@ -15,6 +15,7 @@ import com.example.telnetquiz.data.remote.dto.PretestStatusResponse
 import com.example.telnetquiz.data.remote.dto.QuizDto
 import com.example.telnetquiz.data.remote.dto.BulkMaterialsRequest
 import com.example.telnetquiz.data.remote.dto.BulkMaterialsResponse
+import com.example.telnetquiz.data.remote.dto.TtsAudioResponse
 import com.example.telnetquiz.data.remote.dto.QuizMaterialsRequest
 import com.example.telnetquiz.data.remote.dto.QuizMaterialsResponse
 import com.example.telnetquiz.data.remote.dto.QuizResultDto
@@ -158,4 +159,12 @@ interface TelNetQuizApi {
     suspend fun bulkGetMaterials(
         @Body request: BulkMaterialsRequest
     ): Response<ApiResponse<BulkMaterialsResponse>>
+
+    // TTS
+    @GET("api/tts/{type}/{id}")
+    suspend fun getTtsAudio(
+        @Path("type") type: String,
+        @Path("id") id: Int,
+        @Query("gender") gender: String
+    ): Response<ApiResponse<TtsAudioResponse>>
 }

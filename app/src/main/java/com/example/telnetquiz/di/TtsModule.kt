@@ -2,6 +2,8 @@ package com.example.telnetquiz.di
 
 import android.content.Context
 import com.example.telnetquiz.BuildConfig
+import com.example.telnetquiz.data.remote.api.TelNetQuizApi
+import com.example.telnetquiz.data.tts.EdgeTtsProvider
 import com.example.telnetquiz.data.tts.GoogleCloudTtsProvider
 import com.example.telnetquiz.data.tts.LocalTtsProvider
 import com.example.telnetquiz.data.tts.TtsProvider
@@ -18,8 +20,12 @@ object TtsModule {
 
     @Provides
     @Singleton
-    fun provideTtsProvider(@ApplicationContext context: Context): TtsProvider {
+    fun provideTtsProvider(
+        @ApplicationContext context: Context,
+        api: TelNetQuizApi
+    ): TtsProvider {
         return when (BuildConfig.TTS_PROVIDER) {
+            "edge" -> EdgeTtsProvider(context, api)
             "cloud" -> GoogleCloudTtsProvider(context, BuildConfig.GOOGLE_TTS_API_KEY)
             else -> LocalTtsProvider(context)
         }

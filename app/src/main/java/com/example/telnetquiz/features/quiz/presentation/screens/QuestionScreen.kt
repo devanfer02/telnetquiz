@@ -152,11 +152,7 @@ fun QuestionScreen(
                         description = currentQuestion.description,
                         imageLink = currentQuestion.imageLink,
                         onSpeakClick = {
-                            val optionsText = currentQuestion.options
-                                .mapIndexed { i, opt -> "${letters.getOrElse(i) { ' ' }}. ${opt.text}" }
-                                .joinToString(". ")
-                            val textToRead = "${currentQuestion.description}. ${currentQuestion.question}. Pilihan jawaban: $optionsText"
-                            viewModel.speak(textToRead)
+                            viewModel.speakContent("question", currentQuestion.id, null)
                         }
                     )
 
