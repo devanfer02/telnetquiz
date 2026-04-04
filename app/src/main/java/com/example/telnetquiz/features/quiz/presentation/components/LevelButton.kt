@@ -25,15 +25,15 @@ import com.example.telnetquiz.ui.theme.scoreColor
 fun LevelButton(
     level: Int,
     onClick: () -> Unit = {},
+    onLockedClick: () -> Unit = {},
     done: Boolean = false,
     isLocked: Boolean = false,
     score: Int? = null
 ) {
     OutlinedButton(
-        onClick = { if (!isLocked) onClick() },
+        onClick = { if (!isLocked) onClick() else onLockedClick() },
         contentPadding = PaddingValues(0.dp),
         shape = CircleShape,
-        enabled = !isLocked,
         modifier = Modifier
             .size(50.dp),
         border = BorderStroke(
