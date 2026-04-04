@@ -62,19 +62,19 @@ fun RemedialScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "SAYANG SEKALI!",
+                    text = "YUK BELAJAR LAGI!",
                     color = LitecartesColor.Surface,
                     fontSize = 28.sp,
                     fontFamily = nunitosFontFamily,
                     fontWeight = FontWeight.ExtraBold
                 )
                 Image(
-                    painter = painterResource(id = R.drawable.result),
+                    painter = painterResource(id = R.drawable.chap2),
                     contentDescription = "remedial",
                     modifier = Modifier.size(250.dp)
                 )
                 Text(
-                    text = "$wrongCount dari $totalCount jawabanmu kurang tepat",
+                    text = "$wrongCount dari $totalCount soal perlu diperbaiki",
                     color = Color.White,
                     fontSize = 18.sp,
                     fontFamily = nunitosFontFamily,
@@ -83,7 +83,7 @@ fun RemedialScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Pelajari materi berikut, lalu coba lagi!",
+                    text = "Tenang, kamu bisa pelajari materinya dulu sebelum mencoba lagi",
                     color = Color.White.copy(alpha = 0.9f),
                     fontSize = 14.sp,
                     fontFamily = nunitosFontFamily,
@@ -92,7 +92,7 @@ fun RemedialScreen(
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
-                    text = "Pelajari Materi",
+                    text = "Ayo Pelajari!",
                     borderColor = LitecartesColor.Secondary,
                     color = LitecartesColor.Surface,
                     backgroundColor = LitecartesColor.Secondary,
