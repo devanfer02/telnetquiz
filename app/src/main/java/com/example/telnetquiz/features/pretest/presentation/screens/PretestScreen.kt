@@ -138,7 +138,12 @@ fun PretestScreen(
                         ) {
                             IconButton(
                                 onClick = {
-                                    viewModel.speak(currentQuestion.question)
+                                    val letters = listOf('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
+                                    val optionsText = currentQuestion.options
+                                        .mapIndexed { i, opt -> "${letters.getOrElse(i) { ' ' }}. ${opt.text}" }
+                                        .joinToString(". ")
+                                    val textToRead = "${currentQuestion.description}. ${currentQuestion.question}. Pilihan jawaban: $optionsText"
+                                    viewModel.speak(textToRead)
                                 },
                                 modifier = Modifier.size(32.dp)
                             ) {
