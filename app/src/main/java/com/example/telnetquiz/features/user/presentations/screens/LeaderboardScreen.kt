@@ -153,6 +153,7 @@ fun LeaderboardScreen(
                                     ) {
                                         Top3Profile(
                                             user = top3[1].toUser(),
+                                            rank = 2,
                                             avatarResIdOverride = if (top3[1].rank == state.currentUser?.rank) localAvatarResId else null
                                         )
                                     }
@@ -163,6 +164,7 @@ fun LeaderboardScreen(
                                     ) {
                                         Top3Profile(
                                             user = top3[0].toUser(),
+                                            rank = 1,
                                             avatarResIdOverride = if (top3[0].rank == state.currentUser?.rank) localAvatarResId else null
                                         )
                                     }
@@ -174,6 +176,7 @@ fun LeaderboardScreen(
                                     ) {
                                         Top3Profile(
                                             user = top3[2].toUser(),
+                                            rank = 3,
                                             avatarResIdOverride = if (top3[2].rank == state.currentUser?.rank) localAvatarResId else null
                                         )
                                     }
