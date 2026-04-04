@@ -7,7 +7,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
@@ -25,6 +29,8 @@ class EdgeTtsProvider(
         .build()
 
     private var mediaPlayer: MediaPlayer? = null
+    private val _isLoading = MutableStateFlow(false)
+    override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     override fun speakContent(type: String, id: Int, gender: Boolean?) {
         stop()
@@ -33,9 +39,11 @@ class EdgeTtsProvider(
                 val cacheFile = getCacheFile(type, id)
 
                 if (cacheFile.exists()) {
-                    playFile(cacheFile)
+                    withContext(Dispatchers.Main) { playFile(cacheFile) }
                     return@launch
                 }
+
+                _isLoading.value = true
 
                 val response = api.getTtsAudio(type, id)
                 if (!response.isSuccessful) return@launch
@@ -45,8 +53,11 @@ class EdgeTtsProvider(
 
                 cacheFile.parentFile?.mkdirs()
                 cacheFile.writeBytes(audioBytes)
-                playFile(cacheFile)
-            } catch (_: Exception) {}
+                withContext(Dispatchers.Main) { playFile(cacheFile) }
+            } catch (_: Exception) {
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 

@@ -147,10 +147,13 @@ fun QuestionScreen(
                     val selectedOptionId = state.answers[currentQuestion.id]
                     val verification = state.verifiedQuestions[currentQuestion.id]
 
+                    val isTtsLoading by viewModel.ttsLoading.collectAsState()
+
                     QuestionHeaderBox(
                         title = state.quiz?.title ?: "",
                         description = currentQuestion.description,
                         imageLink = currentQuestion.imageLink,
+                        isTtsLoading = isTtsLoading,
                         onSpeakClick = {
                             val optionsText = currentQuestion.options
                                 .mapIndexed { i, opt -> "${letters.getOrElse(i) { ' ' }}. ${opt.text}" }

@@ -1,6 +1,7 @@
 package com.example.telnetquiz.features.pretest.presentation.screens
 
 import com.example.telnetquiz.components.ErrorRetryBox
+import com.example.telnetquiz.components.TtsPulsingDots
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -65,6 +66,7 @@ fun PretestScreen(
     viewModel: PretestViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val isTtsLoading by viewModel.ttsLoading.collectAsState()
     val currentQuestion = viewModel.currentQuestion
     val haptic = LocalHapticFeedback.current
 
@@ -136,24 +138,28 @@ fun PretestScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.End
                         ) {
-                            IconButton(
-                                onClick = {
-                                    val letters = listOf('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
-                                    val optionsText = currentQuestion.options
-                                        .mapIndexed { i, opt -> "${letters.getOrElse(i) { ' ' }}. ${opt.text}" }
-                                        .joinToString(". ")
-                                    val textToRead = "${currentQuestion.description}. ${currentQuestion.question}. Pilihan jawaban: $optionsText"
-                                    viewModel.speak(textToRead)
-                                    viewModel.speakContent("pretest", currentQuestion.id, null)
-                                },
-                                modifier = Modifier.size(32.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.VolumeUp,
-                                    contentDescription = "Baca soal",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
+                            if (isTtsLoading) {
+                                TtsPulsingDots(modifier = Modifier.size(32.dp))
+                            } else {
+                                IconButton(
+                                    onClick = {
+                                        val letters = listOf('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
+                                        val optionsText = currentQuestion.options
+                                            .mapIndexed { i, opt -> "${letters.getOrElse(i) { ' ' }}. ${opt.text}" }
+                                            .joinToString(". ")
+                                        val textToRead = "${currentQuestion.description}. ${currentQuestion.question}. Pilihan jawaban: $optionsText"
+                                        viewModel.speak(textToRead)
+                                        viewModel.speakContent("pretest", currentQuestion.id, null)
+                                    },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.VolumeUp,
+                                        contentDescription = "Baca soal",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
                             }
                         }
                         AnimatedVisibility(

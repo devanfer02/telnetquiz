@@ -45,6 +45,7 @@ fun FeedbackScren(
     viewModel: StudyMaterialViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val isTtsLoading by viewModel.ttsLoading.collectAsState()
     val scrollState = rememberScrollState()
 
     DisposableEffect(Unit) {
@@ -86,6 +87,7 @@ fun FeedbackScren(
                         title = material.title,
                         content = material.content,
                         imageLink = material.imageLink,
+                        isTtsLoading = isTtsLoading,
                         onSpeakClick = {
                             val plainContent = material.content.replace(Regex("<[^>]*>"), "")
                             viewModel.speak("${material.title}. $plainContent")
