@@ -240,3 +240,7 @@ data class BulkMaterialsRequest(
 data class BulkMaterialsResponse(
     @SerializedName("materials") val materials: List<StudyMaterialDto>
 )
+
+data class TtsAudioResponse(
+    @SerializedName("audio_url") val audioUrl: String
+)

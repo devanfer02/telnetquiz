@@ -87,8 +87,7 @@ fun FeedbackScren(
                         content = material.content,
                         imageLink = material.imageLink,
                         onSpeakClick = {
-                            val plainContent = material.content.replace(Regex("<[^>]*>"), "")
-                            viewModel.speak("${material.title}. $plainContent")
+                            viewModel.speakContent("material", material.id, null)
                         }
                     )
                 }
