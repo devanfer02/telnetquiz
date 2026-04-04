@@ -3,7 +3,6 @@ package com.example.telnetquiz.data.tts
 import android.content.Context
 import android.media.MediaPlayer
 import com.example.telnetquiz.data.remote.api.TelNetQuizApi
-import com.example.telnetquiz.features.quiz.presentation.singletons.ProfileCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -31,16 +30,14 @@ class EdgeTtsProvider(
         stop()
         scope.launch {
             try {
-                val resolvedGender = gender ?: ProfileCache.profile?.gender
-                val genderParam = if (resolvedGender == true) "male" else "female"
-                val cacheFile = getCacheFile(genderParam, type, id)
+                val cacheFile = getCacheFile(type, id)
 
                 if (cacheFile.exists()) {
                     playFile(cacheFile)
                     return@launch
                 }
 
-                val response = api.getTtsAudio(type, id, genderParam)
+                val response = api.getTtsAudio(type, id)
                 if (!response.isSuccessful) return@launch
 
                 val audioUrl = response.body()?.data?.audioUrl ?: return@launch
@@ -70,8 +67,8 @@ class EdgeTtsProvider(
         scope.cancel()
     }
 
-    private fun getCacheFile(gender: String, type: String, id: Int): File {
-        return File(context.cacheDir, "tts/$gender/$type-$id-audio.mp3")
+    private fun getCacheFile(type: String, id: Int): File {
+        return File(context.cacheDir, "tts/$type-$id-audio.mp3")
     }
 
     private fun downloadAudio(url: String): ByteArray? {

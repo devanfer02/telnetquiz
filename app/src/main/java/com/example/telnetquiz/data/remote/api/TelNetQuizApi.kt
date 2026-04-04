@@ -164,7 +164,6 @@ interface TelNetQuizApi {
     @GET("api/tts/{type}/{id}")
     suspend fun getTtsAudio(
         @Path("type") type: String,
-        @Path("id") id: Int,
-        @Query("gender") gender: String
+        @Path("id") id: Int
     ): Response<ApiResponse<TtsAudioResponse>>
 }
