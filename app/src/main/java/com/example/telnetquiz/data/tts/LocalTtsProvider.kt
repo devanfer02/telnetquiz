@@ -19,6 +19,11 @@ class LocalTtsProvider(context: Context) : TtsProvider, TextToSpeech.OnInitListe
                 tts.setLanguage(Locale.getDefault())
                 isReady = true
             }
+            // Prefer male Indonesian voice if available
+            tts.voices?.firstOrNull {
+                it.locale == indonesian && !it.isNetworkConnectionRequired
+                        && it.name.lowercase().let { n -> n.contains("male") || n.contains("ardi") }
+            }?.let { tts.voice = it }
         }
     }
 
