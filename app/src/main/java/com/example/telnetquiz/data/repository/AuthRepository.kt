@@ -1,5 +1,6 @@
 package com.example.telnetquiz.data.repository
 
+import android.util.Log
 import com.example.telnetquiz.data.local.TokenManager
 import com.example.telnetquiz.data.remote.api.TelNetQuizApi
 import com.example.telnetquiz.data.remote.dto.LoginRequest
@@ -42,10 +43,8 @@ class AuthRepository @Inject constructor(
     }
 
     private val loginErrorTranslations = mapOf(
-        "email" to "Email yang diberikan tidak valid",
-        "password" to "Kata sandi tidak boleh kosong",
-        "invalid credentials" to "Email atau kata sandi salah",
-        "user not found" to "Akun tidak ditemukan",
+        "invalid email address" to "Email yang diberikan tidak valid",
+        "invalid email or password" to "Email atau kata sandi salah",
         "request body validation failed" to "Data yang diberikan tidak valid",
     )
 
