@@ -18,6 +18,8 @@ data class ChapterDto(
     val description: String,
     @SerializedName("mascot_id")
     val mascotId: Int,
+    @SerializedName("minimum_score")
+    val minimumScore: Int = 100,
     @SerializedName("user_performance")
     val userPerformance: UserPerformanceDto?,
     @SerializedName("quiz_count")
@@ -35,6 +37,8 @@ data class ChapterDetailDto(
     val description: String,
     @SerializedName("mascotId")
     val mascotId: Int,
+    @SerializedName("minimumScore")
+    val minimumScore: Int = 100,
     @SerializedName("createdAt")
     val createdAt: String,
     @SerializedName("updatedAt")
