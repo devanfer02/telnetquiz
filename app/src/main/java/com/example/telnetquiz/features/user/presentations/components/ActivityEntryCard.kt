@@ -1,6 +1,7 @@
 package com.example.telnetquiz.features.user.presentations.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,7 +47,8 @@ fun ActivityEntryCard(index: Int, entry: ActivityEntryDto) {
             modifier = Modifier
                 .size(44.dp)
                 .clip(CircleShape)
-                .background(color),
+                .background(color)
+                .border(2.dp, LitecartesColor.DarkBrown, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -54,7 +56,7 @@ fun ActivityEntryCard(index: Int, entry: ActivityEntryDto) {
                 fontFamily = nunitosFontFamily,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 14.sp,
-                color = LitecartesColor.DarkerSurface
+                color = LitecartesColor.DarkBrown
             )
         }
         Column(modifier = Modifier.weight(1f)) {
