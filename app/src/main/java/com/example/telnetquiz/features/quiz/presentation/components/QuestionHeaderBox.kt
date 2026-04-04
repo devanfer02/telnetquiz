@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.telnetquiz.components.TopBarContainer
+import com.example.telnetquiz.components.TtsPulsingDots
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
@@ -47,6 +48,7 @@ fun QuestionHeaderBox(
     description: String,
     imageLink: String?,
     onSpeakClick: () -> Unit,
+    isTtsLoading: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     var isExpanded by remember { mutableStateOf(true) }
@@ -83,16 +85,20 @@ fun QuestionHeaderBox(
                     fontFamily = nunitosFontFamily,
                     modifier = Modifier.weight(1f)
                 )
-                IconButton(
-                    onClick = onSpeakClick,
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.VolumeUp,
-                        contentDescription = "Baca soal",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
+                if (isTtsLoading) {
+                    TtsPulsingDots(modifier = Modifier.size(36.dp))
+                } else {
+                    IconButton(
+                        onClick = onSpeakClick,
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.VolumeUp,
+                            contentDescription = "Baca soal",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             }
             AnimatedVisibility(
@@ -141,3 +147,4 @@ fun QuestionHeaderBox(
         }
     }
 }
+

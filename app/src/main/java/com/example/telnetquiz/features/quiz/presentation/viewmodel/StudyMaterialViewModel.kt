@@ -29,6 +29,7 @@ class StudyMaterialViewModel @Inject constructor(
     val audioManager: AudioManager
 ) : ViewModel() {
 
+    val ttsLoading = ttsProvider.isLoading
     fun speak(text: String) = ttsProvider.speak(text)
     fun speakContent(type: String, id: Int, gender: Boolean?) = ttsProvider.speakContent(type, id, gender)
     fun stopTts() = ttsProvider.stop()

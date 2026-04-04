@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
+import com.example.telnetquiz.components.TtsPulsingDots
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
@@ -35,6 +36,7 @@ fun MaterialContentCard(
     content: String,
     imageLink: String?,
     onSpeakClick: () -> Unit,
+    isTtsLoading: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -52,16 +54,20 @@ fun MaterialContentCard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            IconButton(
-                onClick = onSpeakClick,
-                modifier = Modifier.size(32.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.VolumeUp,
-                    contentDescription = "Baca materi",
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp)
-                )
+            if (isTtsLoading) {
+                TtsPulsingDots(modifier = Modifier.size(32.dp))
+            } else {
+                IconButton(
+                    onClick = onSpeakClick,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.VolumeUp,
+                        contentDescription = "Baca materi",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
         }
         Text(
