@@ -6,7 +6,6 @@ import com.example.telnetquiz.data.local.TokenManager
 import com.example.telnetquiz.data.remote.dto.SchoolDto
 import com.example.telnetquiz.data.repository.AuthRepository
 import com.example.telnetquiz.data.repository.Result
-import com.example.telnetquiz.features.quiz.presentation.singletons.ProfileCache
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -173,7 +172,6 @@ class AuthViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             authRepository.logout()
-            ProfileCache.clear()
             _sessionState.value = SessionState.Unauthenticated
             _state.value = AuthState(isLoggedIn = false)
         }

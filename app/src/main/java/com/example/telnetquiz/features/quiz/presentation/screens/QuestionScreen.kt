@@ -32,13 +32,12 @@ import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.MascotLoadingScreen
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.quiz.presentation.components.AnswerFeedbackSheet
-import com.example.telnetquiz.features.quiz.presentation.components.OptionButton
-import com.example.telnetquiz.features.quiz.presentation.components.OptionFeedback
+import com.example.telnetquiz.components.OptionButton
+import com.example.telnetquiz.components.OptionFeedback
 import com.example.telnetquiz.components.ProgressBarFromApi
-import com.example.telnetquiz.features.quiz.presentation.components.QuestionHeaderBox
+import com.example.telnetquiz.components.QuestionHeaderBox
 import com.example.telnetquiz.features.quiz.presentation.components.VerifyButton
-import com.example.telnetquiz.features.quiz.presentation.singletons.QuizResultHolder
-import com.example.telnetquiz.features.quiz.presentation.singletons.RemedialHolder
+import com.example.telnetquiz.features.quiz.presentation.viewmodel.QuizNavEvent
 import com.example.telnetquiz.features.quiz.presentation.viewmodel.QuizViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
@@ -81,24 +80,19 @@ fun QuestionScreen(
         }
     }
 
-    LaunchedEffect(state.result) {
-        if (state.result != null) {
-            val quiz = state.quiz
-            val result = state.result
-            if (quiz != null && result != null) {
-                val originalQuiz = RemedialHolder.quizData ?: quiz
-
-                if (!result.passed && !RemedialHolder.isRetry) {
+    LaunchedEffect(Unit) {
+        viewModel.navEvent.collect { event ->
+            when (event) {
+                is QuizNavEvent.GoToRemedial -> {
                     navController.navigate(
-                        "${Screen.RemedialScreen.route}/${result.wrongQuestionIds?.size ?: 0}/${result.totalQuestions}"
+                        "${Screen.RemedialScreen.route}/${event.wrongCount}/${event.totalCount}"
                     ) {
                         popUpTo("${Screen.QuestionScreen.route}/${quizId}") { inclusive = true }
                     }
-                } else {
-                    QuizResultHolder.lastResult = result
-                    RemedialHolder.clear()
+                }
+                is QuizNavEvent.GoToResult -> {
                     navController.navigate(
-                        "${Screen.ResultScreen.route}/${originalQuiz.chapterId}/levels/${originalQuiz.level}"
+                        "${Screen.ResultScreen.route}/${event.chapterId}/levels/${event.level}"
                     ) {
                         popUpTo("${Screen.QuestionScreen.route}/${quizId}") { inclusive = true }
                     }

@@ -36,7 +36,7 @@ import com.example.telnetquiz.components.ScoreCountRow
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.audio.AudioManager
 import com.example.telnetquiz.data.audio.SfxType
-import com.example.telnetquiz.features.pretest.presentation.singletons.PretestResultHolder
+import com.example.telnetquiz.data.local.FlowResultStore
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
@@ -69,13 +69,14 @@ private fun getFeedback(scorePercentage: Double): PretestFeedback {
 @Composable
 fun PretestResultScreen(
     navController: NavController,
-    audioManager: AudioManager? = null
+    audioManager: AudioManager? = null,
+    flowResultStore: FlowResultStore? = null
 ) {
     LaunchedEffect(Unit) {
         audioManager?.playSfx(SfxType.PRETEST_RESULT)
     }
 
-    val result = PretestResultHolder.lastResult
+    val result = flowResultStore?.pretestResult
     val correctCount = result?.correctAnswers ?: 0
     val wrongCount = result?.incorrectAnswers ?: 0
     val scorePercentage = result?.scorePercentage ?: 0.0
@@ -199,7 +200,7 @@ fun PretestResultScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 32.dp),
                         onClick = {
-                            PretestResultHolder.clear()
+                            flowResultStore?.clearPretest()
                             navController.navigate(Screen.HomeScreen.route) {
                                 popUpTo(0) { inclusive = true }
                             }

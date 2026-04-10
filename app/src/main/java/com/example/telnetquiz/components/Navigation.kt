@@ -41,7 +41,7 @@ import com.example.telnetquiz.features.auth.presentation.screens.AboutScreen
 import com.example.telnetquiz.features.auth.presentation.screens.AuthLoginScreen
 import com.example.telnetquiz.features.auth.presentation.screens.AuthRegisterScreen
 import com.example.telnetquiz.features.auth.presentation.screens.AuthStartScreen
-import com.example.telnetquiz.features.auth.presentation.screens.FeedbackScren
+import com.example.telnetquiz.features.quiz.presentation.screens.FeedbackScreen
 import com.example.telnetquiz.features.auth.presentation.viewmodel.AuthViewModel
 import com.example.telnetquiz.features.auth.presentation.viewmodel.SessionState
 import com.example.telnetquiz.features.chapter.presentation.screens.ChapterScreen
@@ -52,10 +52,10 @@ import com.example.telnetquiz.features.quiz.presentation.screens.LevelScreen
 import com.example.telnetquiz.features.quiz.presentation.screens.QuestionScreen
 import com.example.telnetquiz.features.quiz.presentation.screens.RemedialScreen
 import com.example.telnetquiz.features.quiz.presentation.screens.ResultScreen
-import com.example.telnetquiz.features.quiz.presentation.singletons.QuizResultHolder
-import com.example.telnetquiz.features.user.presentations.screens.EditProfileScreen
-import com.example.telnetquiz.features.user.presentations.screens.LeaderboardScreen
-import com.example.telnetquiz.features.user.presentations.screens.ProfileScreen
+import com.example.telnetquiz.data.local.FlowResultStore
+import com.example.telnetquiz.features.user.presentation.screens.EditProfileScreen
+import com.example.telnetquiz.features.user.presentation.screens.LeaderboardScreen
+import com.example.telnetquiz.features.user.presentation.screens.ProfileScreen
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import kotlinx.coroutines.flow.collectLatest
 
@@ -63,6 +63,7 @@ import kotlinx.coroutines.flow.collectLatest
 @InstallIn(SingletonComponent::class)
 interface AudioManagerEntryPoint {
     fun audioManager(): AudioManager
+    fun flowResultStore(): FlowResultStore
 }
 
 @Composable
@@ -136,9 +137,11 @@ private fun MainNavHost(
     startDestination: String
 ) {
     val context = LocalContext.current
-    val audioManager = remember {
-        EntryPointAccessors.fromApplication(context, AudioManagerEntryPoint::class.java).audioManager()
+    val entryPoint = remember {
+        EntryPointAccessors.fromApplication(context, AudioManagerEntryPoint::class.java)
     }
+    val audioManager = remember { entryPoint.audioManager() }
+    val flowResultStore = remember { entryPoint.flowResultStore() }
 
     DisposableEffect(navController) {
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
@@ -210,7 +213,7 @@ private fun MainNavHost(
             )
         }
         composable(
-            route = Screen.QuickCheckScren.route
+            route = Screen.QuickCheckScreen.route
         ) {
             QuickCheckScreen(
                 navController = navController
@@ -228,7 +231,8 @@ private fun MainNavHost(
         ) {
             PretestResultScreen(
                 navController = navController,
-                audioManager = audioManager
+                audioManager = audioManager,
+                flowResultStore = flowResultStore
             )
         }
         composable(
@@ -295,7 +299,7 @@ private fun MainNavHost(
             val id = it.arguments?.getInt("id") ?: 1
             val materialId = it.arguments?.getInt("materialId") ?: 0
 
-            FeedbackScren(
+            FeedbackScreen(
                 chapterId = chapterId,
                 level = level,
                 materialId = materialId,
@@ -349,7 +353,7 @@ private fun MainNavHost(
             )
         ) {
             val chapterId = it.arguments?.getInt("chapterId") ?: 0
-            val quizResult = QuizResultHolder.lastResult
+            val quizResult = flowResultStore.quizResult
 
             ResultScreen(
                 navController = navController,

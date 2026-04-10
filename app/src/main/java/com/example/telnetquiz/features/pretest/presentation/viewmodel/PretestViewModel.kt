@@ -7,12 +7,16 @@ import com.example.telnetquiz.data.remote.dto.PretestResultDto
 import com.example.telnetquiz.data.remote.dto.PretestSubmissionDto
 import com.example.telnetquiz.data.audio.AudioManager
 import com.example.telnetquiz.data.audio.SfxType
+import com.example.telnetquiz.data.local.FlowResultStore
 import com.example.telnetquiz.data.repository.PretestRepository
 import com.example.telnetquiz.data.repository.Result
 import com.example.telnetquiz.data.tts.TtsProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,7 +25,7 @@ data class PretestState(
     val isLoading: Boolean = false,
     val questions: List<PretestQuestionDto> = emptyList(),
     val currentQuestionIndex: Int = 0,
-    val answers: Map<Int, Int> = emptyMap(), // questionId -> selectedOptionId
+    val answers: Map<Int, Int> = emptyMap(),
     val isSubmitting: Boolean = false,
     val isCompleted: Boolean = false,
     val error: String? = null,
@@ -29,11 +33,16 @@ data class PretestState(
     val result: PretestResultDto? = null
 )
 
+sealed class PretestNavEvent {
+    object GoToResult : PretestNavEvent()
+}
+
 @HiltViewModel
 class PretestViewModel @Inject constructor(
     private val pretestRepository: PretestRepository,
     private val ttsProvider: TtsProvider,
-    val audioManager: AudioManager
+    val audioManager: AudioManager,
+    private val flowResultStore: FlowResultStore
 ) : ViewModel() {
 
     val ttsLoading = ttsProvider.isLoading
@@ -43,6 +52,9 @@ class PretestViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(PretestState())
     val state: StateFlow<PretestState> = _state.asStateFlow()
+
+    private val _navEvent = MutableSharedFlow<PretestNavEvent>()
+    val navEvent: SharedFlow<PretestNavEvent> = _navEvent.asSharedFlow()
 
     val currentQuestion: PretestQuestionDto?
         get() = _state.value.questions.getOrNull(_state.value.currentQuestionIndex)
@@ -106,11 +118,13 @@ class PretestViewModel @Inject constructor(
 
             when (val result = pretestRepository.submitPretestAnswers(submissions)) {
                 is Result.Success -> {
+                    flowResultStore.pretestResult = result.data
                     _state.value = _state.value.copy(
                         isSubmitting = false,
                         isCompleted = true,
                         result = result.data
                     )
+                    _navEvent.emit(PretestNavEvent.GoToResult)
                 }
                 is Result.Error -> {
                     _state.value = _state.value.copy(
