@@ -1,4 +1,4 @@
-package com.example.telnetquiz.features.user.presentations.screens
+package com.example.telnetquiz.features.user.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -46,16 +46,16 @@ import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.data.remote.dto.LeaderboardEntryDto
 import com.example.telnetquiz.features.user.domain.model.User
-import com.example.telnetquiz.features.user.presentations.components.ActivityDateHeaderSkeleton
-import com.example.telnetquiz.features.user.presentations.components.ActivityEntryCard
-import com.example.telnetquiz.features.user.presentations.components.ActivityEntryCardSkeleton
-import com.example.telnetquiz.features.user.presentations.components.CurrentUserRankBox
-import com.example.telnetquiz.features.user.presentations.components.PositionCard
-import com.example.telnetquiz.features.user.presentations.components.SegmentedToggle
-import com.example.telnetquiz.features.user.presentations.components.Top3Profile
-import com.example.telnetquiz.features.user.presentations.components.Top3ProfileSkeleton
-import com.example.telnetquiz.features.user.presentations.viewmodel.LeaderboardTab
-import com.example.telnetquiz.features.user.presentations.viewmodel.LeaderboardViewModel
+import com.example.telnetquiz.features.user.presentation.components.ActivityDateHeaderSkeleton
+import com.example.telnetquiz.features.user.presentation.components.ActivityEntryCard
+import com.example.telnetquiz.features.user.presentation.components.ActivityEntryCardSkeleton
+import com.example.telnetquiz.features.user.presentation.components.CurrentUserRankBox
+import com.example.telnetquiz.features.user.presentation.components.PositionCard
+import com.example.telnetquiz.features.user.presentation.components.SegmentedToggle
+import com.example.telnetquiz.features.user.presentation.components.Top3Profile
+import com.example.telnetquiz.features.user.presentation.components.Top3ProfileSkeleton
+import com.example.telnetquiz.features.user.presentation.viewmodel.LeaderboardTab
+import com.example.telnetquiz.features.user.presentation.viewmodel.LeaderboardViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily

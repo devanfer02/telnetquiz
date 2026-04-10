@@ -1,4 +1,4 @@
-package com.example.telnetquiz.features.user.presentations.screens
+package com.example.telnetquiz.features.user.presentation.screens
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,10 +40,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.constants.Screen
-import com.example.telnetquiz.features.user.presentations.components.AvatarPickerDialog
-import com.example.telnetquiz.features.user.presentations.components.CloseHeader
-import com.example.telnetquiz.features.user.presentations.components.ProfileImagePicker
-import com.example.telnetquiz.features.user.presentations.viewmodel.EditProfileViewModel
+import com.example.telnetquiz.features.user.presentation.components.AvatarPickerDialog
+import com.example.telnetquiz.features.user.presentation.components.CloseHeader
+import com.example.telnetquiz.features.user.presentation.components.ProfileImagePicker
+import com.example.telnetquiz.features.user.presentation.viewmodel.EditProfileViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily

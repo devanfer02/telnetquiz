@@ -1,4 +1,4 @@
-package com.example.telnetquiz.features.user.presentations.components
+package com.example.telnetquiz.features.user.presentation.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

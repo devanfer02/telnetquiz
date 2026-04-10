@@ -1,4 +1,4 @@
-package com.example.telnetquiz.features.user.presentations.screens
+package com.example.telnetquiz.features.user.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -43,13 +43,13 @@ import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.local.AudioSettings
-import com.example.telnetquiz.features.user.presentations.components.AchievementCard
-import com.example.telnetquiz.features.user.presentations.components.AchievementCardSkeleton
-import com.example.telnetquiz.features.user.presentations.components.ProfileHeaderSection
-import com.example.telnetquiz.features.user.presentations.components.SoundSettingsDialog
-import com.example.telnetquiz.features.user.presentations.components.StatCard
-import com.example.telnetquiz.features.user.presentations.viewmodel.AchievementViewModel
-import com.example.telnetquiz.features.user.presentations.viewmodel.ProfileViewModel
+import com.example.telnetquiz.features.user.presentation.components.AchievementCard
+import com.example.telnetquiz.features.user.presentation.components.AchievementCardSkeleton
+import com.example.telnetquiz.features.user.presentation.components.ProfileHeaderSection
+import com.example.telnetquiz.features.user.presentation.components.SoundSettingsDialog
+import com.example.telnetquiz.features.user.presentation.components.StatCard
+import com.example.telnetquiz.features.user.presentation.viewmodel.AchievementViewModel
+import com.example.telnetquiz.features.user.presentation.viewmodel.ProfileViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
