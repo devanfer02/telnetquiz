@@ -1,4 +1,4 @@
-package com.example.telnetquiz.features.quiz.presentation.components
+package com.example.telnetquiz.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,4 +64,13 @@ fun BoxPoints(
             fontSize = 10.sp
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewBoxPoints() {
+    BoxPoints(
+        imageId = android.R.drawable.star_on,
+        points = "150"
+    )
 }

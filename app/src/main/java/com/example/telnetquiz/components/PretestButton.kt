@@ -1,4 +1,4 @@
-package com.example.telnetquiz.features.pretest.presentation.components
+package com.example.telnetquiz.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth

@@ -1,4 +1,4 @@
-package com.example.telnetquiz.features.quiz.presentation.components
+package com.example.telnetquiz.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -148,3 +149,13 @@ fun QuestionHeaderBox(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun PreviewQuestionHeaderBox() {
+    QuestionHeaderBox(
+        title = "Geometri Dasar",
+        description = "Berapakah luas lingkaran dengan jari-jari 7 cm?",
+        imageLink = null,
+        onSpeakClick = {}
+    )
+}
