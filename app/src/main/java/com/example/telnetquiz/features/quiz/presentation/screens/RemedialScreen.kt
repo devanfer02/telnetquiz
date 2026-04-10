@@ -25,12 +25,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.constants.Screen
-import com.example.telnetquiz.features.quiz.presentation.singletons.WrongQuizManager
+import com.example.telnetquiz.features.quiz.presentation.viewmodel.QuizViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -39,7 +40,8 @@ import com.example.telnetquiz.ui.theme.nunitosFontFamily
 fun RemedialScreen(
     navController: NavController,
     wrongCount: Int,
-    totalCount: Int
+    totalCount: Int,
+    viewModel: QuizViewModel = hiltViewModel()
 ) {
     Scaffold { innerPadding ->
         Box(
@@ -101,9 +103,8 @@ fun RemedialScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp),
                     onClick = {
-                        if (WrongQuizManager.queue.isNotEmpty()) {
-                            val quizIndex = WrongQuizManager.queue.first()
-                            WrongQuizManager.queue.removeFirst()
+                        val quizIndex = viewModel.startRemedialReview()
+                        if (quizIndex != null) {
                             navController.navigate(
                                 "${Screen.FeedbackScreen.route}/${quizIndex.chapterId}/levels/${quizIndex.level}/questions/${quizIndex.id}?materialId=${quizIndex.materialId}"
                             ) {

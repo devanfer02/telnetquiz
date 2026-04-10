@@ -33,9 +33,8 @@ import com.example.telnetquiz.features.chapter.presentation.components.ChapterCa
 import com.example.telnetquiz.features.chapter.presentation.components.ChapterCardSkeleton
 import com.example.telnetquiz.features.chapter.presentation.components.ComingSoonCard
 import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterViewModel
-import com.example.telnetquiz.features.quiz.presentation.components.ProfileTopBar
-import com.example.telnetquiz.features.quiz.presentation.singletons.ProfileCache
-import com.example.telnetquiz.features.user.presentations.viewmodel.ProfileViewModel
+import com.example.telnetquiz.components.ProfileTopBar
+import com.example.telnetquiz.features.user.presentation.viewmodel.ProfileViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 
@@ -48,6 +47,7 @@ fun ChapterScreen(
     val state by viewModel.listState.collectAsState()
     val profileState by profileViewModel.state.collectAsState()
     val selectedAvatarIndex by profileViewModel.selectedAvatarIndex.collectAsState()
+    val tag by profileViewModel.tag.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadChapters()
@@ -57,7 +57,7 @@ fun ChapterScreen(
     // Redirect to pretest if user hasn't taken it (wait for fresh profile data)
     LaunchedEffect(profileState.isLoading, profileState.profile?.hasTakenPretest) {
         if (!profileState.isLoading && profileState.profile?.hasTakenPretest == false) {
-            navController.navigate(Screen.QuickCheckScren.route) {
+            navController.navigate(Screen.QuickCheckScreen.route) {
                 popUpTo(Screen.HomeScreen.route) { inclusive = true }
             }
         }
@@ -73,7 +73,7 @@ fun ChapterScreen(
                     localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
                     totalScore = profileState.profile?.stats?.totalScore ?: 0,
                     dailyStreak = profileState.profile?.stats?.dailyStreak ?: 0,
-                    tag = ProfileCache.getTag()
+                    tag = tag
                 )
             },
             modifier = Modifier.systemBarsPadding()

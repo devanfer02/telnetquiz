@@ -37,7 +37,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,22 +57,17 @@ import com.example.telnetquiz.components.MascotLoadingScreen
 import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.constants.Screen
-import com.example.telnetquiz.data.repository.Result
-import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterViewModel
+import com.example.telnetquiz.features.chapter.presentation.viewmodel.LevelNavEvent
 import com.example.telnetquiz.features.quiz.presentation.util.generateLevelPositions
 import com.example.telnetquiz.components.ErrorRetryBox
-import com.example.telnetquiz.constants.SCORE_MIN_COMPLETE
 import com.example.telnetquiz.features.quiz.presentation.components.LevelButton
 import com.example.telnetquiz.features.quiz.presentation.components.LevelOptionMenu
 import com.example.telnetquiz.features.quiz.presentation.components.LevelPath
-import com.example.telnetquiz.features.quiz.presentation.components.ProfileTopBar
-import com.example.telnetquiz.features.quiz.presentation.singletons.LearnFirstHolder
-import com.example.telnetquiz.features.quiz.presentation.singletons.ProfileCache
-import com.example.telnetquiz.features.user.presentations.viewmodel.ProfileViewModel
+import com.example.telnetquiz.components.ProfileTopBar
+import com.example.telnetquiz.features.user.presentation.viewmodel.ProfileViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
-import kotlinx.coroutines.launch
 
 @Composable
 fun LevelScreen(
@@ -86,13 +80,13 @@ fun LevelScreen(
     val detailState by viewModel.detailState.collectAsState()
     val profileState by profileViewModel.state.collectAsState()
     val selectedAvatarIndex by profileViewModel.selectedAvatarIndex.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
+    val tag by profileViewModel.tag.collectAsState()
+    val isFetchingMaterials by viewModel.isFetchingMaterials.collectAsState()
 
     var showLevelDialog by remember { mutableStateOf(false) }
     var selectedQuizId by remember { mutableIntStateOf(0) }
     var selectedQuizLevel by remember { mutableIntStateOf(0) }
     var selectedQuizScore by remember { mutableStateOf<Int?>(null) }
-    var isFetchingMaterials by remember { mutableStateOf(false) }
     var showLockedDialog by remember { mutableStateOf(false) }
     var lockedDialogMessage by remember { mutableStateOf("") }
 
@@ -124,6 +118,23 @@ fun LevelScreen(
         profileViewModel.loadProfile()
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.levelNavEvent.collect { event ->
+            when (event) {
+                is LevelNavEvent.GoToFeedback -> {
+                    navController.navigate(
+                        "${Screen.FeedbackScreen.route}/${event.chapterId}/levels/${event.level}/questions/0?materialId=${event.materialId}"
+                    )
+                }
+                is LevelNavEvent.GoToQuiz -> {
+                    navController.navigate(
+                        "${Screen.QuestionScreen.route}/${event.quizId}"
+                    )
+                }
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             ProfileTopBar(
@@ -136,7 +147,7 @@ fun LevelScreen(
                 localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
                 totalScore = profileState.profile?.stats?.totalScore ?: 0,
                 dailyStreak = profileState.profile?.stats?.dailyStreak ?: 0,
-                tag = ProfileCache.getTag()
+                tag = tag
             )
         },
         modifier = Modifier.systemBarsPadding()
@@ -177,8 +188,7 @@ fun LevelScreen(
                     detailState.chapter != null -> {
                         val chapter = detailState.chapter!!
                         val quizzes = chapter.quizzes
-                        val completedQuizIds = chapter.completedQuizIds
-                        val quizScores = chapter.quizScores
+                        val levelModels = remember(detailState.chapter) { viewModel.getLevelModels() }
                         val dynamicLevels = remember(chapterId, quizzes.size) {
                             generateLevelPositions(quizzes.size, chapterId)
                         }
@@ -217,14 +227,10 @@ fun LevelScreen(
                                     modifier = Modifier.fillMaxSize()
                                 )
 
-                                quizzes.forEachIndexed { index, quiz ->
+                                levelModels.forEachIndexed { index, levelModel ->
                                     if (index >= dynamicLevels.size) return@forEachIndexed
 
                                     val levelPosition = dynamicLevels[index]
-                                    val isCompleted = quiz.id in completedQuizIds
-                                    val prevQuizScore = if (index > 0) quizScores[quizzes[index - 1].id.toString()] ?: 0 else 0
-                                    val isUnlocked = index == 0 ||
-                                        (quizzes[index - 1].id in completedQuizIds && prevQuizScore > SCORE_MIN_COMPLETE)
 
                                     Box(
                                         modifier = Modifier
@@ -235,36 +241,29 @@ fun LevelScreen(
                                             .graphicsLayer { alpha = buttonAlpha }
                                     ) {
                                         LevelButton(
-                                            level = quiz.level,
+                                            level = levelModel.level,
                                             onClick = {
-                                                selectedQuizId = quiz.id
-                                                selectedQuizLevel = quiz.level
-                                                selectedQuizScore = quizScores[quiz.id.toString()]
+                                                selectedQuizId = levelModel.quizId
+                                                selectedQuizLevel = levelModel.level
+                                                selectedQuizScore = levelModel.score
                                                 showLevelDialog = true
                                             },
                                             onLockedClick = {
-                                                if (index > 0) {
-                                                    val prevQuiz = quizzes[index - 1]
-                                                    val prevScore = quizScores[prevQuiz.id.toString()] ?: 0
-                                                    lockedDialogMessage = if (prevQuiz.id !in completedQuizIds) {
-                                                        "Selesaikan Level ${prevQuiz.level} terlebih dahulu"
-                                                    } else {
-                                                        "Kamu perlu mencapai nilai $SCORE_MIN_COMPLETE di Level ${prevQuiz.level} untuk melanjutkan. Nilai terbaikmu saat ini adalah $prevScore. Yuk, coba lagi! "
-                                                    }
+                                                levelModel.lockedMessage?.let { msg ->
+                                                    lockedDialogMessage = msg
                                                     showLockedDialog = true
                                                 }
                                             },
-                                            done = isCompleted,
-                                            isLocked = !isUnlocked,
-                                            score = quizScores[quiz.id.toString()]
+                                            done = levelModel.isCompleted,
+                                            isLocked = !levelModel.isUnlocked,
+                                            score = levelModel.score
                                         )
                                     }
                                 }
 
                                 if (showLevelDialog) {
-                                    val selectedQuiz = quizzes.find { it.id == selectedQuizId }
-                                    val selectedIndex = quizzes.indexOfFirst { it.id == selectedQuizId }
-                                    if (selectedQuiz != null && selectedIndex in dynamicLevels.indices) {
+                                    val selectedIndex = levelModels.indexOfFirst { it.quizId == selectedQuizId }
+                                    if (selectedIndex >= 0 && selectedIndex in dynamicLevels.indices) {
                                         val levelPosition = dynamicLevels[selectedIndex]
                                         Box(
                                             modifier = Modifier.offset(
@@ -278,46 +277,11 @@ fun LevelScreen(
                                                 score = selectedQuizScore,
                                                 onLearnFirst = {
                                                     showLevelDialog = false
-                                                    isFetchingMaterials = true
-                                                    coroutineScope.launch {
-                                                        when (val result = viewModel.fetchQuizMaterials(selectedQuizId)) {
-                                                            is Result.Success -> {
-                                                                val materials = result.data.materials
-                                                                if (materials.isNotEmpty()) {
-                                                                    LearnFirstHolder.setup(
-                                                                        quizId = selectedQuizId,
-                                                                        chapterId = chapterId,
-                                                                        level = selectedQuizLevel,
-                                                                        materials = materials
-                                                                    )
-                                                                    val firstMaterial = LearnFirstHolder.next()!!
-                                                                    isFetchingMaterials = false
-                                                                    navController.navigate(
-                                                                        "${Screen.FeedbackScreen.route}/${chapterId}/levels/${selectedQuizLevel}/questions/0?materialId=${firstMaterial.id}"
-                                                                    )
-                                                                } else {
-                                                                    isFetchingMaterials = false
-                                                                    navController.navigate(
-                                                                        "${Screen.QuestionScreen.route}/${selectedQuizId}"
-                                                                    )
-                                                                }
-                                                            }
-                                                            is Result.Error -> {
-                                                                isFetchingMaterials = false
-                                                                navController.navigate(
-                                                                    "${Screen.QuestionScreen.route}/${selectedQuizId}"
-                                                                )
-                                                            }
-                                                            is Result.Loading -> {}
-                                                        }
-                                                    }
+                                                    viewModel.startLearnFirst(selectedQuizId, chapterId, selectedQuizLevel)
                                                 },
                                                 onPlayDirectly = {
-                                                    viewModel.audioManager.playSfx(SfxType.START_LEVEL)
                                                     showLevelDialog = false
-                                                    navController.navigate(
-                                                        "${Screen.QuestionScreen.route}/${selectedQuizId}"
-                                                    )
+                                                    viewModel.playDirectly(selectedQuizId)
                                                 }
                                             )
                                         }

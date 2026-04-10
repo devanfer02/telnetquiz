@@ -5,13 +5,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.telnetquiz.data.remote.dto.StudyMaterialDto
 import com.example.telnetquiz.data.audio.AudioManager
 import com.example.telnetquiz.data.audio.SfxType
+import com.example.telnetquiz.data.local.QuizFlowManager
 import com.example.telnetquiz.data.repository.MaterialRepository
 import com.example.telnetquiz.data.repository.Result
 import com.example.telnetquiz.data.tts.TtsProvider
-import com.example.telnetquiz.features.quiz.presentation.singletons.RemedialHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,11 +25,19 @@ data class StudyMaterialState(
     val error: String? = null
 )
 
+sealed class FeedbackNavEvent {
+    data class NextWrongQuestion(val chapterId: Int, val level: Int, val questionId: Int, val materialId: Int) : FeedbackNavEvent()
+    data class NextLearnFirstMaterial(val chapterId: Int, val level: Int, val materialId: Int) : FeedbackNavEvent()
+    data class StartQuiz(val quizId: Int) : FeedbackNavEvent()
+    data class RetryQuiz(val quizId: Int) : FeedbackNavEvent()
+}
+
 @HiltViewModel
 class StudyMaterialViewModel @Inject constructor(
     private val materialRepository: MaterialRepository,
     private val ttsProvider: TtsProvider,
-    val audioManager: AudioManager
+    private val audioManager: AudioManager,
+    private val quizFlowManager: QuizFlowManager
 ) : ViewModel() {
 
     val ttsLoading = ttsProvider.isLoading
@@ -37,8 +48,19 @@ class StudyMaterialViewModel @Inject constructor(
     private val _state = MutableStateFlow(StudyMaterialState())
     val state: StateFlow<StudyMaterialState> = _state.asStateFlow()
 
+    private val _navEvent = MutableSharedFlow<FeedbackNavEvent>()
+    val navEvent: SharedFlow<FeedbackNavEvent> = _navEvent.asSharedFlow()
+
+    val buttonText: String
+        get() = when {
+            quizFlowManager.wrongQueue.isNotEmpty() -> "Lanjut Belajar"
+            quizFlowManager.hasNextMaterial() -> "Lanjut Belajar"
+            quizFlowManager.isLearnFirstActive() -> "Mulai Kuis"
+            else -> "Ayo Coba Lagi!"
+        }
+
     fun loadMaterial(materialId: Int) {
-        val cached = RemedialHolder.materialsCache[materialId]
+        val cached = quizFlowManager.materialsCache[materialId]
         if (cached != null) {
             _state.value = _state.value.copy(isLoading = false, material = cached)
             return
@@ -61,6 +83,44 @@ class StudyMaterialViewModel @Inject constructor(
                 }
                 is Result.Loading -> {
                     _state.value = _state.value.copy(isLoading = true)
+                }
+            }
+        }
+    }
+
+    fun onContinue() {
+        viewModelScope.launch {
+            when {
+                quizFlowManager.wrongQueue.isNotEmpty() -> {
+                    val next = quizFlowManager.wrongQueue.removeFirst()
+                    _navEvent.emit(
+                        FeedbackNavEvent.NextWrongQuestion(
+                            chapterId = next.chapterId,
+                            level = next.level,
+                            questionId = next.id,
+                            materialId = next.materialId
+                        )
+                    )
+                }
+                quizFlowManager.hasNextMaterial() -> {
+                    val nextMaterial = quizFlowManager.nextMaterial()!!
+                    _navEvent.emit(
+                        FeedbackNavEvent.NextLearnFirstMaterial(
+                            chapterId = quizFlowManager.learnFirstChapterId,
+                            level = quizFlowManager.learnFirstLevel,
+                            materialId = nextMaterial.id
+                        )
+                    )
+                }
+                quizFlowManager.isLearnFirstActive() -> {
+                    audioManager.playSfx(SfxType.START_LEVEL)
+                    val quizId = quizFlowManager.learnFirstQuizId
+                    quizFlowManager.clearLearnFirst()
+                    _navEvent.emit(FeedbackNavEvent.StartQuiz(quizId))
+                }
+                else -> {
+                    val quizId = quizFlowManager.remedialQuizId
+                    _navEvent.emit(FeedbackNavEvent.RetryQuiz(quizId))
                 }
             }
         }
