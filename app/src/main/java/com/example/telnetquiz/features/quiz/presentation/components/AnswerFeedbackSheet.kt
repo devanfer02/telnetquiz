@@ -15,10 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.telnetquiz.R
-import com.example.telnetquiz.features.pretest.presentation.components.PretestButton
+import com.example.telnetquiz.components.PretestButton
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
@@ -67,4 +68,26 @@ fun AnswerFeedbackSheet(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewAnswerFeedbackSheetCorrect() {
+    AnswerFeedbackSheet(
+        isCorrect = true,
+        isLastQuestion = false,
+        onDismiss = {},
+        onContinue = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewAnswerFeedbackSheetWrong() {
+    AnswerFeedbackSheet(
+        isCorrect = false,
+        isLastQuestion = true,
+        onDismiss = {},
+        onContinue = {}
+    )
 }
