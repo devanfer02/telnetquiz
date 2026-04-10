@@ -1,4 +1,4 @@
-package com.example.telnetquiz.features.auth.presentation.screens
+package com.example.telnetquiz.features.quiz.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -26,18 +26,15 @@ import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.MascotLoadingScreen
+import com.example.telnetquiz.components.MaterialContentCard
 import com.example.telnetquiz.constants.Screen
-import com.example.telnetquiz.data.audio.SfxType
-import com.example.telnetquiz.features.auth.presentation.components.MaterialContentCard
-import com.example.telnetquiz.features.quiz.presentation.singletons.LearnFirstHolder
-import com.example.telnetquiz.features.quiz.presentation.singletons.RemedialHolder
-import com.example.telnetquiz.features.quiz.presentation.singletons.WrongQuizManager
+import com.example.telnetquiz.features.quiz.presentation.viewmodel.FeedbackNavEvent
 import com.example.telnetquiz.features.quiz.presentation.viewmodel.StudyMaterialViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 
 @Composable
-fun FeedbackScren(
+fun FeedbackScreen(
     navController: NavController,
     chapterId: Int,
     level: Int,
@@ -55,6 +52,42 @@ fun FeedbackScren(
     LaunchedEffect(materialId) {
         if (materialId > 0) {
             viewModel.loadMaterial(materialId)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.navEvent.collect { event ->
+            val feedbackRoute = "${Screen.FeedbackScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}"
+            when (event) {
+                is FeedbackNavEvent.NextWrongQuestion -> {
+                    navController.navigate(
+                        "${Screen.FeedbackScreen.route}/${event.chapterId}/levels/${event.level}/questions/${event.questionId}?materialId=${event.materialId}"
+                    ) {
+                        popUpTo(feedbackRoute) { inclusive = true }
+                    }
+                }
+                is FeedbackNavEvent.NextLearnFirstMaterial -> {
+                    navController.navigate(
+                        "${Screen.FeedbackScreen.route}/${event.chapterId}/levels/${event.level}/questions/0?materialId=${event.materialId}"
+                    ) {
+                        popUpTo(feedbackRoute) { inclusive = true }
+                    }
+                }
+                is FeedbackNavEvent.StartQuiz -> {
+                    navController.navigate(
+                        "${Screen.QuestionScreen.route}/${event.quizId}"
+                    ) {
+                        popUpTo(feedbackRoute) { inclusive = true }
+                    }
+                }
+                is FeedbackNavEvent.RetryQuiz -> {
+                    navController.navigate(
+                        "${Screen.QuestionScreen.route}/${event.quizId}?retry=true"
+                    ) {
+                        popUpTo(feedbackRoute) { inclusive = true }
+                    }
+                }
+            }
         }
     }
 
@@ -107,52 +140,11 @@ fun FeedbackScren(
 
             Spacer(modifier = Modifier.padding(30.dp))
             Button(
-                text = when {
-                    WrongQuizManager.queue.isNotEmpty() -> "Lanjut Belajar"
-                    LearnFirstHolder.hasNext() -> "Lanjut Belajar"
-                    LearnFirstHolder.isActive() -> "Mulai Kuis"
-                    else -> "Ayo Coba Lagi!"
-                },
+                text = viewModel.buttonText,
                 borderColor = LitecartesColor.Secondary,
                 color = LitecartesColor.Surface,
                 backgroundColor = LitecartesColor.Secondary,
-                onClick = {
-                    if (WrongQuizManager.queue.isNotEmpty()) {
-                        // Remedial flow: more materials to review
-                        val next = WrongQuizManager.queue.first()
-                        WrongQuizManager.queue.removeFirst()
-                        navController.navigate(
-                            "${Screen.FeedbackScreen.route}/${next.chapterId}/levels/${next.level}/questions/${next.id}?materialId=${next.materialId}"
-                        ) {
-                            popUpTo("${Screen.FeedbackScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}") { inclusive = true }
-                        }
-                    } else if (LearnFirstHolder.hasNext()) {
-                        // Learn-first flow: more materials to view
-                        val nextMaterial = LearnFirstHolder.next()!!
-                        navController.navigate(
-                            "${Screen.FeedbackScreen.route}/${chapterId}/levels/${level}/questions/0?materialId=${nextMaterial.id}"
-                        ) {
-                            popUpTo("${Screen.FeedbackScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}") { inclusive = true }
-                        }
-                    } else if (LearnFirstHolder.isActive()) {
-                        viewModel.audioManager.playSfx(SfxType.START_LEVEL)
-                        val quizId = LearnFirstHolder.quizId
-                        LearnFirstHolder.clear()
-                        navController.navigate(
-                            "${Screen.QuestionScreen.route}/${quizId}"
-                        ) {
-                            popUpTo("${Screen.FeedbackScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}") { inclusive = true }
-                        }
-                    } else {
-                        // Remedial flow done: retry the quiz
-                        val quizId = RemedialHolder.quizId
-                        navController.navigate(
-                            "${Screen.QuestionScreen.route}/${quizId}?retry=true"
-                        ) {
-                            popUpTo("${Screen.FeedbackScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}") { inclusive = true }
-                        }
-                    }
-                },
+                onClick = { viewModel.onContinue() },
                 textModifier = Modifier.padding(8.dp),
                 modifier = Modifier.fillMaxWidth(),
                 fontSize = 16.sp
@@ -163,9 +155,9 @@ fun FeedbackScren(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun PreviewFeedbackScren() {
+fun PreviewFeedbackScreen() {
     LitecartesNativeTheme {
-        FeedbackScren(
+        FeedbackScreen(
             navController = rememberNavController(),
             chapterId = 0,
             level = 1
