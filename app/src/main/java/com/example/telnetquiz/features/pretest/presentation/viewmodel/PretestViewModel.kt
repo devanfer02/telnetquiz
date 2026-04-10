@@ -68,12 +68,19 @@ class PretestViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, error = null)
             when (val result = pretestRepository.getPretestQuestions()) {
                 is Result.Success -> {
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        questions = result.data,
-                        currentQuestionIndex = 0,
-                        answers = emptyMap()
-                    )
+                    if (result.data.isEmpty()) {
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            error = "Belum ada soal pretest. Silahkan kontak Admin!"
+                        )
+                    } else {
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            questions = result.data,
+                            currentQuestionIndex = 0,
+                            answers = emptyMap()
+                        )
+                    }
                 }
                 is Result.Error -> {
                     _state.value = _state.value.copy(

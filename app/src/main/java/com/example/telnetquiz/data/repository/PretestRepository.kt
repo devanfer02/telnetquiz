@@ -17,7 +17,7 @@ class PretestRepository @Inject constructor(
             val response = api.getPretestQuestions()
             if (response.isSuccessful) {
                 val body = response.body()
-                if (body != null && body.data != null) {
+                if (body?.data != null) {
                     Result.Success(body.data.questions)
                 } else {
                     Result.Error("No pretest questions found")
@@ -35,7 +35,7 @@ class PretestRepository @Inject constructor(
             val response = api.submitPretestAnswers(SubmitPretestRequest(answers))
             if (response.isSuccessful) {
                 val body = response.body()
-                if (body != null && body.data != null) {
+                if (body?.data != null) {
                     Result.Success(body.data)
                 } else {
                     Result.Error("Invalid response from server")

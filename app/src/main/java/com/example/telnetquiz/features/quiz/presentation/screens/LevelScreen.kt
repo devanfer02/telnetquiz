@@ -241,7 +241,7 @@ fun LevelScreen(
                                             .graphicsLayer { alpha = buttonAlpha }
                                     ) {
                                         LevelButton(
-                                            level = levelModel.level,
+                                            level = index + 1,
                                             onClick = {
                                                 selectedQuizId = levelModel.quizId
                                                 selectedQuizLevel = levelModel.level

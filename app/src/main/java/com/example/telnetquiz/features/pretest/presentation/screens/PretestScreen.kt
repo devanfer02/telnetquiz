@@ -48,7 +48,7 @@ fun PretestScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val isTtsLoading by viewModel.ttsLoading.collectAsState()
-    val currentQuestion = viewModel.currentQuestion
+    val currentQuestion = state.questions.getOrNull(state.currentQuestionIndex)
     val haptic = LocalHapticFeedback.current
 
     val letters = listOf('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
