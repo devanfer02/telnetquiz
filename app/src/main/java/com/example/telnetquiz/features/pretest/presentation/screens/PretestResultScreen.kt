@@ -87,7 +87,7 @@ fun PretestResultScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .background(LitecartesColor.Surface),
+                .background(LitecartesColor.Primary),
             contentAlignment = Alignment.Center
         ) {
             Column(

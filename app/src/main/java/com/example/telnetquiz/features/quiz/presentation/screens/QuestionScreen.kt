@@ -51,7 +51,7 @@ fun QuestionScreen(
     viewModel: QuizViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val currentQuestion = viewModel.currentQuestion
+    val currentQuestion = state.quiz?.questions?.getOrNull(state.currentQuestionIndex)
     val haptic = LocalHapticFeedback.current
 
     var showDialog by remember { mutableStateOf(false) }
