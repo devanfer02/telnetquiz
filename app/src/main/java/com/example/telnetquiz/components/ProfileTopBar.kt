@@ -1,4 +1,4 @@
-package com.example.telnetquiz.features.quiz.presentation.components
+package com.example.telnetquiz.components
 
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn

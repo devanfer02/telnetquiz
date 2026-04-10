@@ -1,4 +1,4 @@
-package com.example.telnetquiz.features.auth.presentation.components
+package com.example.telnetquiz.components
 
 import android.webkit.WebView
 import androidx.compose.foundation.background
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -108,6 +109,17 @@ fun MaterialContentCard(
             modifier = Modifier.fillMaxWidth()
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewMaterialContentCard() {
+    MaterialContentCard(
+        title = "Materi: Luas Lingkaran",
+        content = "<p>Rumus luas lingkaran adalah <b>πr²</b></p>",
+        imageLink = null,
+        onSpeakClick = {}
+    )
 }
 
 fun sanitizeHtml(input: String): String {

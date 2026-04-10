@@ -1,4 +1,4 @@
-package com.example.telnetquiz.features.quiz.presentation.components
+package com.example.telnetquiz.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
