@@ -95,7 +95,7 @@ fun AuthRegisterScreen(
     LaunchedEffect(state.successMessage) {
         state.successMessage?.let {
             viewModel.clearSuccessMessage()
-            navController.navigate(Screen.QuickCheckScren.route) {
+            navController.navigate(Screen.QuickCheckScreen.route) {
                 popUpTo(Screen.AuthRegisterScreen.route) { inclusive = true }
             }
         }

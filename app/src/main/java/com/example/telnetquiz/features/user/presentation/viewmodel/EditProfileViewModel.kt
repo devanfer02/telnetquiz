@@ -1,4 +1,4 @@
-package com.example.telnetquiz.features.user.presentations.viewmodel
+package com.example.telnetquiz.features.user.presentation.viewmodel
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel

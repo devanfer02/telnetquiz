@@ -1,4 +1,4 @@
-package com.example.telnetquiz.features.user.presentations.components
+package com.example.telnetquiz.features.user.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,7 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.telnetquiz.features.user.presentations.viewmodel.LeaderboardTab
+import com.example.telnetquiz.features.user.presentation.viewmodel.LeaderboardTab
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
