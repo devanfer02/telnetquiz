@@ -156,29 +156,11 @@ fun PretestScreen(
                             val isLastQuestion = state.currentQuestionIndex >= state.questions.size - 1
                             val hasSelectedAnswer = selectedOptionId != null
 
-                            PretestButton(
-                                text = if (isLastQuestion) "Selesai" else "Lanjutkan",
-                                backgroundColor = if (hasSelectedAnswer) LitecartesColor.Secondary else Color.Gray,
-                                textColor = if (hasSelectedAnswer) LitecartesColor.Surface else Color.White,
-                                onClick = {
-                                    if (hasSelectedAnswer) {
-                                        if (isLastQuestion) {
-                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                            viewModel.audioManager.playSfx(SfxType.PRETEST_SUBMIT)
-                                            viewModel.submitPretest()
-                                        } else {
-                                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                            viewModel.nextQuestion()
-                                        }
-                                    }
-                                }
-                            )
-
                             if (state.isSubmitting) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(top = 16.dp),
+                                        .padding(vertical = 16.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     CircularProgressIndicator(
@@ -186,6 +168,24 @@ fun PretestScreen(
                                         modifier = Modifier.size(24.dp)
                                     )
                                 }
+                            } else {
+                                PretestButton(
+                                    text = if (isLastQuestion) "Selesai" else "Lanjutkan",
+                                    backgroundColor = if (hasSelectedAnswer) LitecartesColor.Secondary else Color.Gray,
+                                    textColor = if (hasSelectedAnswer) LitecartesColor.Surface else Color.White,
+                                    onClick = {
+                                        if (hasSelectedAnswer) {
+                                            if (isLastQuestion) {
+                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                viewModel.audioManager.playSfx(SfxType.PRETEST_SUBMIT)
+                                                viewModel.submitPretest()
+                                            } else {
+                                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                                viewModel.nextQuestion()
+                                            }
+                                        }
+                                    }
+                                )
                             }
                         }
 
