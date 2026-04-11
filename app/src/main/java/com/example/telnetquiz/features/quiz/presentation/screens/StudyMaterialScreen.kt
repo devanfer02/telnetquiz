@@ -28,13 +28,13 @@ import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.MascotLoadingScreen
 import com.example.telnetquiz.components.MaterialContentCard
 import com.example.telnetquiz.constants.Screen
-import com.example.telnetquiz.features.quiz.presentation.viewmodel.FeedbackNavEvent
+import com.example.telnetquiz.features.quiz.presentation.viewmodel.StudyMaterialNavEvent
 import com.example.telnetquiz.features.quiz.presentation.viewmodel.StudyMaterialViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 
 @Composable
-fun FeedbackScreen(
+fun StudyMaterialScreen(
     navController: NavController,
     chapterId: Int,
     level: Int,
@@ -57,34 +57,34 @@ fun FeedbackScreen(
 
     LaunchedEffect(Unit) {
         viewModel.navEvent.collect { event ->
-            val feedbackRoute = "${Screen.FeedbackScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}"
+            val materialRoute = "${Screen.StudyMaterialScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}"
             when (event) {
-                is FeedbackNavEvent.NextWrongQuestion -> {
+                is StudyMaterialNavEvent.NextWrongQuestion -> {
                     navController.navigate(
-                        "${Screen.FeedbackScreen.route}/${event.chapterId}/levels/${event.level}/questions/${event.questionId}?materialId=${event.materialId}"
+                        "${Screen.StudyMaterialScreen.route}/${event.chapterId}/levels/${event.level}/questions/${event.questionId}?materialId=${event.materialId}"
                     ) {
-                        popUpTo(feedbackRoute) { inclusive = true }
+                        popUpTo(materialRoute) { inclusive = true }
                     }
                 }
-                is FeedbackNavEvent.NextLearnFirstMaterial -> {
+                is StudyMaterialNavEvent.NextLearnFirstMaterial -> {
                     navController.navigate(
-                        "${Screen.FeedbackScreen.route}/${event.chapterId}/levels/${event.level}/questions/0?materialId=${event.materialId}"
+                        "${Screen.StudyMaterialScreen.route}/${event.chapterId}/levels/${event.level}/questions/0?materialId=${event.materialId}"
                     ) {
-                        popUpTo(feedbackRoute) { inclusive = true }
+                        popUpTo(materialRoute) { inclusive = true }
                     }
                 }
-                is FeedbackNavEvent.StartQuiz -> {
+                is StudyMaterialNavEvent.StartQuiz -> {
                     navController.navigate(
                         "${Screen.QuestionScreen.route}/${event.quizId}"
                     ) {
-                        popUpTo(feedbackRoute) { inclusive = true }
+                        popUpTo(materialRoute) { inclusive = true }
                     }
                 }
-                is FeedbackNavEvent.RetryQuiz -> {
+                is StudyMaterialNavEvent.RetryQuiz -> {
                     navController.navigate(
                         "${Screen.QuestionScreen.route}/${event.quizId}?retry=true"
                     ) {
-                        popUpTo(feedbackRoute) { inclusive = true }
+                        popUpTo(materialRoute) { inclusive = true }
                     }
                 }
             }
@@ -99,11 +99,11 @@ fun FeedbackScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .background(LitecartesColor.Surface)
+                .background(LitecartesColor.Primary)
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.padding(50.dp))
+            Spacer(modifier = Modifier.padding(8.dp))
 
             when {
                 state.isLoading -> {
@@ -138,7 +138,7 @@ fun FeedbackScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.padding(30.dp))
+            Spacer(modifier = Modifier.padding(12.dp))
             Button(
                 text = viewModel.buttonText,
                 borderColor = LitecartesColor.Secondary,
@@ -149,15 +149,16 @@ fun FeedbackScreen(
                 modifier = Modifier.fillMaxWidth(),
                 fontSize = 16.sp
             )
+            Spacer(modifier = Modifier.padding(16.dp))
         }
     }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun PreviewFeedbackScreen() {
+fun PreviewStudyMaterialScreen() {
     LitecartesNativeTheme {
-        FeedbackScreen(
+        StudyMaterialScreen(
             navController = rememberNavController(),
             chapterId = 0,
             level = 1

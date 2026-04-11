@@ -106,7 +106,7 @@ fun RemedialScreen(
                         val quizIndex = viewModel.startRemedialReview()
                         if (quizIndex != null) {
                             navController.navigate(
-                                "${Screen.FeedbackScreen.route}/${quizIndex.chapterId}/levels/${quizIndex.level}/questions/${quizIndex.id}?materialId=${quizIndex.materialId}"
+                                "${Screen.StudyMaterialScreen.route}/${quizIndex.chapterId}/levels/${quizIndex.level}/questions/${quizIndex.id}?materialId=${quizIndex.materialId}"
                             ) {
                                 popUpTo(Screen.RemedialScreen.route) { inclusive = true }
                             }
