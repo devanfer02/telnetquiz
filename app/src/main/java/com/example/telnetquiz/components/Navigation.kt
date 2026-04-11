@@ -44,6 +44,7 @@ import com.example.telnetquiz.features.auth.presentation.screens.AuthStartScreen
 import com.example.telnetquiz.features.quiz.presentation.screens.StudyMaterialScreen
 import com.example.telnetquiz.features.auth.presentation.viewmodel.AuthViewModel
 import com.example.telnetquiz.features.auth.presentation.viewmodel.SessionState
+import com.example.telnetquiz.features.user.presentation.viewmodel.ProfileViewModel
 import com.example.telnetquiz.features.chapter.presentation.screens.ChapterScreen
 import com.example.telnetquiz.features.pretest.presentation.screens.PretestResultScreen
 import com.example.telnetquiz.features.pretest.presentation.screens.PretestScreen
@@ -238,7 +239,20 @@ private fun MainNavHost(
         composable(
             route = Screen.HomeScreen.route
         ) {
-            ChapterScreen(navController = navController)
+            val profileViewModel: ProfileViewModel = hiltViewModel()
+            val profileState by profileViewModel.state.collectAsState()
+
+            LaunchedEffect(profileState.isLoading, profileState.profile?.hasTakenPretest) {
+                if (!profileState.isLoading && profileState.profile?.hasTakenPretest == false) {
+                    navController.navigate(Screen.QuickCheckScreen.route) {
+                        popUpTo(Screen.HomeScreen.route) { inclusive = true }
+                    }
+                }
+            }
+
+            if (!profileState.isLoading && profileState.profile?.hasTakenPretest != false) {
+                ChapterScreen(navController = navController)
+            }
         }
         composable(
             route = "${Screen.LevelScreen.route}/{id}",

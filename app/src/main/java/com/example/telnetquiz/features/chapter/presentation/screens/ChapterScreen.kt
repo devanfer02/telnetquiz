@@ -29,7 +29,6 @@ import com.example.telnetquiz.features.chapter.presentation.components.ChapterCa
 import com.example.telnetquiz.features.chapter.presentation.components.ChapterCardSkeleton
 import com.example.telnetquiz.features.chapter.presentation.components.ComingSoonCard
 import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterViewModel
-import com.example.telnetquiz.features.user.presentation.viewmodel.ProfileViewModel
 import com.example.telnetquiz.ui.layout.AppLayout
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
@@ -37,23 +36,12 @@ import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 @Composable
 fun ChapterScreen(
     navController: NavController,
-    viewModel: ChapterViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ChapterViewModel = hiltViewModel()
 ) {
     val state by viewModel.listState.collectAsState()
-    val profileState by profileViewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadChapters()
-    }
-
-    // Redirect to pretest if user hasn't taken it (wait for fresh profile data)
-    LaunchedEffect(profileState.isLoading, profileState.profile?.hasTakenPretest) {
-        if (!profileState.isLoading && profileState.profile?.hasTakenPretest == false) {
-            navController.navigate(Screen.QuickCheckScreen.route) {
-                popUpTo(Screen.HomeScreen.route) { inclusive = true }
-            }
-        }
     }
     AppLayout(
         navController = navController
