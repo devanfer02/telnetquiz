@@ -93,120 +93,107 @@ fun PretestResultScreen(
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp),
+                    .padding(
+                        vertical = 40.dp,
+                        horizontal = 20.dp
+                    ),
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Column(
-                    modifier = Modifier
-                        .shadow(
-                            elevation = 10.dp,
-                            shape = RoundedCornerShape(12.dp),
-                            clip = false
-                        )
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(LitecartesColor.Primary)
-                        .padding(
-                            vertical = 40.dp,
-                            horizontal = 20.dp
-                        ),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+            ){
+                Text(
+                    text = "HASIL PRETEST",
+                    color = LitecartesColor.Surface,
+                    fontSize = 28.sp,
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.result),
+                    contentDescription = "result",
+                    modifier = Modifier.size(300.dp)
+                )
+                Text(
+                    text = "${scorePercentage.toInt()}%",
+                    color = Color.White,
+                    fontSize = 48.sp,
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Spacer(modifier = Modifier.padding(8.dp))
+                val feedback = getFeedback(scorePercentage)
+                Text(
+                    text = feedback.title,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = feedback.description,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.White.copy(alpha = 0.85f),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 24.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                ScoreCountRow(
+                    correctCount = correctCount,
+                    wrongCount = wrongCount
+                )
+                if (wrongCount > 0 && weaknesses.isNotEmpty()) {
+                    Spacer(modifier = Modifier.padding(12.dp))
                     Text(
-                        text = "HASIL PRETEST",
-                        color = LitecartesColor.Surface,
-                        fontSize = 28.sp,
-                        fontFamily = nunitosFontFamily,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.result),
-                        contentDescription = "result",
-                        modifier = Modifier.size(300.dp)
-                    )
-                    Text(
-                        text = "${scorePercentage.toInt()}%",
-                        color = Color.White,
-                        fontSize = 48.sp,
-                        fontFamily = nunitosFontFamily,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                    Spacer(modifier = Modifier.padding(8.dp))
-                    val feedback = getFeedback(scorePercentage)
-                    Text(
-                        text = feedback.title,
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = feedback.description,
+                        text = "Bab yang perlu dipelajari lagi:",
+                        color = Color.White.copy(alpha = 0.8f),
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.White.copy(alpha = 0.85f),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 24.dp)
+                        fontFamily = nunitosFontFamily,
+                        fontWeight = FontWeight.SemiBold
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ScoreCountRow(
-                        correctCount = correctCount,
-                        wrongCount = wrongCount
-                    )
-                    if (wrongCount > 0 && weaknesses.isNotEmpty()) {
-                        Spacer(modifier = Modifier.padding(12.dp))
-                        Text(
-                            text = "Bab yang perlu dipelajari lagi:",
-                            color = Color.White.copy(alpha = 0.8f),
-                            fontSize = 14.sp,
-                            fontFamily = nunitosFontFamily,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Spacer(modifier = Modifier.padding(6.dp))
-                        weaknesses.forEach { weakness ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(LitecartesColor.Surface.copy(alpha = 0.15f))
-                                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = weakness.chapterTitle,
-                                    color = Color.White,
-                                    fontSize = 14.sp,
-                                    fontFamily = nunitosFontFamily,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                Text(
-                                    text = "${weakness.wrongCount}/${weakness.totalQuestions} salah",
-                                    color = Color.White.copy(alpha = 0.7f),
-                                    fontSize = 12.sp,
-                                    fontFamily = nunitosFontFamily
-                                )
-                            }
+                    Spacer(modifier = Modifier.padding(6.dp))
+                    weaknesses.forEach { weakness ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(LitecartesColor.Surface.copy(alpha = 0.15f))
+                                .padding(horizontal = 14.dp, vertical = 10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = weakness.chapterTitle,
+                                color = Color.White,
+                                fontSize = 14.sp,
+                                fontFamily = nunitosFontFamily,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Text(
+                                text = "${weakness.wrongCount}/${weakness.totalQuestions} salah",
+                                color = Color.White.copy(alpha = 0.7f),
+                                fontSize = 12.sp,
+                                fontFamily = nunitosFontFamily
+                            )
                         }
                     }
-                    Spacer(modifier = Modifier.padding(10.dp))
-                    Button(
-                        text = "Lanjutkan",
-                        borderColor = LitecartesColor.Secondary,
-                        color = LitecartesColor.Surface,
-                        backgroundColor = LitecartesColor.Secondary,
-                        textModifier = Modifier.padding(8.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 32.dp),
-                        onClick = {
-                            flowResultStore?.clearPretest()
-                            navController.navigate(Screen.HomeScreen.route) {
-                                popUpTo(0) { inclusive = true }
-                            }
-                        }
-                    )
                 }
+                Spacer(modifier = Modifier.padding(10.dp))
+                Button(
+                    text = "Lanjutkan",
+                    borderColor = LitecartesColor.Secondary,
+                    color = LitecartesColor.Surface,
+                    backgroundColor = LitecartesColor.Secondary,
+                    textModifier = Modifier.padding(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp),
+                    onClick = {
+                        flowResultStore?.clearPretest()
+                        navController.navigate(Screen.HomeScreen.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                )
             }
         }
     }
