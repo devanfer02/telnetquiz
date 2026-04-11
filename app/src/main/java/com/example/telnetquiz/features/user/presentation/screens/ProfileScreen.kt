@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,7 +38,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.components.ErrorRetryBox
-import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.local.AudioSettings
@@ -50,6 +48,7 @@ import com.example.telnetquiz.features.user.presentation.components.SoundSetting
 import com.example.telnetquiz.features.user.presentation.components.StatCard
 import com.example.telnetquiz.features.user.presentation.viewmodel.AchievementViewModel
 import com.example.telnetquiz.features.user.presentation.viewmodel.ProfileViewModel
+import com.example.telnetquiz.ui.layout.AppLayout
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -83,43 +82,48 @@ fun ProfileScreen(
         )
     }
 
-    Scaffold { innerPadding ->
+    AppLayout(
+        navController = navController,
+        topBar = {
+            Column {
+                AnimatedVisibility(
+                    visible = isHeaderExpanded,
+                    enter = expandVertically(expandFrom = Alignment.Top),
+                    exit = shrinkVertically(shrinkTowards = Alignment.Top)
+                ) {
+                    ProfileHeaderSection(
+                        profile = state.profile,
+                        isLoading = state.isLoading,
+                        error = state.error,
+                        localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
+                        onSettingsClick = { showSoundSettings = true },
+                        onEditProfile = { navController.navigate(Screen.EditProfileScreen.route) }
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { isHeaderExpanded = !isHeaderExpanded }
+                        .padding(vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(40.dp)
+                            .height(4.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                            .background(Color.Gray.copy(alpha = 0.3f))
+                    )
+                }
+            }
+        }
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .background(LitecartesColor.Surface)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween
+                .fillMaxSize()
         ) {
-            AnimatedVisibility(
-                visible = isHeaderExpanded,
-                enter = expandVertically(expandFrom = Alignment.Top),
-                exit = shrinkVertically(shrinkTowards = Alignment.Top)
-            ) {
-                ProfileHeaderSection(
-                    profile = state.profile,
-                    isLoading = state.isLoading,
-                    error = state.error,
-                    localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
-                    onSettingsClick = { showSoundSettings = true },
-                    onEditProfile = { navController.navigate(Screen.EditProfileScreen.route) }
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { isHeaderExpanded = !isHeaderExpanded }
-                    .padding(vertical = 6.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .width(40.dp)
-                        .height(4.dp)
-                        .clip(RoundedCornerShape(2.dp))
-                        .background(Color.Gray.copy(alpha = 0.3f))
-                )
-            }
             LazyColumn(
                 modifier = Modifier
                     .padding(
@@ -205,9 +209,6 @@ fun ProfileScreen(
                     }
                 }
             }
-            Navbar(
-                navController = navController
-            )
         }
     }
 }

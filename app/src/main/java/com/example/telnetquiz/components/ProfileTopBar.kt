@@ -16,13 +16,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,10 +49,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.telnetquiz.R
-import com.example.telnetquiz.components.AvatarImage
-import com.example.telnetquiz.components.SkeletonBox
-import com.example.telnetquiz.components.TopBarContainer
+import com.example.telnetquiz.constants.AvatarConstants
+import com.example.telnetquiz.features.user.presentation.viewmodel.ProfileViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
@@ -58,16 +60,16 @@ import com.example.telnetquiz.ui.theme.nunitosFontFamily
 fun ProfileTopBar(
     modifier: Modifier = Modifier,
     backgroundColor: Color = LitecartesColor.Surface,
-    isLoading: Boolean = false,
-    name: String = "",
-    school: String = "",
-    imageUrl: String? = null,
-    gender: Boolean? = null,
-    localAvatarResId: Int? = null,
-    totalScore: Int = 0,
-    dailyStreak: Int = 0,
-    tag: String = "Penjelajah"
+    profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(Unit) {
+        profileViewModel.loadProfile()
+    }
+
+    val profileState by profileViewModel.state.collectAsState()
+    val selectedAvatarIndex by profileViewModel.selectedAvatarIndex.collectAsState()
+    val tag by profileViewModel.tag.collectAsState()
+
     TopBarContainer(
         modifier = modifier
             .fillMaxWidth()
@@ -79,7 +81,7 @@ fun ProfileTopBar(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(vertical = 20.dp, horizontal = 18.dp)
         ) {
-            if (isLoading) {
+            if (profileState.isLoading) {
                 SkeletonBox(
                     height = 55.dp,
                     width = 55.dp,
@@ -88,10 +90,10 @@ fun ProfileTopBar(
                 )
             } else {
                 AvatarImage(
-                    imageUrl = imageUrl,
-                    localAvatarResId = localAvatarResId,
-                    gender = gender,
-                    nameSeed = name,
+                    imageUrl = profileState.profile?.image,
+                    localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
+                    gender = profileState.profile?.gender,
+                    nameSeed = profileState.profile?.fullname ?: "",
                     shape = RoundedCornerShape(18.dp),
                     modifier = Modifier
                         .height(55.dp)
@@ -99,7 +101,7 @@ fun ProfileTopBar(
                 )
             }
             Spacer(modifier = Modifier.padding(4.dp))
-            if (isLoading) {
+            if (profileState.isLoading) {
                 Column(
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -112,14 +114,14 @@ fun ProfileTopBar(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = name,
+                        text = profileState?.profile?.fullname ?: "",
                         fontFamily = nunitosFontFamily,
                         color = LitecartesColor.Surface,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
                     Text(
-                        text = school,
+                        text = profileState.profile?.school?.name ?: "",
                         fontFamily = nunitosFontFamily,
                         color = LitecartesColor.Surface,
                         fontWeight = FontWeight.SemiBold,
@@ -134,7 +136,7 @@ fun ProfileTopBar(
                         horizontal = 12.dp
                     )
             ) {
-                if (isLoading) {
+                if (profileState.isLoading) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -158,13 +160,13 @@ fun ProfileTopBar(
                             BoxPoints(
                                 modifier = Modifier.weight(1f),
                                 imageId = R.drawable.diamon,
-                                points = "$totalScore",
+                                points = "${ profileState.profile?.stats?.totalScore ?: 0 }",
                             )
                             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
                             BoxPoints(
                                 modifier = Modifier.weight(1f),
                                 imageId = R.drawable.lightning,
-                                points = "$dailyStreak"
+                                points = "${profileState.profile?.stats?.dailyStreak ?: 0}"
                             )
                         }
                         androidx.compose.animation.AnimatedVisibility(

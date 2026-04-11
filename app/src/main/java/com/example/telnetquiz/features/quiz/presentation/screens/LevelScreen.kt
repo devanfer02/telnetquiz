@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
@@ -28,7 +27,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -54,8 +52,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.MascotLoadingScreen
-import com.example.telnetquiz.components.Navbar
-import com.example.telnetquiz.constants.AvatarConstants
+import com.example.telnetquiz.components.ProfileTopBar
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterViewModel
 import com.example.telnetquiz.features.chapter.presentation.viewmodel.LevelNavEvent
@@ -64,8 +61,7 @@ import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.features.quiz.presentation.components.LevelButton
 import com.example.telnetquiz.features.quiz.presentation.components.LevelOptionMenu
 import com.example.telnetquiz.features.quiz.presentation.components.LevelPath
-import com.example.telnetquiz.components.ProfileTopBar
-import com.example.telnetquiz.features.user.presentation.viewmodel.ProfileViewModel
+import com.example.telnetquiz.ui.layout.AppLayout
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 
@@ -73,14 +69,10 @@ import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 fun LevelScreen(
     navController: NavController,
     chapterId: Int,
-    viewModel: ChapterViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ChapterViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
     val detailState by viewModel.detailState.collectAsState()
-    val profileState by profileViewModel.state.collectAsState()
-    val selectedAvatarIndex by profileViewModel.selectedAvatarIndex.collectAsState()
-    val tag by profileViewModel.tag.collectAsState()
     val isFetchingMaterials by viewModel.isFetchingMaterials.collectAsState()
 
     var showLevelDialog by remember { mutableStateOf(false) }
@@ -115,7 +107,6 @@ fun LevelScreen(
 
     LaunchedEffect(chapterId) {
         viewModel.loadChapterById(chapterId)
-        profileViewModel.loadProfile()
     }
 
     LaunchedEffect(Unit) {
@@ -135,32 +126,15 @@ fun LevelScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            ProfileTopBar(
-                backgroundColor = LitecartesColor.DarkerSurface,
-                isLoading = profileState.isLoading,
-                name = profileState.profile?.fullname ?: "",
-                school = profileState.profile?.school?.name ?: "",
-                imageUrl = profileState.profile?.image,
-                gender = profileState.profile?.gender,
-                localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
-                totalScore = profileState.profile?.stats?.totalScore ?: 0,
-                dailyStreak = profileState.profile?.stats?.dailyStreak ?: 0,
-                tag = tag
-            )
-        },
-        modifier = Modifier.systemBarsPadding()
+    AppLayout(
+        navController = navController,
+        topBar = { ProfileTopBar(backgroundColor = LitecartesColor.DarkerSurface) }
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
                 if (detailState.chapter == null && detailState.error == null) {
                     BoxWithConstraints(
                         modifier = Modifier
@@ -291,7 +265,6 @@ fun LevelScreen(
                         }
                     }
                 }
-            }
             IconButton(
                 onClick = {
                     navController.navigate(Screen.HomeScreen.route) {
@@ -300,7 +273,7 @@ fun LevelScreen(
                 },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 16.dp, bottom = 80.dp)
+                    .padding(end = 16.dp, bottom = 16.dp)
                     .size(48.dp),
                 colors = IconButtonDefaults.iconButtonColors(
                     containerColor = LitecartesColor.Primary,
@@ -310,14 +283,6 @@ fun LevelScreen(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back to chapters"
-                )
-            }
-            Box(
-                modifier = Modifier.align(Alignment.BottomCenter)
-            ) {
-                Navbar(
-                    navController = navController,
-                    backgroundColor = Color.Transparent
                 )
             }
         }
