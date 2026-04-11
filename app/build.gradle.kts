@@ -98,6 +98,7 @@ dependencies {
     implementation("androidx.compose.material:material")
     implementation("androidx.core:core-splashscreen:1.0.0")
     implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation("io.coil-kt:coil-gif:2.7.0")
     implementation("com.google.dagger:hilt-android:2.51")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("io.arrow-kt:arrow-core:1.2.0")
