@@ -25,11 +25,11 @@ data class StudyMaterialState(
     val error: String? = null
 )
 
-sealed class FeedbackNavEvent {
-    data class NextWrongQuestion(val chapterId: Int, val level: Int, val questionId: Int, val materialId: Int) : FeedbackNavEvent()
-    data class NextLearnFirstMaterial(val chapterId: Int, val level: Int, val materialId: Int) : FeedbackNavEvent()
-    data class StartQuiz(val quizId: Int) : FeedbackNavEvent()
-    data class RetryQuiz(val quizId: Int) : FeedbackNavEvent()
+sealed class StudyMaterialNavEvent {
+    data class NextWrongQuestion(val chapterId: Int, val level: Int, val questionId: Int, val materialId: Int) : StudyMaterialNavEvent()
+    data class NextLearnFirstMaterial(val chapterId: Int, val level: Int, val materialId: Int) : StudyMaterialNavEvent()
+    data class StartQuiz(val quizId: Int) : StudyMaterialNavEvent()
+    data class RetryQuiz(val quizId: Int) : StudyMaterialNavEvent()
 }
 
 @HiltViewModel
@@ -48,8 +48,8 @@ class StudyMaterialViewModel @Inject constructor(
     private val _state = MutableStateFlow(StudyMaterialState())
     val state: StateFlow<StudyMaterialState> = _state.asStateFlow()
 
-    private val _navEvent = MutableSharedFlow<FeedbackNavEvent>()
-    val navEvent: SharedFlow<FeedbackNavEvent> = _navEvent.asSharedFlow()
+    private val _navEvent = MutableSharedFlow<StudyMaterialNavEvent>()
+    val navEvent: SharedFlow<StudyMaterialNavEvent> = _navEvent.asSharedFlow()
 
     val buttonText: String
         get() = when {
@@ -94,7 +94,7 @@ class StudyMaterialViewModel @Inject constructor(
                 quizFlowManager.wrongQueue.isNotEmpty() -> {
                     val next = quizFlowManager.wrongQueue.removeFirst()
                     _navEvent.emit(
-                        FeedbackNavEvent.NextWrongQuestion(
+                        StudyMaterialNavEvent.NextWrongQuestion(
                             chapterId = next.chapterId,
                             level = next.level,
                             questionId = next.id,
@@ -105,7 +105,7 @@ class StudyMaterialViewModel @Inject constructor(
                 quizFlowManager.hasNextMaterial() -> {
                     val nextMaterial = quizFlowManager.nextMaterial()!!
                     _navEvent.emit(
-                        FeedbackNavEvent.NextLearnFirstMaterial(
+                        StudyMaterialNavEvent.NextLearnFirstMaterial(
                             chapterId = quizFlowManager.learnFirstChapterId,
                             level = quizFlowManager.learnFirstLevel,
                             materialId = nextMaterial.id
@@ -116,11 +116,11 @@ class StudyMaterialViewModel @Inject constructor(
                     audioManager.playSfx(SfxType.START_LEVEL)
                     val quizId = quizFlowManager.learnFirstQuizId
                     quizFlowManager.clearLearnFirst()
-                    _navEvent.emit(FeedbackNavEvent.StartQuiz(quizId))
+                    _navEvent.emit(StudyMaterialNavEvent.StartQuiz(quizId))
                 }
                 else -> {
                     val quizId = quizFlowManager.remedialQuizId
-                    _navEvent.emit(FeedbackNavEvent.RetryQuiz(quizId))
+                    _navEvent.emit(StudyMaterialNavEvent.RetryQuiz(quizId))
                 }
             }
         }

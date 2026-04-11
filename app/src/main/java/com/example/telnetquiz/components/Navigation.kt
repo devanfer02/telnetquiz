@@ -41,7 +41,7 @@ import com.example.telnetquiz.features.auth.presentation.screens.AboutScreen
 import com.example.telnetquiz.features.auth.presentation.screens.AuthLoginScreen
 import com.example.telnetquiz.features.auth.presentation.screens.AuthRegisterScreen
 import com.example.telnetquiz.features.auth.presentation.screens.AuthStartScreen
-import com.example.telnetquiz.features.quiz.presentation.screens.FeedbackScreen
+import com.example.telnetquiz.features.quiz.presentation.screens.StudyMaterialScreen
 import com.example.telnetquiz.features.auth.presentation.viewmodel.AuthViewModel
 import com.example.telnetquiz.features.auth.presentation.viewmodel.SessionState
 import com.example.telnetquiz.features.chapter.presentation.screens.ChapterScreen
@@ -277,7 +277,7 @@ private fun MainNavHost(
             )
         }
         composable(
-            route = "${Screen.FeedbackScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}",
+            route = "${Screen.StudyMaterialScreen.route}/{chapterId}/levels/{level}/questions/{id}?materialId={materialId}",
             arguments = listOf(
                 navArgument("chapterId") {
                     type = NavType.IntType
@@ -299,7 +299,7 @@ private fun MainNavHost(
             val id = it.arguments?.getInt("id") ?: 1
             val materialId = it.arguments?.getInt("materialId") ?: 0
 
-            FeedbackScreen(
+            StudyMaterialScreen(
                 chapterId = chapterId,
                 level = level,
                 materialId = materialId,

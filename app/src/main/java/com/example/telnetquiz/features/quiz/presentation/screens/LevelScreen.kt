@@ -123,7 +123,7 @@ fun LevelScreen(
             when (event) {
                 is LevelNavEvent.GoToFeedback -> {
                     navController.navigate(
-                        "${Screen.FeedbackScreen.route}/${event.chapterId}/levels/${event.level}/questions/0?materialId=${event.materialId}"
+                        "${Screen.StudyMaterialScreen.route}/${event.chapterId}/levels/${event.level}/questions/0?materialId=${event.materialId}"
                     )
                 }
                 is LevelNavEvent.GoToQuiz -> {
