@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,7 +42,6 @@ import com.example.telnetquiz.R
 import com.example.telnetquiz.components.TopBarContainer
 import com.example.telnetquiz.components.EmptyStateBox
 import com.example.telnetquiz.components.ErrorRetryBox
-import com.example.telnetquiz.components.Navbar
 import com.example.telnetquiz.data.remote.dto.LeaderboardEntryDto
 import com.example.telnetquiz.features.user.domain.model.User
 import com.example.telnetquiz.features.user.presentation.components.ActivityDateHeaderSkeleton
@@ -56,6 +54,7 @@ import com.example.telnetquiz.features.user.presentation.components.Top3Profile
 import com.example.telnetquiz.features.user.presentation.components.Top3ProfileSkeleton
 import com.example.telnetquiz.features.user.presentation.viewmodel.LeaderboardTab
 import com.example.telnetquiz.features.user.presentation.viewmodel.LeaderboardViewModel
+import com.example.telnetquiz.ui.layout.AppLayout
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -78,14 +77,9 @@ fun LeaderboardScreen(
         viewModel.loadRecentActivity()
     }
 
-    Scaffold { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .background(LitecartesColor.Surface)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
+    AppLayout(
+        navController = navController,
+        topBar = {
             TopBarContainer(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = 20.dp,
@@ -107,7 +101,6 @@ fun LeaderboardScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Segmented Toggle
                     SegmentedToggle(
                         selectedTab = selectedTab,
                         onTabSelected = { viewModel.selectTab(it) }
@@ -146,7 +139,6 @@ fun LeaderboardScreen(
                                     modifier = Modifier
                                         .padding(bottom = 12.dp)
                                 ) {
-                                    // 2nd place
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         modifier = Modifier.padding(top = 18.dp)
@@ -158,7 +150,6 @@ fun LeaderboardScreen(
                                         )
                                     }
                                     Spacer(modifier = Modifier.padding(5.dp))
-                                    // 1st place
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
@@ -169,7 +160,6 @@ fun LeaderboardScreen(
                                         )
                                     }
                                     Spacer(modifier = Modifier.padding(5.dp))
-                                    // 3rd place
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         modifier = Modifier.padding(top = 28.dp)
@@ -208,8 +198,14 @@ fun LeaderboardScreen(
                     }
                 }
             }
-
-            // Content area
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .background(LitecartesColor.Surface)
+                .fillMaxSize()
+        ) {
             when (selectedTab) {
                 LeaderboardTab.PROGRESS -> {
                     when {
@@ -323,7 +319,6 @@ fun LeaderboardScreen(
                 }
             }
 
-            Navbar(navController = navController)
         }
     }
 }
