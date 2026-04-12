@@ -49,7 +49,8 @@ class AudioManager @Inject constructor(
         "remedial_screen",
         "pretest_screen",
         "pretest_result_screen",
-        "feedback_screen"
+        "feedback_screen",
+        "study_material_screen"
     )
 
     init {
