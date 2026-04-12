@@ -1,12 +1,15 @@
 package com.example.telnetquiz.features.quiz.presentation.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
@@ -27,6 +30,7 @@ import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.MascotLoadingScreen
 import com.example.telnetquiz.components.MaterialContentCard
+import com.example.telnetquiz.components.ProgressBarFromApi
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.quiz.presentation.viewmodel.StudyMaterialNavEvent
 import com.example.telnetquiz.features.quiz.presentation.viewmodel.StudyMaterialViewModel
@@ -73,6 +77,13 @@ fun StudyMaterialScreen(
                         popUpTo(materialRoute) { inclusive = true }
                     }
                 }
+                is StudyMaterialNavEvent.PreviousLearnFirstMaterial -> {
+                    navController.navigate(
+                        "${Screen.StudyMaterialScreen.route}/${event.chapterId}/levels/${event.level}/questions/0?materialId=${event.materialId}"
+                    ) {
+                        popUpTo(materialRoute) { inclusive = true }
+                    }
+                }
                 is StudyMaterialNavEvent.StartQuiz -> {
                     navController.navigate(
                         "${Screen.QuestionScreen.route}/${event.quizId}"
@@ -92,6 +103,20 @@ fun StudyMaterialScreen(
     }
 
     Scaffold(
+        topBar = {
+            if (viewModel.totalMaterials > 0) {
+                ProgressBarFromApi(
+                    current = viewModel.currentMaterialIndex,
+                    total = viewModel.totalMaterials,
+                    containerColor = LitecartesColor.Primary,
+                    barColor = LitecartesColor.Surface,
+                    borderColor = LitecartesColor.Surface,
+                    useDashedBorder = true,
+                    showLabel = false,
+                    showDivider = true
+                )
+            }
+        },
         modifier = Modifier
             .systemBarsPadding()
     ) { innerPadding ->
@@ -139,16 +164,35 @@ fun StudyMaterialScreen(
             }
 
             Spacer(modifier = Modifier.padding(12.dp))
-            Button(
-                text = viewModel.buttonText,
-                borderColor = LitecartesColor.Secondary,
-                color = LitecartesColor.Surface,
-                backgroundColor = LitecartesColor.Secondary,
-                onClick = { viewModel.onContinue() },
-                textModifier = Modifier.padding(8.dp),
-                modifier = Modifier.fillMaxWidth(),
-                fontSize = 16.sp
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (viewModel.canGoPrevious) {
+                    Button(
+                        text = "Sebelumnya",
+                        borderColor = LitecartesColor.Surface,
+                        color = LitecartesColor.Secondary,
+                        backgroundColor = LitecartesColor.Surface,
+                        onClick = { viewModel.onPrevious() },
+                        textModifier = Modifier.padding(8.dp),
+                        modifier = Modifier.weight(1f),
+                        fontSize = 14.sp
+                    )
+                }
+                Button(
+                    text = viewModel.buttonText,
+                    borderColor = LitecartesColor.Secondary,
+                    color = LitecartesColor.Surface,
+                    backgroundColor = LitecartesColor.Secondary,
+                    onClick = { viewModel.onContinue() },
+                    textModifier = Modifier.padding(8.dp),
+                    modifier = Modifier.weight(1f),
+                    fontSize = 14.sp
+                )
+            }
             Spacer(modifier = Modifier.padding(16.dp))
         }
     }

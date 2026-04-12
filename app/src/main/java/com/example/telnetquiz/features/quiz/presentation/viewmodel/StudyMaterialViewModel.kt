@@ -28,6 +28,7 @@ data class StudyMaterialState(
 sealed class StudyMaterialNavEvent {
     data class NextWrongQuestion(val chapterId: Int, val level: Int, val questionId: Int, val materialId: Int) : StudyMaterialNavEvent()
     data class NextLearnFirstMaterial(val chapterId: Int, val level: Int, val materialId: Int) : StudyMaterialNavEvent()
+    data class PreviousLearnFirstMaterial(val chapterId: Int, val level: Int, val materialId: Int) : StudyMaterialNavEvent()
     data class StartQuiz(val quizId: Int) : StudyMaterialNavEvent()
     data class RetryQuiz(val quizId: Int) : StudyMaterialNavEvent()
 }
@@ -58,6 +59,26 @@ class StudyMaterialViewModel @Inject constructor(
             quizFlowManager.isLearnFirstActive() -> "Mulai Kuis"
             else -> "Ayo Coba Lagi!"
         }
+
+    val currentMaterialIndex: Int get() = quizFlowManager.currentMaterialIndex
+    val totalMaterials: Int get() = quizFlowManager.totalMaterials
+    val canGoPrevious: Boolean get() = quizFlowManager.isLearnFirstActive() && quizFlowManager.currentMaterialIndex > 1
+
+    fun onPrevious() {
+        stopTts()
+        viewModelScope.launch {
+            val prevMaterial = quizFlowManager.previousMaterial()
+            if (prevMaterial != null) {
+                _navEvent.emit(
+                    StudyMaterialNavEvent.PreviousLearnFirstMaterial(
+                        chapterId = quizFlowManager.learnFirstChapterId,
+                        level = quizFlowManager.learnFirstLevel,
+                        materialId = prevMaterial.id
+                    )
+                )
+            }
+        }
+    }
 
     fun loadMaterial(materialId: Int) {
         val cached = quizFlowManager.materialsCache[materialId]

@@ -70,12 +70,23 @@ class QuizFlowManager @Inject constructor() {
         learnFirstIndex = 0
     }
 
+    val currentMaterialIndex: Int get() = learnFirstIndex
+    val totalMaterials: Int get() = learnFirstMaterials.size
+
     fun isLearnFirstActive(): Boolean = learnFirstQuizId > 0
 
     fun hasNextMaterial(): Boolean = learnFirstIndex < learnFirstMaterials.size
 
     fun nextMaterial(): StudyMaterialDto? {
         if (learnFirstIndex >= learnFirstMaterials.size) return null
+        val material = learnFirstMaterials[learnFirstIndex]
+        learnFirstIndex++
+        return material
+    }
+
+    fun previousMaterial(): StudyMaterialDto? {
+        if (learnFirstIndex <= 1) return null
+        learnFirstIndex -= 2
         val material = learnFirstMaterials[learnFirstIndex]
         learnFirstIndex++
         return material
