@@ -1,15 +1,12 @@
 package com.example.telnetquiz.features.quiz.presentation.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
@@ -164,44 +161,26 @@ fun StudyMaterialScreen(
             }
 
             Spacer(modifier = Modifier.padding(8.dp))
+            Button(
+                text = viewModel.buttonText,
+                borderColor = LitecartesColor.Secondary,
+                color = LitecartesColor.Surface,
+                backgroundColor = LitecartesColor.Secondary,
+                onClick = { viewModel.onContinue() },
+                textModifier = Modifier.padding(8.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                fontSize = 16.sp
+            )
             if (viewModel.canGoPrevious) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Button(
-                        text = "Sebelumnya",
-                        borderColor = LitecartesColor.Surface,
-                        color = LitecartesColor.Secondary,
-                        backgroundColor = LitecartesColor.Surface,
-                        onClick = { viewModel.onPrevious() },
-                        textModifier = Modifier.padding(8.dp),
-                        modifier = Modifier.weight(1f),
-                        fontSize = 14.sp
-                    )
-                    Button(
-                        text = viewModel.buttonText,
-                        borderColor = LitecartesColor.Secondary,
-                        color = LitecartesColor.Surface,
-                        backgroundColor = LitecartesColor.Secondary,
-                        onClick = { viewModel.onContinue() },
-                        textModifier = Modifier.padding(8.dp),
-                        modifier = Modifier.weight(1f),
-                        fontSize = 14.sp
-                    )
-                }
-            } else {
                 Button(
-                    text = viewModel.buttonText,
-                    borderColor = LitecartesColor.Secondary,
-                    color = LitecartesColor.Surface,
-                    backgroundColor = LitecartesColor.Secondary,
-                    onClick = { viewModel.onContinue() },
-                    textModifier = Modifier.padding(8.dp),
+                    text = "Sebelumnya",
+                    borderColor = LitecartesColor.Surface,
+                    color = LitecartesColor.Secondary,
+                    backgroundColor = LitecartesColor.Surface,
+                    onClick = { viewModel.onPrevious() },
+                    textModifier = Modifier.padding(4.dp),
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-                    fontSize = 16.sp
+                    fontSize = 14.sp
                 )
             }
             Spacer(modifier = Modifier.padding(8.dp))
