@@ -118,10 +118,10 @@ private fun SplashLoadingScreen() {
 
 private fun tabIndexOf(route: String?): Int? = when {
     route == null -> null
-    route == Screen.HomeScreen.route -> 0
+    route.startsWith(Screen.HomeScreen.route) -> 0
     route.startsWith(Screen.LevelScreen.route) -> 0
-    route == Screen.LeaderboardScreen.route -> 1
-    route == Screen.ProfileScreen.route -> 2
+    route.startsWith(Screen.LeaderboardScreen.route) -> 1
+    route.startsWith(Screen.ProfileScreen.route) -> 2
     else -> null
 }
 

@@ -102,6 +102,7 @@ class PretestViewModel @Inject constructor(
     }
 
     fun nextQuestion() {
+        stopTts()
         val currentIndex = _state.value.currentQuestionIndex
         if (currentIndex < _state.value.questions.size - 1) {
             _state.value = _state.value.copy(currentQuestionIndex = currentIndex + 1)

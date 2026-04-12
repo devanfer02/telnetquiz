@@ -163,14 +163,14 @@ fun StudyMaterialScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.padding(12.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (viewModel.canGoPrevious) {
+            Spacer(modifier = Modifier.padding(8.dp))
+            if (viewModel.canGoPrevious) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Button(
                         text = "Sebelumnya",
                         borderColor = LitecartesColor.Surface,
@@ -181,7 +181,18 @@ fun StudyMaterialScreen(
                         modifier = Modifier.weight(1f),
                         fontSize = 14.sp
                     )
+                    Button(
+                        text = viewModel.buttonText,
+                        borderColor = LitecartesColor.Secondary,
+                        color = LitecartesColor.Surface,
+                        backgroundColor = LitecartesColor.Secondary,
+                        onClick = { viewModel.onContinue() },
+                        textModifier = Modifier.padding(8.dp),
+                        modifier = Modifier.weight(1f),
+                        fontSize = 14.sp
+                    )
                 }
+            } else {
                 Button(
                     text = viewModel.buttonText,
                     borderColor = LitecartesColor.Secondary,
@@ -189,11 +200,11 @@ fun StudyMaterialScreen(
                     backgroundColor = LitecartesColor.Secondary,
                     onClick = { viewModel.onContinue() },
                     textModifier = Modifier.padding(8.dp),
-                    modifier = Modifier.weight(1f),
-                    fontSize = 14.sp
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                    fontSize = 16.sp
                 )
             }
-            Spacer(modifier = Modifier.padding(16.dp))
+            Spacer(modifier = Modifier.padding(8.dp))
         }
     }
 }

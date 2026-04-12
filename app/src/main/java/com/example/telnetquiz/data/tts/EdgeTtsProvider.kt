@@ -69,14 +69,17 @@ class EdgeTtsProvider(
         // No-op for edge provider — use speakContent instead
     }
 
+    @Synchronized
     override fun stop() {
         currentJob?.cancel()
         currentJob = null
         _isLoading.value = false
-        mediaPlayer?.let {
-            if (it.isPlaying) it.stop()
-            it.release()
-        }
+        try {
+            mediaPlayer?.let {
+                if (it.isPlaying) it.stop()
+                it.release()
+            }
+        } catch (_: IllegalStateException) {}
         mediaPlayer = null
     }
 
@@ -96,13 +99,15 @@ class EdgeTtsProvider(
         return response.body?.bytes()
     }
 
+    @Synchronized
     private fun playFile(file: File) {
+        stop()
         mediaPlayer = MediaPlayer().apply {
             setDataSource(file.absolutePath)
             prepare()
             setOnCompletionListener {
                 it.release()
-                mediaPlayer = null
+                if (mediaPlayer === it) mediaPlayer = null
             }
             start()
         }

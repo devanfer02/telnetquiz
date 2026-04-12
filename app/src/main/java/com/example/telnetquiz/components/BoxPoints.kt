@@ -11,12 +11,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -57,15 +61,14 @@ fun BoxPoints(
             modifier = Modifier
                 .padding(3.dp)
         )
-        Text(
+        AutoSizeText(
             text = "$points",
             fontFamily = nunitosFontFamily,
             color = LitecartesColor.Secondary,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 10.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            softWrap = false
+            maxFontSize = 10.sp,
+            minFontSize = 6.sp,
+            maxLines = 1
         )
     }
 }

@@ -58,13 +58,13 @@ fun QuestionHeaderBox(
     var isExpanded by remember { mutableStateOf(true) }
 
     TopBarContainer(
-        modifier = modifier,
-        cornerRadius = 28.dp,
-        elevation = 8.dp,
+        modifier = modifier.padding(bottom = 8.dp),
+        cornerRadius = 24.dp,
+        elevation = 4.dp,
         backgroundBrush = Brush.verticalGradient(
             colors = listOf(
                 LitecartesColor.Primary,
-                LitecartesColor.Primary.copy(alpha = 0.85f)
+                LitecartesColor.Primary.copy(alpha = 0.92f)
             )
         )
     ) {
