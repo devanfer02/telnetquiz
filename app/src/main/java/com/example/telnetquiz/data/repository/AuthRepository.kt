@@ -1,6 +1,5 @@
 package com.example.telnetquiz.data.repository
 
-import android.util.Log
 import com.example.telnetquiz.data.local.TokenManager
 import com.example.telnetquiz.data.remote.api.TelNetQuizApi
 import com.example.telnetquiz.data.remote.dto.LoginRequest
@@ -8,7 +7,6 @@ import com.example.telnetquiz.data.remote.dto.PaginatedSchoolsResponse
 import com.example.telnetquiz.data.remote.dto.RegisterRequest
 import com.example.telnetquiz.data.remote.dto.SchoolDto
 import com.example.telnetquiz.data.remote.dto.UserProfileDto
-import com.example.telnetquiz.data.remote.dto.ValidationErrorResponse
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -25,53 +23,44 @@ class AuthRepository @Inject constructor(
     val userEmail: Flow<String?> = tokenManager.userEmail
     val userName: Flow<String?> = tokenManager.userName
 
-    private fun parseValidationError(errorBody: String?): String {
-        if (errorBody.isNullOrBlank()) return "An error occurred"
-
-        return try {
-            val errorResponse = gson.fromJson(errorBody, ValidationErrorResponse::class.java)
-            if (errorResponse.errors != null && errorResponse.errors.isNotEmpty()) {
-                errorResponse.errors.entries.joinToString("\n") { (field, messages) ->
-                    messages.joinToString("\n") { "• $it" }
-                }
-            } else {
-                errorResponse.message
-            }
-        } catch (e: Exception) {
-            errorBody
-        }
-    }
-
-    private val loginErrorTranslations = mapOf(
+    private val errorTranslations = mapOf(
+        "user already exists" to "Pengguna dengan email ini sudah terdaftar",
         "invalid email address" to "Email yang diberikan tidak valid",
         "invalid email or password" to "Email atau kata sandi salah",
         "request body validation failed" to "Data yang diberikan tidak valid",
+        "failed to register user" to "Gagal mendaftarkan pengguna",
+        "failed to login user" to "Gagal masuk",
     )
 
     private fun translateError(message: String): String {
         val lower = message.lowercase()
-        return loginErrorTranslations.entries
+        return errorTranslations.entries
             .firstOrNull { lower.contains(it.key) }?.value ?: message
     }
 
-    private fun parseLoginError(errorBody: String?): String {
+    private fun parseApiError(errorBody: String?): String {
         if (errorBody.isNullOrBlank()) return "Terjadi kesalahan"
 
         return try {
             val jsonObject = gson.fromJson(errorBody, com.google.gson.JsonObject::class.java)
             val errors = jsonObject.get("errors")
             when {
-                errors != null && errors.isJsonPrimitive -> translateError(errors.asString)
+                errors != null && errors.isJsonPrimitive ->
+                    translateError(errors.asString)
                 errors != null && errors.isJsonObject -> {
                     errors.asJsonObject.entrySet().flatMap { (_, messages) ->
-                        messages.asJsonArray.map { translateError(it.asString) }
+                        when {
+                            messages.isJsonArray -> messages.asJsonArray.map { translateError(it.asString) }
+                            messages.isJsonPrimitive -> listOf(translateError(messages.asString))
+                            else -> emptyList()
+                        }
                     }.joinToString("\n") { "• $it" }
                 }
                 else -> translateError(
-                    jsonObject.get("message")?.asString ?: errorBody
+                    jsonObject.get("message")?.asString ?: "Terjadi kesalahan"
                 )
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             "Terjadi kesalahan"
         }
     }
@@ -99,7 +88,7 @@ class AuthRepository @Inject constructor(
                 }
             } else {
                 val errorBody = response.errorBody()?.string()
-                val errorMessage = parseValidationError(errorBody)
+                val errorMessage = parseApiError(errorBody)
                 Result.Error(errorMessage)
             }
         } catch (e: Exception) {
@@ -122,7 +111,7 @@ class AuthRepository @Inject constructor(
                 }
             } else {
                 val errorBody = response.errorBody()?.string()
-                val errorMessage = parseLoginError(errorBody)
+                val errorMessage = parseApiError(errorBody)
                 Result.Error(errorMessage)
             }
         } catch (e: Exception) {
