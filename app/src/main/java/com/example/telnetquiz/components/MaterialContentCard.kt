@@ -124,6 +124,7 @@ fun PreviewMaterialContentCard() {
 
 fun sanitizeHtml(input: String): String {
     return input
+        .replace(Regex("<h1[^>]*>[\\s\\S]*?</h1>", RegexOption.IGNORE_CASE), "")
         .replace(Regex("<script[^>]*>[\\s\\S]*?</script>", RegexOption.IGNORE_CASE), "")
         .replace(Regex("<script[^>]*/>", RegexOption.IGNORE_CASE), "")
         .replace(Regex("<iframe[^>]*>[\\s\\S]*?</iframe>", RegexOption.IGNORE_CASE), "")
