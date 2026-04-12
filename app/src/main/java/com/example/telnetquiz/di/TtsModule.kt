@@ -4,7 +4,6 @@ import android.content.Context
 import com.example.telnetquiz.BuildConfig
 import com.example.telnetquiz.data.remote.api.TelNetQuizApi
 import com.example.telnetquiz.data.tts.EdgeTtsProvider
-import com.example.telnetquiz.data.tts.GoogleCloudTtsProvider
 import com.example.telnetquiz.data.tts.LocalTtsProvider
 import com.example.telnetquiz.data.tts.TtsProvider
 import dagger.Module
@@ -26,7 +25,6 @@ object TtsModule {
     ): TtsProvider {
         return when (BuildConfig.TTS_PROVIDER) {
             "edge" -> EdgeTtsProvider(context, api)
-            "cloud" -> GoogleCloudTtsProvider(context, BuildConfig.GOOGLE_TTS_API_KEY)
             else -> LocalTtsProvider(context)
         }
     }

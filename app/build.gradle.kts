@@ -42,7 +42,6 @@ android {
             val apiKey = apiProperties.getProperty("DEBUG_API_KEY", "")
             buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
             buildConfigField("String", "API_KEY", "\"$apiKey\"")
-            buildConfigField("String", "GOOGLE_TTS_API_KEY", "\"${apiProperties.getProperty("GOOGLE_TTS_API_KEY", "")}\"")
             buildConfigField("String", "TTS_PROVIDER", "\"${apiProperties.getProperty("TTS_PROVIDER", "local")}\"")
         }
         release {
@@ -50,7 +49,6 @@ android {
             val apiKey = apiProperties.getProperty("PROD_API_KEY", "")
             buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
             buildConfigField("String", "API_KEY", "\"$apiKey\"")
-            buildConfigField("String", "GOOGLE_TTS_API_KEY", "\"${apiProperties.getProperty("GOOGLE_TTS_API_KEY", "")}\"")
             buildConfigField("String", "TTS_PROVIDER", "\"${apiProperties.getProperty("TTS_PROVIDER", "local")}\"")
             isMinifyEnabled = true
             isShrinkResources = true
