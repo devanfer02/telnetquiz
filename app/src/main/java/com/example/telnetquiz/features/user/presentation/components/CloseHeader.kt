@@ -33,6 +33,13 @@ fun CloseHeader(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Spacer(modifier = Modifier)
+        Text(
+            text = title,
+            color = LitecartesColor.DarkBrown,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 20.sp
+        )
         IconButton(
             onClick = onClose,
             modifier = Modifier
@@ -49,13 +56,6 @@ fun CloseHeader(
                 modifier = Modifier.size(25.dp)
             )
         }
-        Text(
-            text = title,
-            color = LitecartesColor.DarkBrown,
-            fontWeight = FontWeight.ExtraBold,
-            fontSize = 20.sp
-        )
-        Spacer(modifier = Modifier)
     }
 }
 
