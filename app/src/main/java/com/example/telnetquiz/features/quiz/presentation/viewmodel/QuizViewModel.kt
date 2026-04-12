@@ -308,6 +308,7 @@ class QuizViewModel @Inject constructor(
                 )
             )
         } else {
+            flowResultStore.clearQuiz()
             flowResultStore.quizResult = result
             quizFlowManager.clearRemedial()
             _navEvent.emit(
