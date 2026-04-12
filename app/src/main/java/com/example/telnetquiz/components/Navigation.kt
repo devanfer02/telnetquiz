@@ -128,8 +128,15 @@ private fun tabIndexOf(route: String?): Int? = when {
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.tabSlideDirection(): SlideDirection? {
     val from = tabIndexOf(initialState.destination.route)
     val to = tabIndexOf(targetState.destination.route)
-    if (from == null || to == null || from == to) return null
-    return if (to > from) SlideDirection.Left else SlideDirection.Right
+    return when {
+        from != null && to != null -> {
+            if (from == to) null
+            else if (to > from) SlideDirection.Left else SlideDirection.Right
+        }
+        from == null && to != null -> SlideDirection.Right
+        from != null && to == null -> SlideDirection.Left
+        else -> null
+    }
 }
 
 @Composable
