@@ -40,7 +40,6 @@ jobs:
         run: |
           echo "PROD_API_URL=${{ secrets.PROD_API_URL }}" >> api.properties
           echo "PROD_API_KEY=${{ secrets.PROD_API_KEY }}" >> api.properties
-          echo "GOOGLE_TTS_API_KEY=${{ secrets.GOOGLE_TTS_API_KEY }}" >> api.properties
           echo "TTS_PROVIDER=${{ secrets.TTS_PROVIDER }}" >> api.properties
 
       - name: Build Release APK
@@ -55,6 +54,8 @@ jobs:
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
