@@ -154,7 +154,7 @@ fun QuestionScreen(
                                 .joinToString(". ")
                             val textToRead = "${currentQuestion.description}. ${currentQuestion.question}. Pilihan jawaban: $optionsText"
                             viewModel.speak(textToRead)
-                            viewModel.speakContent("question", currentQuestion.id, null)
+                            viewModel.speakContent("question", currentQuestion.id, null, currentQuestion.audioLink)
                         }
                     )
 

@@ -124,7 +124,7 @@ fun PretestScreen(
                                 .joinToString(". ")
                             val textToRead = "${currentQuestion.description}. ${currentQuestion.question}. Pilihan jawaban: $optionsText"
                             viewModel.speak(textToRead)
-                            viewModel.speakContent("pretest", currentQuestion.id, null)
+                            viewModel.speakContent("pretest", currentQuestion.id, null, currentQuestion.audioLink)
                         }
                     )
 

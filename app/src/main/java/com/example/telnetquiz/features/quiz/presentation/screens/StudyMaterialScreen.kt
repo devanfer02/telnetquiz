@@ -149,7 +149,7 @@ fun StudyMaterialScreen(
                         onSpeakClick = {
                             val plainContent = material.content.replace(Regex("<[^>]*>"), "")
                             viewModel.speak("${material.title}. $plainContent")
-                            viewModel.speakContent("material", material.id, null)
+                            viewModel.speakContent("material", material.id, null, material.audioLink)
                         }
                     )
                 }

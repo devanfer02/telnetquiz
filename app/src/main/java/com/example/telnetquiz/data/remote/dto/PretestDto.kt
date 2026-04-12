@@ -18,6 +18,8 @@ data class PretestQuestionDto(
     val chapterTitle: String?,
     @SerializedName("image_link")
     val imageLink: String?,
+    @SerializedName("audio_link")
+    val audioLink: String? = null,
     @SerializedName("description")
     val description: String,
     @SerializedName("question")

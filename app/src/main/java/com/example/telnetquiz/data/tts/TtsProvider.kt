@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface TtsProvider {
     val isLoading: StateFlow<Boolean> get() = MutableStateFlow(false)
     fun speak(text: String)
-    fun speakContent(type: String, id: Int, gender: Boolean?) {}
+    fun speakContent(type: String, id: Int, gender: Boolean?, audioUrl: String? = null) {}
     fun stop()
     fun shutdown()
 }

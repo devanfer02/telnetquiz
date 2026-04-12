@@ -121,6 +121,8 @@ data class StudyMaterialDto(
     val title: String,
     @SerializedName("imageLink")
     val imageLink: String?,
+    @SerializedName("audio_link")
+    val audioLink: String? = null,
     @SerializedName("content")
     val content: String,
     @SerializedName("createdAt")

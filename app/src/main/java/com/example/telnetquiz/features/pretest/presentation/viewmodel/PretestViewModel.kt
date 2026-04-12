@@ -47,7 +47,7 @@ class PretestViewModel @Inject constructor(
 
     val ttsLoading = ttsProvider.isLoading
     fun speak(text: String) = ttsProvider.speak(text)
-    fun speakContent(type: String, id: Int, gender: Boolean?) = ttsProvider.speakContent(type, id, gender)
+    fun speakContent(type: String, id: Int, gender: Boolean?, audioUrl: String? = null) = ttsProvider.speakContent(type, id, gender, audioUrl)
     fun stopTts() = ttsProvider.stop()
 
     private val _state = MutableStateFlow(PretestState())

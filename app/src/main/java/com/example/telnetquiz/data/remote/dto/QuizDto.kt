@@ -34,6 +34,8 @@ data class QuizQuestionDto(
     val materialId: Int?,
     @SerializedName("imageLink")
     val imageLink: String?,
+    @SerializedName("audioLink")
+    val audioLink: String? = null,
     @SerializedName("description")
     val description: String,
     @SerializedName("question")

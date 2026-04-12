@@ -34,7 +34,7 @@ class EdgeTtsProvider(
     private val _isLoading = MutableStateFlow(false)
     override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    override fun speakContent(type: String, id: Int, gender: Boolean?) {
+    override fun speakContent(type: String, id: Int, gender: Boolean?, audioUrl: String?) {
         stop()
         currentJob = scope.launch {
             try {
@@ -47,11 +47,13 @@ class EdgeTtsProvider(
 
                 _isLoading.value = true
 
-                val response = api.getTtsAudio(type, id)
-                if (!response.isSuccessful) return@launch
+                val resolvedUrl = audioUrl ?: run {
+                    val response = api.getTtsAudio(type, id)
+                    if (!response.isSuccessful) return@launch
+                    response.body()?.data?.audioUrl ?: return@launch
+                }
 
-                val audioUrl = response.body()?.data?.audioUrl ?: return@launch
-                val audioBytes = downloadAudio(audioUrl) ?: return@launch
+                val audioBytes = downloadAudio(resolvedUrl) ?: return@launch
 
                 cacheFile.parentFile?.mkdirs()
                 cacheFile.writeBytes(audioBytes)
