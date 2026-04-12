@@ -133,7 +133,25 @@ fun LeaderboardScreen(
                                     ) { Top3ProfileSkeleton() }
                                 }
                             }
-                            state.leaderboard.size >= 3 -> {
+                            state.leaderboard.isNotEmpty() && state.leaderboard.size < 3 -> {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 12.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "Belum ada cukup juara di arena ini, Penjelajah!",
+                                        fontFamily = nunitosFontFamily,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 14.sp,
+                                        color = Color.White.copy(alpha = 0.8f),
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                    )
+                                }
+                            }
+                        state.leaderboard.size >= 3 -> {
                                 val top3 = state.leaderboard.take(3)
                                 Row(
                                     modifier = Modifier
@@ -173,7 +191,22 @@ fun LeaderboardScreen(
                                 }
                             }
                             else -> {
-                                Spacer(modifier = Modifier.padding(12.dp))
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 20.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "Belum ada juara di arena ini, Penjelajah!\nJadilah yang pertama!",
+                                        fontFamily = nunitosFontFamily,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 14.sp,
+                                        color = Color.White.copy(alpha = 0.8f),
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                    )
+                                }
                             }
                         }
                     }
@@ -279,6 +312,16 @@ fun LeaderboardScreen(
                             ErrorRetryBox(
                                 message = state.error ?: "Terjadi kesalahan",
                                 modifier = Modifier.weight(1f)
+                            )
+                        }
+                        !state.isLoading && state.leaderboard.isEmpty() -> {
+                            EmptyStateBox(
+                                title = "Belum ada juara di arena ini!",
+                                subtitle = "Jadilah Penjelajah pertama yang menaklukkan tantangan!",
+                                imageResId = R.drawable.start_screen,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth()
                             )
                         }
                         else -> {
