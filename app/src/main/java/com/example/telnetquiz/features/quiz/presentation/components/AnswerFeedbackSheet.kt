@@ -52,7 +52,7 @@ fun AnswerFeedbackSheet(
                 fontWeight = FontWeight.Bold
             )
             Image(
-                painter = painterResource(id = R.drawable.chap1),
+                painter = painterResource(id = if (isCorrect) R.drawable.chap1 else R.drawable.mascot_wrong),
                 contentDescription = "",
                 modifier = Modifier.size(200.dp)
             )
