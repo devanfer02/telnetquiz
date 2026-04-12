@@ -56,12 +56,12 @@ fun QuestionHeaderBox(
 
     TopBarContainer(
         modifier = modifier,
-        cornerRadius = 24.dp,
-        elevation = 12.dp,
+        cornerRadius = 28.dp,
+        elevation = 8.dp,
         backgroundBrush = Brush.verticalGradient(
             colors = listOf(
                 LitecartesColor.Primary,
-                LitecartesColor.Primary.copy(alpha = 0.9f)
+                LitecartesColor.Primary.copy(alpha = 0.85f)
             )
         )
     ) {
