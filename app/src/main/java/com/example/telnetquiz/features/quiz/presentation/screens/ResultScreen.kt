@@ -51,6 +51,10 @@ fun ResultScreen(
     val passed = quizResult?.passed ?: true
 
     val titleText = if (passed) "Sempurna" else "Hampir Berhasil!"
+    val motivationalText = if (passed)
+        "Luar biasa, Penjelajah! Kamu berhasil menaklukkan level ini! Terus jelajahi dan raih lebih banyak berlian!"
+    else
+        "Jangan menyerah, Penjelajah! Setiap tantangan membuatmu lebih kuat. Pelajari materinya dan coba lagi!"
     val diamondReward = if (passed) (scorePercentage * 0.15).toInt().coerceAtLeast(5) else 0
 
     LaunchedEffect(Unit) {
@@ -100,9 +104,18 @@ fun ResultScreen(
                     correctCount = correctCount,
                     wrongCount = wrongCount
                 )
+                Spacer(modifier = Modifier.padding(6.dp))
+                Text(
+                    text = motivationalText,
+                    color = LitecartesColor.Surface,
+                    fontSize = 14.sp,
+                    fontFamily = nunitosFontFamily,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
                 Spacer(
                     modifier = Modifier
-                        .padding(10.dp)
+                        .padding(6.dp)
                 )
                 if (diamondReward > 0) {
                     Row(
