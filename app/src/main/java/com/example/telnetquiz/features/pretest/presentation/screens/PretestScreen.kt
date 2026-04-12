@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -25,7 +26,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -40,6 +44,7 @@ import com.example.telnetquiz.features.pretest.presentation.viewmodel.PretestNav
 import com.example.telnetquiz.features.pretest.presentation.viewmodel.PretestViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
+import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
 @Composable
 fun PretestScreen(
@@ -109,8 +114,8 @@ fun PretestScreen(
                     val selectedOptionId = state.answers[currentQuestion.id]
 
                     QuestionHeaderBox(
-                        title = "Pretest",
-                        description = currentQuestion.question,
+                        title = currentQuestion.chapterTitle ?: "Pretest",
+                        description = currentQuestion.description,
                         imageLink = currentQuestion.imageLink,
                         isTtsLoading = isTtsLoading,
                         onSpeakClick = {
@@ -135,6 +140,17 @@ fun PretestScreen(
                                 .padding(horizontal = 12.dp)
                                 .padding(top = 16.dp)
                         ) {
+                            item {
+                                Text(
+                                    text = currentQuestion.question,
+                                    textAlign = TextAlign.Center,
+                                    color = LitecartesColor.Secondary,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = nunitosFontFamily,
+                                    fontSize = 15.sp,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 8.dp)
+                                )
+                            }
                             itemsIndexed(currentQuestion.options) { index, option ->
                                 OptionButton(
                                     text = option.text,

@@ -14,6 +14,8 @@ data class PretestQuestionDto(
     val type: String,
     @SerializedName("chapter_id")
     val chapterId: Int,
+    @SerializedName("chapter_title")
+    val chapterTitle: String?,
     @SerializedName("image_link")
     val imageLink: String?,
     @SerializedName("description")

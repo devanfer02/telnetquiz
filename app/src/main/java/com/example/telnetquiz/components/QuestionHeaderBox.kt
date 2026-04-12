@@ -126,7 +126,7 @@ fun QuestionHeaderBox(
                         color = Color.White,
                         fontFamily = nunitosFontFamily,
                         fontSize = 17.sp,
-                        modifier = Modifier.padding(vertical = 16.dp)
+                        modifier = Modifier.padding(vertical = 4.dp)
                     )
                 }
             }
