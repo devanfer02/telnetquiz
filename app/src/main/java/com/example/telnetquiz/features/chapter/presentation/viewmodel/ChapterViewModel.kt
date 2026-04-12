@@ -162,6 +162,7 @@ class ChapterViewModel @Inject constructor(
                             level = level,
                             materials = materials
                         )
+                        quizFlowManager.setMaterialsCache(materials.associateBy { it.id })
                         val firstMaterial = quizFlowManager.nextMaterial()!!
                         _isFetchingMaterials.value = false
                         _levelNavEvent.emit(LevelNavEvent.GoToFeedback(chapterId, level, firstMaterial.id))
