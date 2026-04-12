@@ -156,6 +156,7 @@ class QuizViewModel @Inject constructor(
     }
 
     fun nextQuestion() {
+        stopTts()
         val currentIndex = _state.value.currentQuestionIndex
         val questions = _state.value.quiz?.questions ?: return
         if (currentIndex < questions.size - 1) {

@@ -5,6 +5,7 @@ import android.media.MediaPlayer
 import com.example.telnetquiz.data.remote.api.TelNetQuizApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,12 +30,13 @@ class EdgeTtsProvider(
         .build()
 
     private var mediaPlayer: MediaPlayer? = null
+    private var currentJob: Job? = null
     private val _isLoading = MutableStateFlow(false)
     override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     override fun speakContent(type: String, id: Int, gender: Boolean?) {
         stop()
-        scope.launch {
+        currentJob = scope.launch {
             try {
                 val cacheFile = getCacheFile(type, id)
 
@@ -66,6 +68,9 @@ class EdgeTtsProvider(
     }
 
     override fun stop() {
+        currentJob?.cancel()
+        currentJob = null
+        _isLoading.value = false
         mediaPlayer?.let {
             if (it.isPlaying) it.stop()
             it.release()

@@ -89,6 +89,7 @@ class StudyMaterialViewModel @Inject constructor(
     }
 
     fun onContinue() {
+        stopTts()
         viewModelScope.launch {
             when {
                 quizFlowManager.wrongQueue.isNotEmpty() -> {
