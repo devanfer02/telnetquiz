@@ -204,7 +204,6 @@ fun ProfileScreen(
             }
         }
     }
-}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

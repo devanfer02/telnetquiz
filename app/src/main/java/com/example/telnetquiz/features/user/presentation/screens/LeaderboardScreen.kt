@@ -389,7 +389,6 @@ fun LeaderboardScreen(
 
         }
     }
-}
 
 private fun formatDateHeader(dateString: String): String {
     val date = LocalDate.parse(dateString)
