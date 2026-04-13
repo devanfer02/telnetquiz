@@ -22,7 +22,7 @@ object LitecartesColor {
 
     val ScoreBlue = Color(0xFF2196F3)
     val ScoreGreen = Color(0xFF4CAF50)
-    val ScoreYellow = Color(0xFFFFEB3B)
+    val ScoreYellow = Color(0xFFF9A825)
     val ScoreOrange = Color(0xFFFF9800)
     val ScoreRed = Color(0xFFE53935)
 }
