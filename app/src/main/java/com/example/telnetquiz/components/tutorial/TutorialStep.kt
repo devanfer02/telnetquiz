@@ -60,8 +60,8 @@ val tutorialSteps = listOf(
         id = TutorialStepId.LEVEL_ROAD,
         title = "Level dalam Bab",
         description = "Ini adalah level-level dalam bab. Selesaikan dari bawah ke atas untuk membuka level berikutnya!",
-        targetKey = "level_road",
-        tooltipPosition = TooltipPosition.BELOW_TARGET,
+        targetKey = null,
+        tooltipPosition = TooltipPosition.CENTER_SCREEN,
         navigateTo = "${Screen.LevelScreen.route}/1"
     ),
     TutorialStep(

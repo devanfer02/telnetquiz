@@ -189,11 +189,6 @@ fun LevelScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(contentHeight)
-                                    .then(
-                                        if (tutorialController != null) Modifier.onGloballyPositioned {
-                                            tutorialController.registerTarget("level_road", it)
-                                        } else Modifier
-                                    )
                             ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.level_background_no_path),

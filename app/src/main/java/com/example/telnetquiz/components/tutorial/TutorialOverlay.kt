@@ -92,12 +92,7 @@ fun TutorialOverlay(
                 totalSteps = tutorialSteps.size,
                 targetBounds = targetBounds,
                 onNext = { controller.nextStep() },
-                onSkip = { controller.skip() },
-                modifier = Modifier.align(
-                    if (step.tooltipPosition == TooltipPosition.CENTER_SCREEN)
-                        Alignment.Center
-                    else Alignment.TopStart
-                )
+                onSkip = { controller.skip() }
             )
         }
     }
@@ -126,8 +121,7 @@ private fun TooltipCard(
     totalSteps: Int,
     targetBounds: Rect?,
     onNext: () -> Unit,
-    onSkip: () -> Unit,
-    modifier: Modifier = Modifier
+    onSkip: () -> Unit
 ) {
     val density = LocalDensity.current
 
@@ -155,14 +149,19 @@ private fun TooltipCard(
                     .padding(horizontal = 20.dp)
             }
             else -> {
-                modifier.padding(horizontal = 32.dp)
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 32.dp)
             }
         }
 
         Box(
             modifier = containerModifier,
-            contentAlignment = if (step.tooltipPosition == TooltipPosition.ABOVE_TARGET)
-                Alignment.BottomCenter else Alignment.TopStart
+            contentAlignment = when (step.tooltipPosition) {
+                TooltipPosition.ABOVE_TARGET -> Alignment.BottomCenter
+                TooltipPosition.CENTER_SCREEN -> Alignment.Center
+                else -> Alignment.TopStart
+            }
         ) {
             val cardContent = @Composable {
                 Column(
