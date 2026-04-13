@@ -273,7 +273,7 @@ fun LevelScreen(
                 },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 16.dp, bottom = 16.dp)
+                    .padding(end = 16.dp, bottom = 72.dp)
                     .size(48.dp),
                 colors = IconButtonDefaults.iconButtonColors(
                     containerColor = LitecartesColor.Primary,
