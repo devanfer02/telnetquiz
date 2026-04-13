@@ -2,16 +2,18 @@ package com.example.telnetquiz.features.chapter.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -105,10 +107,6 @@ fun ChapterCardFromApi(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
-    val progressFraction = if (chapter.quizCount > 0) {
-        chapter.completedQuizzes.toFloat() / chapter.quizCount.toFloat()
-    } else 0f
-
     CardWithShadow(
         modifier = modifier.fillMaxWidth(),
         elevation = 12.dp,
@@ -150,14 +148,10 @@ fun ChapterCardFromApi(
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                LinearProgressIndicator(
-                    progress = { progressFraction },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(8.dp)
-                        .clip(RoundedCornerShape(4.dp)),
-                    color = LitecartesColor.Primary,
-                    trackColor = LitecartesColor.Surface,
+                SegmentedProgressBar(
+                    completed = chapter.completedQuizzes,
+                    total = chapter.quizCount,
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Button(
                     text = "Yuk Main".uppercase(),
@@ -167,7 +161,8 @@ fun ChapterCardFromApi(
                     shadowEnabled = true,
                     shadowColor = LitecartesColor.DarkBrown,
                     onClick = onClick,
-                    shadowHeight = 5.dp
+                    shadowHeight = 5.dp,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
             Box(
@@ -186,6 +181,48 @@ fun ChapterCardFromApi(
                         .heightIn(min = 150.dp)
                         .fillMaxWidth()
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SegmentedProgressBar(
+    completed: Int,
+    total: Int,
+    modifier: Modifier = Modifier
+) {
+    val segments = total.coerceAtLeast(1)
+
+    Box(
+        modifier = modifier
+            .height(10.dp)
+            .clip(RoundedCornerShape(5.dp))
+            .background(LitecartesColor.Surface)
+    ) {
+        Row(
+            modifier = Modifier
+                .matchParentSize()
+                .clip(RoundedCornerShape(5.dp))
+        ) {
+            for (i in 0 until segments) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(
+                            if (i < completed) LitecartesColor.Primary
+                            else LitecartesColor.Surface
+                        )
+                )
+                if (i < segments - 1) {
+                    Box(
+                        modifier = Modifier
+                            .width(2.dp)
+                            .fillMaxHeight()
+                            .background(LitecartesColor.Secondary.copy(alpha = 0.3f))
+                    )
+                }
             }
         }
     }
