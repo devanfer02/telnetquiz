@@ -9,9 +9,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -207,22 +207,16 @@ private fun MainNavHost(
     CompositionLocalProvider(
         LocalTutorialController provides if (!hasCompletedTutorial) tutorialController else null
     ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-    Scaffold(
-        topBar = {
+    Box(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
+        Column(modifier = Modifier.fillMaxSize()) {
             if (showProfileTopBar) ProfileTopBar(backgroundColor = profileTopBarBg)
-        },
-        bottomBar = {
-            if (showNavbar) Navbar(navController = navController)
-        },
-        modifier = Modifier.systemBarsPadding()
-    ) { scaffoldPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = startDestination,
-            modifier = Modifier
-                .padding(top = scaffoldPadding.calculateTopPadding())
-                .background(LitecartesColor.Surface),
+            NavHost(
+                navController = navController,
+                startDestination = startDestination,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+                    .background(LitecartesColor.Surface),
             enterTransition = {
                 tabSlideDirection()?.let {
                     slideIntoContainer(towards = it, animationSpec = tween(300))
@@ -436,16 +430,22 @@ private fun MainNavHost(
             )
         }
         }
-    }
+        }
 
-    val showTutorial = !hasCompletedTutorial && (
-        (currentRoute == Screen.HomeScreen.route && tutorialController.targetBounds.containsKey("profile_top_bar")) ||
-        currentRoute?.startsWith(Screen.LevelScreen.route) == true
-    )
+        if (showNavbar) {
+            Box(modifier = Modifier.align(Alignment.BottomCenter)) {
+                Navbar(navController = navController)
+            }
+        }
 
-    if (showTutorial) {
-        TutorialOverlay(controller = tutorialController)
-    }
+        val showTutorial = !hasCompletedTutorial && (
+            (currentRoute == Screen.HomeScreen.route && tutorialController.targetBounds.containsKey("profile_top_bar")) ||
+            currentRoute?.startsWith(Screen.LevelScreen.route) == true
+        )
+
+        if (showTutorial) {
+            TutorialOverlay(controller = tutorialController)
+        }
     }
     }
 }
