@@ -55,7 +55,7 @@ This saves significant time and tokens compared to re-reading files to understan
 
 ## Architecture
 
-This is a native Android app built with Kotlin and Jetpack Compose for an educational geometry quiz application ("Geomatruiz").
+This is a native Android app built with Kotlin and Jetpack Compose for TelNetQuiz — an educational quiz application for Vocational (SMK) students studying the "Media dan Jaringan Telekomunikasi" subject.
 
 **Tech Stack:**
 - Kotlin 1.9.0 with Jetpack Compose
