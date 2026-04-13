@@ -64,6 +64,8 @@ import com.example.telnetquiz.features.quiz.presentation.components.LevelPath
 import com.example.telnetquiz.ui.layout.AppLayout
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
+import androidx.compose.ui.layout.onGloballyPositioned
 
 @Composable
 fun LevelScreen(
@@ -72,6 +74,7 @@ fun LevelScreen(
     viewModel: ChapterViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
+    val tutorialController = LocalTutorialController.current
     val detailState by viewModel.detailState.collectAsState()
     val isFetchingMaterials by viewModel.isFetchingMaterials.collectAsState()
 
@@ -186,6 +189,11 @@ fun LevelScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(contentHeight)
+                                    .then(
+                                        if (tutorialController != null) Modifier.onGloballyPositioned {
+                                            tutorialController.registerTarget("level_road", it)
+                                        } else Modifier
+                                    )
                             ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.level_background_no_path),
@@ -213,6 +221,13 @@ fun LevelScreen(
                                                 y = contentHeight * levelPosition.yFraction
                                             )
                                             .graphicsLayer { alpha = buttonAlpha }
+                                            .then(
+                                                if (index == 0 && tutorialController != null)
+                                                    Modifier.onGloballyPositioned {
+                                                        tutorialController.registerTarget("level_button_first", it)
+                                                    }
+                                                else Modifier
+                                            )
                                     ) {
                                         LevelButton(
                                             level = index + 1,

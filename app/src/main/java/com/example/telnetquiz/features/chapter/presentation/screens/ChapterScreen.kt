@@ -32,6 +32,8 @@ import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterVie
 import com.example.telnetquiz.ui.layout.AppLayout
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
+import androidx.compose.ui.layout.onGloballyPositioned
 
 @Composable
 fun ChapterScreen(
@@ -39,6 +41,7 @@ fun ChapterScreen(
     viewModel: ChapterViewModel = hiltViewModel()
 ) {
     val state by viewModel.listState.collectAsState()
+    val tutorialController = LocalTutorialController.current
 
     LaunchedEffect(Unit) {
         viewModel.loadChapters()
@@ -86,6 +89,13 @@ fun ChapterScreen(
                                 modifier = Modifier
                                     .padding(
                                         horizontal = 10.dp
+                                    )
+                                    .then(
+                                        if (index == 0 && tutorialController != null)
+                                            Modifier.onGloballyPositioned {
+                                                tutorialController.registerTarget("chapter_card_first", it)
+                                            }
+                                        else Modifier
                                     )
                             ) {
                                 ChapterCardFromApi(

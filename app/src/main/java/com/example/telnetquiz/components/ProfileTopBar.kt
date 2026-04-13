@@ -55,6 +55,8 @@ import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.features.user.presentation.viewmodel.ProfileViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
+import androidx.compose.ui.layout.onGloballyPositioned
 
 @Composable
 fun ProfileTopBar(
@@ -69,11 +71,17 @@ fun ProfileTopBar(
     val profileState by profileViewModel.state.collectAsState()
     val selectedAvatarIndex by profileViewModel.selectedAvatarIndex.collectAsState()
     val tag by profileViewModel.tag.collectAsState()
+    val tutorialController = LocalTutorialController.current
 
     TopBarContainer(
         modifier = modifier
             .fillMaxWidth()
-            .background(backgroundColor),
+            .background(backgroundColor)
+            .then(
+                if (tutorialController != null) Modifier.onGloballyPositioned {
+                    tutorialController.registerTarget("profile_top_bar", it)
+                } else Modifier
+            ),
         cornerRadius = 24.dp,
         backgroundColor = LitecartesColor.Secondary
     ) {

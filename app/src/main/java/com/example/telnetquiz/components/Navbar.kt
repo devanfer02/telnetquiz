@@ -27,6 +27,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.constants.NavItem
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.ui.theme.LitecartesColor
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
+import androidx.compose.ui.layout.onGloballyPositioned
 
 @Composable
 fun Navbar(
@@ -34,11 +36,17 @@ fun Navbar(
     backgroundColor: Color = LitecartesColor.Surface
 ) {
     val haptic = LocalHapticFeedback.current
+    val tutorialController = LocalTutorialController.current
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(backgroundColor)
+            .then(
+                if (tutorialController != null) Modifier.onGloballyPositioned {
+                    tutorialController.registerTarget("bottom_navbar", it)
+                } else Modifier
+            )
     ) {
         BottomNavigation(
             backgroundColor = LitecartesColor.Primary,
