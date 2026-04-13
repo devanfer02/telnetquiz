@@ -58,13 +58,21 @@ import com.example.telnetquiz.features.user.presentation.screens.EditProfileScre
 import com.example.telnetquiz.features.user.presentation.screens.LeaderboardScreen
 import com.example.telnetquiz.features.user.presentation.screens.ProfileScreen
 import com.example.telnetquiz.ui.theme.LitecartesColor
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
+import com.example.telnetquiz.components.tutorial.TutorialController
+import com.example.telnetquiz.components.tutorial.TutorialOverlay
+import com.example.telnetquiz.data.local.TutorialPreferenceManager
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
 interface AudioManagerEntryPoint {
     fun audioManager(): AudioManager
     fun flowResultStore(): FlowResultStore
+    fun tutorialPreferenceManager(): TutorialPreferenceManager
 }
 
 @Composable
@@ -150,6 +158,19 @@ private fun MainNavHost(
     }
     val audioManager = remember { entryPoint.audioManager() }
     val flowResultStore = remember { entryPoint.flowResultStore() }
+    val tutorialPreferenceManager = remember { entryPoint.tutorialPreferenceManager() }
+    val hasCompletedTutorial by tutorialPreferenceManager.hasCompletedTutorial.collectAsState(initial = true)
+    val scope = rememberCoroutineScope()
+    val tutorialController = remember {
+        TutorialController(
+            onComplete = { scope.launch { tutorialPreferenceManager.setTutorialCompleted() } },
+            onNavigate = { route ->
+                navController.navigate(route) {
+                    launchSingleTop = true
+                }
+            }
+        )
+    }
 
     DisposableEffect(navController) {
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
@@ -163,6 +184,9 @@ private fun MainNavHost(
         }
     }
 
+    CompositionLocalProvider(
+        LocalTutorialController provides if (!hasCompletedTutorial) tutorialController else null
+    ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -384,5 +408,10 @@ private fun MainNavHost(
             )
         }
         }
+
+        if (!hasCompletedTutorial) {
+            TutorialOverlay(controller = tutorialController)
+        }
+    }
     }
 }
