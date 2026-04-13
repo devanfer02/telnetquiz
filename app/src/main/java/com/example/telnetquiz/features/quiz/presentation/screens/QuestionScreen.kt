@@ -1,5 +1,6 @@
 package com.example.telnetquiz.features.quiz.presentation.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -55,6 +58,29 @@ fun QuestionScreen(
     val haptic = LocalHapticFeedback.current
 
     var showDialog by remember { mutableStateOf(false) }
+    var showExitConfirm by remember { mutableStateOf(false) }
+
+    BackHandler { showExitConfirm = true }
+
+    if (showExitConfirm) {
+        AlertDialog(
+            onDismissRequest = { showExitConfirm = false },
+            title = { androidx.compose.material3.Text("Yakin mau keluar, Penjelajah?") },
+            text = { androidx.compose.material3.Text("Progres kuis kamu belum tersimpan. Kalau keluar sekarang, kamu harus mengulang dari awal.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showExitConfirm = false
+                    viewModel.stopTts()
+                    navController.popBackStack()
+                }) { androidx.compose.material3.Text("Keluar") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExitConfirm = false }) {
+                    androidx.compose.material3.Text("Lanjut Kuis")
+                }
+            }
+        )
+    }
 
     DisposableEffect(Unit) {
         onDispose { viewModel.stopTts() }
