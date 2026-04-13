@@ -69,7 +69,7 @@ val tutorialSteps = listOf(
         title = "Pilihan Belajar",
         description = "Ketuk level untuk memulai. Kamu bisa pilih \"Belajar Dulu\" untuk mempelajari materi, atau \"Langsung Main\" untuk langsung bermain quiz.",
         targetKey = "level_button_first",
-        tooltipPosition = TooltipPosition.ABOVE_TARGET
+        tooltipPosition = TooltipPosition.BELOW_TARGET
     ),
     TutorialStep(
         id = TutorialStepId.FINISH,

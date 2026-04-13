@@ -136,6 +136,7 @@ private fun TooltipCard(
         val containerModifier = when {
             step.tooltipPosition == TooltipPosition.ABOVE_TARGET && targetBounds != null -> {
                 val constrainedHeight = with(density) { (targetBounds.top - 16.dp.toPx()).toDp() }
+                    .coerceAtLeast(100.dp)
                 Modifier
                     .fillMaxWidth()
                     .height(constrainedHeight)
