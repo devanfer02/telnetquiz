@@ -61,7 +61,6 @@ import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.features.quiz.presentation.components.LevelButton
 import com.example.telnetquiz.features.quiz.presentation.components.LevelOptionMenu
 import com.example.telnetquiz.features.quiz.presentation.components.LevelPath
-import androidx.compose.foundation.layout.Column
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.components.tutorial.LocalTutorialController
