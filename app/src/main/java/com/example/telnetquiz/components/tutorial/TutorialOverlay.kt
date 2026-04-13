@@ -125,144 +125,140 @@ private fun TooltipCard(
 ) {
     val density = LocalDensity.current
 
-    AnimatedContent(
-        targetState = stepIndex,
-        transitionSpec = {
-            (fadeIn(tween(200)) + slideInVertically(tween(250)) { it / 4 })
-                .togetherWith(fadeOut(tween(150)) + slideOutVertically(tween(200)) { -it / 4 })
-        },
-        label = "tutorial_step"
-    ) { _ ->
-        val containerModifier = when {
-            step.tooltipPosition == TooltipPosition.ABOVE_TARGET && targetBounds != null -> {
-                val constrainedHeight = with(density) { (targetBounds.top - 16.dp.toPx()).toDp() }
-                    .coerceAtLeast(100.dp)
-                Modifier
-                    .fillMaxWidth()
-                    .height(constrainedHeight)
-                    .padding(horizontal = 20.dp)
-            }
-            step.tooltipPosition == TooltipPosition.BELOW_TARGET && targetBounds != null -> {
-                val yOffset = with(density) { (targetBounds.bottom + 16.dp.toPx()).toInt() }
-                Modifier
-                    .fillMaxWidth()
-                    .offset { IntOffset(0, yOffset) }
-                    .padding(horizontal = 20.dp)
-            }
-            else -> {
-                Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 32.dp)
-            }
+    val containerModifier = when {
+        step.tooltipPosition == TooltipPosition.ABOVE_TARGET && targetBounds != null -> {
+            val constrainedHeight = with(density) { (targetBounds.top - 16.dp.toPx()).toDp() }
+                .coerceAtLeast(100.dp)
+            Modifier
+                .fillMaxWidth()
+                .height(constrainedHeight)
+                .padding(horizontal = 20.dp)
         }
+        step.tooltipPosition == TooltipPosition.BELOW_TARGET && targetBounds != null -> {
+            val yOffset = with(density) { (targetBounds.bottom + 16.dp.toPx()).toInt() }
+            Modifier
+                .fillMaxWidth()
+                .offset { IntOffset(0, yOffset) }
+                .padding(horizontal = 20.dp)
+        }
+        else -> {
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 32.dp)
+        }
+    }
 
-        Box(
-            modifier = containerModifier,
-            contentAlignment = when (step.tooltipPosition) {
-                TooltipPosition.ABOVE_TARGET -> Alignment.BottomCenter
-                TooltipPosition.CENTER_SCREEN -> Alignment.Center
-                else -> Alignment.TopStart
-            }
-        ) {
-            val cardContent = @Composable {
-                Column(
-                    modifier = Modifier
-                        .shadow(12.dp, RoundedCornerShape(16.dp))
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(LitecartesColor.Secondary)
-                        .padding(16.dp)
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = containerModifier,
+        contentAlignment = when (step.tooltipPosition) {
+            TooltipPosition.ABOVE_TARGET -> Alignment.BottomCenter
+            TooltipPosition.CENTER_SCREEN -> Alignment.Center
+            else -> Alignment.TopStart
+        }
+    ) {
+        AnimatedContent(
+            targetState = stepIndex,
+            transitionSpec = {
+                (fadeIn(tween(200)) + slideInVertically(tween(250)) { it / 4 })
+                    .togetherWith(fadeOut(tween(150)) + slideOutVertically(tween(200)) { -it / 4 })
+            },
+            label = "tutorial_step"
+        ) { _ ->
+            Column(
+                modifier = Modifier
+                    .shadow(12.dp, RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(LitecartesColor.Secondary)
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.quickcheck),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(50.dp)
-                                .clip(RoundedCornerShape(12.dp)),
-                            contentScale = ContentScale.Crop
+                    Image(
+                        painter = painterResource(id = R.drawable.quickcheck),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = step.title,
+                            fontFamily = nunitosFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = LitecartesColor.Surface
                         )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column(modifier = Modifier.weight(1f)) {
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "${stepIndex + 1} / $totalSteps",
+                            fontFamily = nunitosFontFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 11.sp,
+                            color = LitecartesColor.Surface.copy(alpha = 0.6f)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = step.description,
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 13.sp,
+                    color = LitecartesColor.Surface,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (stepIndex < totalSteps - 1) {
+                        TextButton(onClick = onSkip) {
                             Text(
-                                text = step.title,
-                                fontFamily = nunitosFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
-                                color = LitecartesColor.Surface
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = "${stepIndex + 1} / $totalSteps",
+                                text = "Lewati",
                                 fontFamily = nunitosFontFamily,
                                 fontWeight = FontWeight.SemiBold,
-                                fontSize = 11.sp,
-                                color = LitecartesColor.Surface.copy(alpha = 0.6f)
+                                fontSize = 13.sp,
+                                color = LitecartesColor.Surface.copy(alpha = 0.7f)
                             )
                         }
+                    } else {
+                        Spacer(modifier = Modifier.width(1.dp))
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text(
-                        text = step.description,
-                        fontFamily = nunitosFontFamily,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 13.sp,
-                        color = LitecartesColor.Surface,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                    TextButton(
+                        onClick = onNext,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(LitecartesColor.Surface)
+                            .padding(horizontal = 12.dp)
                     ) {
-                        if (stepIndex < totalSteps - 1) {
-                            TextButton(onClick = onSkip) {
-                                Text(
-                                    text = "Lewati",
-                                    fontFamily = nunitosFontFamily,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 13.sp,
-                                    color = LitecartesColor.Surface.copy(alpha = 0.7f)
-                                )
-                            }
-                        } else {
-                            Spacer(modifier = Modifier.width(1.dp))
-                        }
-
-                        TextButton(
-                            onClick = onNext,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(LitecartesColor.Surface)
-                                .padding(horizontal = 12.dp)
-                        ) {
-                            Text(
-                                text = when {
-                                    stepIndex == 0 -> "Mulai"
-                                    stepIndex >= totalSteps - 1 -> "Selesai"
-                                    else -> "Lanjut"
-                                },
-                                fontFamily = nunitosFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp,
-                                color = LitecartesColor.Secondary
-                            )
-                        }
+                        Text(
+                            text = when {
+                                stepIndex == 0 -> "Mulai"
+                                stepIndex >= totalSteps - 1 -> "Selesai"
+                                else -> "Lanjut"
+                            },
+                            fontFamily = nunitosFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            color = LitecartesColor.Secondary
+                        )
                     }
                 }
             }
-
-            cardContent()
         }
     }
 }
