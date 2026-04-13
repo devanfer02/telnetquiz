@@ -7,9 +7,11 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.LayoutCoordinates
-import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.positionInWindow
 
 val LocalTutorialController = staticCompositionLocalOf<TutorialController?> { null }
 
@@ -33,13 +35,26 @@ class TutorialController(
     private val _targetBounds = mutableStateMapOf<String, Rect>()
     val targetBounds: Map<String, Rect> get() = _targetBounds
 
+    var overlayOffset by mutableStateOf(Offset.Zero)
+
+    fun registerOverlay(coordinates: LayoutCoordinates) {
+        if (coordinates.isAttached) {
+            overlayOffset = coordinates.positionInWindow()
+        }
+    }
+
     fun registerTarget(key: String, coordinates: LayoutCoordinates) {
         if (coordinates.isAttached) {
-            _targetBounds[key] = coordinates.boundsInRoot()
+            _targetBounds[key] = coordinates.boundsInWindow()
             if (isWaitingForBounds && currentStep.targetKey == key) {
                 isWaitingForBounds = false
             }
         }
+    }
+
+    fun getLocalBounds(key: String): Rect? {
+        val windowBounds = _targetBounds[key] ?: return null
+        return windowBounds.translate(-overlayOffset.x, -overlayOffset.y)
     }
 
     fun nextStep() {

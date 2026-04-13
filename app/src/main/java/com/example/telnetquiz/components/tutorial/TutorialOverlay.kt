@@ -53,6 +53,7 @@ import com.example.telnetquiz.R
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 import androidx.compose.foundation.Canvas
+import androidx.compose.ui.layout.onGloballyPositioned
 
 @Composable
 fun TutorialOverlay(
@@ -61,13 +62,14 @@ fun TutorialOverlay(
     if (!controller.isActive) return
 
     val step = controller.currentStep
-    val targetBounds = step.targetKey?.let { controller.targetBounds[it] }
+    val localBounds = step.targetKey?.let { controller.getLocalBounds(it) }
     val density = LocalDensity.current
     val paddingPx = with(density) { 8.dp.toPx() }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .onGloballyPositioned { controller.registerOverlay(it) }
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
@@ -80,8 +82,8 @@ fun TutorialOverlay(
         ) {
             drawRect(Color.Black.copy(alpha = 0.75f))
 
-            if (targetBounds != null && !controller.isWaitingForBounds) {
-                drawSpotlight(targetBounds, paddingPx)
+            if (localBounds != null && !controller.isWaitingForBounds) {
+                drawSpotlight(localBounds, paddingPx)
             }
         }
 
@@ -90,7 +92,7 @@ fun TutorialOverlay(
                 step = step,
                 stepIndex = controller.currentStepIndex,
                 totalSteps = tutorialSteps.size,
-                targetBounds = targetBounds,
+                targetBounds = localBounds,
                 onNext = { controller.nextStep() },
                 onSkip = { controller.skip() }
             )
