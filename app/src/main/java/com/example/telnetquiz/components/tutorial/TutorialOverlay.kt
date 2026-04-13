@@ -178,7 +178,7 @@ private fun TooltipCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.quickcheck),
+                        painter = painterResource(id = step.mascotResId),
                         contentDescription = null,
                         modifier = Modifier
                             .size(50.dp)
