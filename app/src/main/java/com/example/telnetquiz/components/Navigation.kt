@@ -207,6 +207,7 @@ private fun MainNavHost(
     CompositionLocalProvider(
         LocalTutorialController provides if (!hasCompletedTutorial) tutorialController else null
     ) {
+    Box(modifier = Modifier.fillMaxSize()) {
     Box(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (showProfileTopBar) ProfileTopBar(backgroundColor = profileTopBarBg)
@@ -437,15 +438,16 @@ private fun MainNavHost(
                 Navbar(navController = navController)
             }
         }
+    }
 
-        val showTutorial = !hasCompletedTutorial && (
-            (currentRoute == Screen.HomeScreen.route && tutorialController.targetBounds.containsKey("profile_top_bar")) ||
-            currentRoute?.startsWith(Screen.LevelScreen.route) == true
-        )
+    val showTutorial = !hasCompletedTutorial && (
+        (currentRoute == Screen.HomeScreen.route && tutorialController.targetBounds.containsKey("profile_top_bar")) ||
+        currentRoute?.startsWith(Screen.LevelScreen.route) == true
+    )
 
-        if (showTutorial) {
-            TutorialOverlay(controller = tutorialController)
-        }
+    if (showTutorial) {
+        TutorialOverlay(controller = tutorialController)
+    }
     }
     }
 }
