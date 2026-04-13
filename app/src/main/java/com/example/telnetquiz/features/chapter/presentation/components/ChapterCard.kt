@@ -25,6 +25,11 @@ import androidx.compose.ui.unit.sp
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.components.CardWithShadow
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import com.example.telnetquiz.BuildConfig
 import com.example.telnetquiz.data.remote.dto.ChapterDto
 import com.example.telnetquiz.features.quiz.domain.model.Chapter
 import com.example.telnetquiz.ui.theme.LitecartesColor
@@ -170,12 +175,16 @@ fun ChapterCardFromApi(
                     .weight(0.5f),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data("${BuildConfig.BASE_URL}/assets/mascot/chap${chapter.mascotId}.png")
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = chapter.title,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .heightIn(min = 150.dp)
-                        .fillMaxWidth(),
-                    painter = painterResource(id = R.drawable.chap1), // Default image for API chapters
-                    contentDescription = chapter.title
+                        .fillMaxWidth()
                 )
             }
         }
