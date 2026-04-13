@@ -3,8 +3,11 @@ package com.example.telnetquiz.features.user.presentation.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -140,14 +143,25 @@ fun LeaderboardScreen(
                                         .padding(bottom = 12.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.property_variant2),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(100.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = "Belum ada cukup juara di arena ini, Penjelajah!",
+                                        text = "Belum ada penjelajah lainnya",
                                         fontFamily = nunitosFontFamily,
-                                        fontWeight = FontWeight.SemiBold,
+                                        fontWeight = FontWeight.Bold,
                                         fontSize = 14.sp,
-                                        color = Color.White.copy(alpha = 0.8f),
-                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                        color = Color.White
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "Tunggu saja kedatangan mereka!",
+                                        fontFamily = nunitosFontFamily,
+                                        fontSize = 12.sp,
+                                        color = Color.White.copy(alpha = 0.7f)
                                     )
                                 }
                             }
@@ -194,17 +208,28 @@ fun LeaderboardScreen(
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(vertical = 20.dp),
+                                        .padding(vertical = 12.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.property_variant2),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(100.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = "Belum ada juara di arena ini, Penjelajah!\nJadilah yang pertama!",
+                                        text = "Belum ada penjelajah lainnya",
                                         fontFamily = nunitosFontFamily,
-                                        fontWeight = FontWeight.SemiBold,
+                                        fontWeight = FontWeight.Bold,
                                         fontSize = 14.sp,
-                                        color = Color.White.copy(alpha = 0.8f),
-                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                        color = Color.White
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "Tunggu saja kedatangan mereka!",
+                                        fontFamily = nunitosFontFamily,
+                                        fontSize = 12.sp,
+                                        color = Color.White.copy(alpha = 0.7f)
                                     )
                                 }
                             }
