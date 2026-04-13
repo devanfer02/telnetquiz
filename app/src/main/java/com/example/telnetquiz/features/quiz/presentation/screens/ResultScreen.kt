@@ -55,7 +55,7 @@ fun ResultScreen(
         "Luar biasa, Penjelajah! Kamu berhasil menaklukkan level ini! Terus jelajahi dan raih lebih banyak berlian!"
     else
         "Jangan menyerah, Penjelajah! Setiap tantangan membuatmu lebih kuat. Pelajari materinya dan coba lagi!"
-    val diamondReward = if (passed) (scorePercentage * 0.15).toInt().coerceAtLeast(5) else 0
+    val diamondReward = if (passed) scorePercentage.toInt() else 0
 
     LaunchedEffect(Unit) {
         if (passed) audioManager?.playSfx(SfxType.RESULT_SUCCESS)
