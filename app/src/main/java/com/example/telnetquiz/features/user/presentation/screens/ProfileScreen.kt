@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -124,7 +125,8 @@ fun ProfileScreen(
                         start = 20.dp,
                         end = 20.dp
                     )
-                    .weight(1f)
+                    .weight(1f),
+                contentPadding = PaddingValues(bottom = 64.dp)
             ) {
                 state.profile?.stats?.let { stats ->
                     item {

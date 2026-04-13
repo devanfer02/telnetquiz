@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -270,7 +271,8 @@ fun LeaderboardScreen(
                             LazyColumn(
                                 modifier = Modifier
                                     .padding(start = 14.dp, end = 14.dp)
-                                    .weight(1f)
+                                    .weight(1f),
+                                contentPadding = PaddingValues(bottom = 64.dp)
                             ) {
                                 item { Spacer(modifier = Modifier.height(12.dp)) }
                                 item { ActivityDateHeaderSkeleton() }
@@ -300,7 +302,8 @@ fun LeaderboardScreen(
                             LazyColumn(
                                 modifier = Modifier
                                     .padding(start = 14.dp, end = 14.dp)
-                                    .weight(1f)
+                                    .weight(1f),
+                                contentPadding = PaddingValues(bottom = 64.dp)
                             ) {
                                 item { Spacer(modifier = Modifier.height(12.dp)) }
                                 activityState.days.forEach { day ->
@@ -358,7 +361,8 @@ fun LeaderboardScreen(
                             LazyColumn(
                                 modifier = Modifier
                                     .padding(start = 14.dp, end = 14.dp)
-                                    .weight(1f)
+                                    .weight(1f),
+                                contentPadding = PaddingValues(bottom = 64.dp)
                             ) {
                                 // Show current user's rank if available
                                 state.currentUser?.let { currentUser ->

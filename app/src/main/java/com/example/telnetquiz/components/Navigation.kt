@@ -221,7 +221,7 @@ private fun MainNavHost(
             navController = navController,
             startDestination = startDestination,
             modifier = Modifier
-                .padding(scaffoldPadding)
+                .padding(top = scaffoldPadding.calculateTopPadding())
                 .background(LitecartesColor.Surface),
             enterTransition = {
                 tabSlideDirection()?.let {

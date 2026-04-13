@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -71,7 +72,9 @@ fun ChapterScreen(
                     )
                 }
                 state.chapters.isNotEmpty() -> {
-                    LazyColumn {
+                    LazyColumn(
+                        contentPadding = PaddingValues(bottom = 64.dp)
+                    ) {
                         itemsIndexed(state.chapters) { index, chapter ->
                             Spacer(modifier = Modifier.padding(5.dp))
                             Box(
