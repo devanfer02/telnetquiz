@@ -199,12 +199,19 @@ private fun MainNavHost(
         currentRoute in navbarRoutes ||
         currentRoute.startsWith(Screen.LevelScreen.route)
     )
+    val showProfileTopBar = currentRoute == Screen.HomeScreen.route ||
+        currentRoute?.startsWith(Screen.LevelScreen.route) == true
+    val profileTopBarBg = if (currentRoute?.startsWith(Screen.LevelScreen.route) == true)
+        LitecartesColor.DarkerSurface else LitecartesColor.Surface
 
     CompositionLocalProvider(
         LocalTutorialController provides if (!hasCompletedTutorial) tutorialController else null
     ) {
     Box(modifier = Modifier.fillMaxSize()) {
     Scaffold(
+        topBar = {
+            if (showProfileTopBar) ProfileTopBar(backgroundColor = profileTopBarBg)
+        },
         bottomBar = {
             if (showNavbar) Navbar(navController = navController)
         },

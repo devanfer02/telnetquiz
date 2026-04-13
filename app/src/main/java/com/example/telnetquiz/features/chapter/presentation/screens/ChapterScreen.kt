@@ -29,7 +29,6 @@ import com.example.telnetquiz.features.chapter.presentation.components.ChapterCa
 import com.example.telnetquiz.features.chapter.presentation.components.ChapterCardSkeleton
 import com.example.telnetquiz.features.chapter.presentation.components.ComingSoonCard
 import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterViewModel
-import com.example.telnetquiz.components.ProfileTopBar
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.components.tutorial.LocalTutorialController
@@ -46,16 +45,11 @@ fun ChapterScreen(
     LaunchedEffect(Unit) {
         viewModel.loadChapters()
     }
-    Column(
-        modifier = Modifier.fillMaxSize()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(LitecartesColor.Surface)
     ) {
-        ProfileTopBar()
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .background(LitecartesColor.Surface)
-        ) {
             when {
                 state.isLoading -> {
                     LazyColumn {
@@ -123,7 +117,6 @@ fun ChapterScreen(
             }
         }
     }
-}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

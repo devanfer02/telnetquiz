@@ -52,7 +52,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.MascotLoadingScreen
-import com.example.telnetquiz.components.ProfileTopBar
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterViewModel
 import com.example.telnetquiz.features.chapter.presentation.viewmodel.LevelNavEvent
@@ -128,13 +127,7 @@ fun LevelScreen(
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        ProfileTopBar(backgroundColor = LitecartesColor.DarkerSurface)
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize()
-        ) {
+    Box(modifier = Modifier.fillMaxSize()) {
                 if (detailState.chapter == null && detailState.error == null) {
                     BoxWithConstraints(
                         modifier = Modifier
@@ -352,7 +345,6 @@ fun LevelScreen(
             }
         }
     }
-}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
