@@ -64,6 +64,7 @@ import com.example.telnetquiz.components.tutorial.TutorialOverlay
 import com.example.telnetquiz.data.local.TutorialPreferenceManager
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -409,7 +410,14 @@ private fun MainNavHost(
         }
         }
 
-        if (!hasCompletedTutorial) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+        val showTutorial = !hasCompletedTutorial && (
+            currentRoute == Screen.HomeScreen.route ||
+            currentRoute?.startsWith(Screen.LevelScreen.route) == true
+        )
+
+        if (showTutorial) {
             TutorialOverlay(controller = tutorialController)
         }
     }
