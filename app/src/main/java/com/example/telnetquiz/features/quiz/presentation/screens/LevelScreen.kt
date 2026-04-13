@@ -61,7 +61,7 @@ import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.features.quiz.presentation.components.LevelButton
 import com.example.telnetquiz.features.quiz.presentation.components.LevelOptionMenu
 import com.example.telnetquiz.features.quiz.presentation.components.LevelPath
-import com.example.telnetquiz.ui.layout.AppLayout
+import androidx.compose.foundation.layout.Column
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.components.tutorial.LocalTutorialController
@@ -129,13 +129,11 @@ fun LevelScreen(
         }
     }
 
-    AppLayout(
-        navController = navController,
-        topBar = { ProfileTopBar(backgroundColor = LitecartesColor.DarkerSurface) }
-    ) { innerPadding ->
+    Column(modifier = Modifier.fillMaxSize()) {
+        ProfileTopBar(backgroundColor = LitecartesColor.DarkerSurface)
         Box(
             modifier = Modifier
-                .padding(innerPadding)
+                .weight(1f)
                 .fillMaxSize()
         ) {
                 if (detailState.chapter == null && detailState.error == null) {

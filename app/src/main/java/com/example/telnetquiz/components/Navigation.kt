@@ -9,6 +9,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -185,17 +188,34 @@ private fun MainNavHost(
         }
     }
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val navbarRoutes = setOf(
+        Screen.HomeScreen.route,
+        Screen.LeaderboardScreen.route,
+        Screen.ProfileScreen.route
+    )
+    val showNavbar = currentRoute != null && (
+        currentRoute in navbarRoutes ||
+        currentRoute.startsWith(Screen.LevelScreen.route)
+    )
+
     CompositionLocalProvider(
         LocalTutorialController provides if (!hasCompletedTutorial) tutorialController else null
     ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(LitecartesColor.Surface)
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        bottomBar = {
+            if (showNavbar) Navbar(navController = navController)
+        },
+        modifier = Modifier.systemBarsPadding()
+    ) { scaffoldPadding ->
         NavHost(
             navController = navController,
             startDestination = startDestination,
+            modifier = Modifier
+                .padding(scaffoldPadding)
+                .background(LitecartesColor.Surface),
             enterTransition = {
                 tabSlideDirection()?.let {
                     slideIntoContainer(towards = it, animationSpec = tween(300))
@@ -409,17 +429,16 @@ private fun MainNavHost(
             )
         }
         }
+    }
 
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-        val showTutorial = !hasCompletedTutorial && (
-            (currentRoute == Screen.HomeScreen.route && tutorialController.targetBounds.containsKey("profile_top_bar")) ||
-            currentRoute?.startsWith(Screen.LevelScreen.route) == true
-        )
+    val showTutorial = !hasCompletedTutorial && (
+        (currentRoute == Screen.HomeScreen.route && tutorialController.targetBounds.containsKey("profile_top_bar")) ||
+        currentRoute?.startsWith(Screen.LevelScreen.route) == true
+    )
 
-        if (showTutorial) {
-            TutorialOverlay(controller = tutorialController)
-        }
+    if (showTutorial) {
+        TutorialOverlay(controller = tutorialController)
+    }
     }
     }
 }

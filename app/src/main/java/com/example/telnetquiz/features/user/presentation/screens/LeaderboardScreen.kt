@@ -57,7 +57,6 @@ import com.example.telnetquiz.features.user.presentation.components.Top3Profile
 import com.example.telnetquiz.features.user.presentation.components.Top3ProfileSkeleton
 import com.example.telnetquiz.features.user.presentation.viewmodel.LeaderboardTab
 import com.example.telnetquiz.features.user.presentation.viewmodel.LeaderboardViewModel
-import com.example.telnetquiz.ui.layout.AppLayout
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -80,10 +79,12 @@ fun LeaderboardScreen(
         viewModel.loadRecentActivity()
     }
 
-    AppLayout(
-        navController = navController,
-        topBar = {
-            TopBarContainer(
+    Column(
+        modifier = Modifier
+            .background(LitecartesColor.Surface)
+            .fillMaxSize()
+    ) {
+        TopBarContainer(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = 20.dp,
                 contentAlignment = Alignment.Center
@@ -257,11 +258,10 @@ fun LeaderboardScreen(
                 }
             }
         }
-    ) { innerPadding ->
+
         Column(
             modifier = Modifier
-                .padding(innerPadding)
-                .background(LitecartesColor.Surface)
+                .weight(1f)
                 .fillMaxSize()
         ) {
             when (selectedTab) {
