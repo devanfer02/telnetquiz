@@ -413,7 +413,7 @@ private fun MainNavHost(
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
         val showTutorial = !hasCompletedTutorial && (
-            currentRoute == Screen.HomeScreen.route ||
+            (currentRoute == Screen.HomeScreen.route && tutorialController.targetBounds.containsKey("profile_top_bar")) ||
             currentRoute?.startsWith(Screen.LevelScreen.route) == true
         )
 
