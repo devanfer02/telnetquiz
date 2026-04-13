@@ -51,10 +51,6 @@ fun Navbar(
         BottomNavigation(
             backgroundColor = LitecartesColor.Primary,
             modifier = Modifier
-                .clip(RoundedCornerShape(
-                    topStart = 16.dp,
-                    topEnd = 16.dp
-                ))
                 .background(LitecartesColor.Primary)
         ) {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
