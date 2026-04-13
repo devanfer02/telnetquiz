@@ -8,8 +8,8 @@ fun generateLevelPositions(count: Int, chapterId: Int): List<LevelData> {
 
     val random = Random(seed = chapterId)
     val positions = mutableListOf<LevelData>()
-    val yStart = 0.02f
-    val yEnd = 0.85f
+    val yStart = 0.07f
+    val yEnd = 0.78f
     val yStep = if (count > 1) (yEnd - yStart) / (count - 1) else 0f
 
     for (i in 0 until count) {
