@@ -1,7 +1,11 @@
 package com.example.telnetquiz.features.quiz.presentation.screens
 
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,12 +20,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.foundation.rememberScrollState
@@ -50,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.MascotLoadingScreen
 import com.example.telnetquiz.constants.Screen
@@ -129,20 +136,94 @@ fun LevelScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
                 if (detailState.chapter == null && detailState.error == null) {
+                    val placeholderLevels = remember(chapterId) {
+                        generateLevelPositions(4, chapterId)
+                    }
+                    val visibleCount = remember { mutableIntStateOf(0) }
+                    LaunchedEffect(Unit) {
+                        for (i in 1..4) {
+                            delay(250L)
+                            visibleCount.intValue = i
+                        }
+                    }
+
+                    var loadingPathTarget by remember { mutableFloatStateOf(0f) }
+                    val loadingPathProgress by animateFloatAsState(
+                        targetValue = loadingPathTarget,
+                        animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
+                        label = "loading_path"
+                    )
+                    LaunchedEffect(Unit) { loadingPathTarget = 1f }
+
+                    val pulseTransition = rememberInfiniteTransition(label = "pulse")
+                    val pulseAlpha by pulseTransition.animateFloat(
+                        initialValue = 0.3f,
+                        targetValue = 0.7f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(800),
+                            repeatMode = RepeatMode.Reverse
+                        ),
+                        label = "pulse_alpha"
+                    )
+
                     BoxWithConstraints(
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
-                        val loadingHeight = maxWidth * 1.94f + 72.dp
-                        Image(
-                            painter = painterResource(id = R.drawable.level_background_no_path),
-                            contentDescription = "bg",
-                            contentScale = ContentScale.FillBounds,
+                        val screenWidth = maxWidth
+                        val contentHeight = screenWidth * 1.94f + 72.dp
+                        val density = LocalDensity.current
+                        val buttonCenterOffset = remember(density) {
+                            with(density) { 25.dp.toPx() }
+                        }
+                        val buttonCenterDp = remember(density) {
+                            with(density) { buttonCenterOffset.toDp() }
+                        }
+
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(loadingHeight)
-                        )
+                                .height(contentHeight)
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.level_background_no_path),
+                                contentDescription = "bg",
+                                contentScale = ContentScale.FillBounds,
+                                modifier = Modifier.fillMaxSize()
+                            )
+
+                            LevelPath(
+                                levels = placeholderLevels,
+                                pathAnimationProgress = { loadingPathProgress },
+                                buttonCenterOffsetPx = buttonCenterOffset,
+                                modifier = Modifier.fillMaxSize()
+                            )
+
+                            placeholderLevels.forEachIndexed { index, levelPosition ->
+                                val itemAlpha by animateFloatAsState(
+                                    targetValue = if (index < visibleCount.intValue) 1f else 0f,
+                                    animationSpec = tween(durationMillis = 400),
+                                    label = "item_$index"
+                                )
+
+                                Box(
+                                    modifier = Modifier
+                                        .offset(
+                                            x = screenWidth * levelPosition.xFraction - buttonCenterDp,
+                                            y = contentHeight * levelPosition.yFraction
+                                        )
+                                        .graphicsLayer { alpha = itemAlpha }
+                                ) {
+                                    Surface(
+                                        modifier = Modifier.size(50.dp),
+                                        shape = CircleShape,
+                                        color = Color.Gray.copy(alpha = pulseAlpha),
+                                        shadowElevation = 0.dp
+                                    ) {}
+                                }
+                            }
+                        }
                     }
                 }
                 when {
