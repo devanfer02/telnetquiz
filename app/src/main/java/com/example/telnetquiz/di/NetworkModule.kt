@@ -7,6 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.example.telnetquiz.BuildConfig
 import com.example.telnetquiz.data.local.TokenManager
 import com.example.telnetquiz.data.remote.api.TelNetQuizApi
+import com.example.telnetquiz.data.remote.auth.TokenAuthenticator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -62,26 +63,47 @@ object NetworkModule {
                 requestBuilder.header("Authorization", "Bearer $token")
             }
 
-            val response = chain.proceed(requestBuilder.build())
-
-            // Handle 401 Unauthorized - token expired
-            if (response.code == 401) {
-                runBlocking { tokenManager.onSessionExpired() }
-            }
-
-            response
+            chain.proceed(requestBuilder.build())
         }
+    }
+
+    @Provides
+    @Singleton
+    @Named("refreshClient")
+    fun provideRefreshOkHttpClient(
+        @Named("apiKey") apiKeyInterceptor: Interceptor
+    ): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(apiKeyInterceptor)
+            .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
+            .readTimeout(TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(TIMEOUT, TimeUnit.SECONDS)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    @Named("refreshApi")
+    fun provideRefreshApi(@Named("refreshClient") okHttpClient: OkHttpClient): TelNetQuizApi {
+        return Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(TelNetQuizApi::class.java)
     }
 
     @Provides
     @Singleton
     fun provideOkHttpClient(
         @Named("apiKey") apiKeyInterceptor: Interceptor,
-        @Named("auth") authInterceptor: Interceptor
+        @Named("auth") authInterceptor: Interceptor,
+        tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(apiKeyInterceptor)
             .addInterceptor(authInterceptor)
+            .authenticator(tokenAuthenticator)
             .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(TIMEOUT, TimeUnit.SECONDS)

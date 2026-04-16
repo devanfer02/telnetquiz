@@ -23,6 +23,7 @@ class TokenManager @Inject constructor(
         private const val KEY_AUTH_TOKEN = "auth_token"
         private const val KEY_USER_EMAIL = "user_email"
         private const val KEY_USER_NAME = "user_name"
+        private const val KEY_REFRESH_TOKEN = "refresh_token"
     }
 
     private val prefs: SharedPreferences = EncryptedSharedPreferences.create(
@@ -34,6 +35,7 @@ class TokenManager @Inject constructor(
     )
 
     private val _authToken = MutableStateFlow(prefs.getString(KEY_AUTH_TOKEN, null))
+    private val _refreshToken = MutableStateFlow(prefs.getString(KEY_REFRESH_TOKEN, null))
     private val _userEmail = MutableStateFlow(prefs.getString(KEY_USER_EMAIL, null))
     private val _userName = MutableStateFlow(prefs.getString(KEY_USER_NAME, null))
 
@@ -41,12 +43,21 @@ class TokenManager @Inject constructor(
     val sessionExpired: SharedFlow<Unit> = _sessionExpired.asSharedFlow()
 
     val authToken: Flow<String?> = _authToken.asStateFlow()
+    val refreshToken: Flow<String?> = _refreshToken.asStateFlow()
     val userEmail: Flow<String?> = _userEmail.asStateFlow()
     val userName: Flow<String?> = _userName.asStateFlow()
+
+    fun getAuthTokenSync(): String? = _authToken.value
+    fun getRefreshTokenSync(): String? = _refreshToken.value
 
     suspend fun saveAuthToken(token: String) {
         prefs.edit().putString(KEY_AUTH_TOKEN, token).apply()
         _authToken.value = token
+    }
+
+    suspend fun saveRefreshToken(token: String) {
+        prefs.edit().putString(KEY_REFRESH_TOKEN, token).apply()
+        _refreshToken.value = token
     }
 
     suspend fun saveUserInfo(email: String, name: String) {
@@ -61,10 +72,12 @@ class TokenManager @Inject constructor(
     suspend fun clearSession() {
         prefs.edit()
             .remove(KEY_AUTH_TOKEN)
+            .remove(KEY_REFRESH_TOKEN)
             .remove(KEY_USER_EMAIL)
             .remove(KEY_USER_NAME)
             .apply()
         _authToken.value = null
+        _refreshToken.value = null
         _userEmail.value = null
         _userName.value = null
     }

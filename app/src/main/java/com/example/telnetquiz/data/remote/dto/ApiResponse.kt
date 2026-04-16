@@ -13,7 +13,21 @@ data class AuthResponse(
     @SerializedName("message")
     val message: String,
     @SerializedName("token")
-    val token: String? = null
+    val token: String? = null,
+    @SerializedName("refreshToken")
+    val refreshToken: String? = null
+)
+
+data class RefreshTokenRequest(
+    @SerializedName("refreshToken")
+    val refreshToken: String
+)
+
+data class RefreshTokenResponse(
+    @SerializedName("token")
+    val token: String,
+    @SerializedName("refreshToken")
+    val refreshToken: String
 )
 
 data class ValidationErrorResponse(

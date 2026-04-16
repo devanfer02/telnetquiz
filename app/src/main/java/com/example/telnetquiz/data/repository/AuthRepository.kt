@@ -81,6 +81,7 @@ class AuthRepository @Inject constructor(
 
                 if (body != null && body.token != null) {
                     tokenManager.saveAuthToken(body.token)
+                    body.refreshToken?.let { tokenManager.saveRefreshToken(it) }
                     tokenManager.saveUserInfo(email, fullname)
                     Result.Success(body.message)
                 } else {
@@ -104,6 +105,7 @@ class AuthRepository @Inject constructor(
                 val body = response.body()
                 if (body != null && body.token != null) {
                     tokenManager.saveAuthToken(body.token)
+                    body.refreshToken?.let { tokenManager.saveRefreshToken(it) }
                     tokenManager.saveUserInfo(email, "")
                     Result.Success(body.message)
                 } else {

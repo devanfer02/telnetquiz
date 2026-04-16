@@ -3,6 +3,8 @@ package com.example.telnetquiz.data.remote.api
 import com.example.telnetquiz.data.remote.dto.AchievementsResponse
 import com.example.telnetquiz.data.remote.dto.ApiResponse
 import com.example.telnetquiz.data.remote.dto.AuthResponse
+import com.example.telnetquiz.data.remote.dto.RefreshTokenRequest
+import com.example.telnetquiz.data.remote.dto.RefreshTokenResponse
 import com.example.telnetquiz.data.remote.dto.AvatarResponse
 import com.example.telnetquiz.data.remote.dto.ChapterDetailDto
 import com.example.telnetquiz.data.remote.dto.ChaptersResponse
@@ -59,6 +61,12 @@ interface TelNetQuizApi {
 
     @DELETE("api/sessions")
     suspend fun logout(): Response<Unit>
+
+    @Headers("Content-Type: application/json")
+    @POST("api/auth/refresh")
+    suspend fun refreshToken(
+        @Body request: RefreshTokenRequest
+    ): Response<RefreshTokenResponse>
 
     // Schools
     @GET("api/schools")
