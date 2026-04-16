@@ -120,6 +120,10 @@ class AuthRepository @Inject constructor(
     }
 
     suspend fun logout() {
+        try {
+            api.logout()
+        } catch (_: Exception) {
+        }
         tokenManager.clearSession()
     }
 

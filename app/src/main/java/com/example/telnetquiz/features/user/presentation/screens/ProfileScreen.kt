@@ -5,11 +5,13 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,7 +20,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,6 +60,7 @@ import com.example.telnetquiz.ui.theme.nunitosFontFamily
 @Composable
 fun ProfileScreen(
     navController: NavController,
+    onLogout: () -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel(),
     achievementViewModel: AchievementViewModel = hiltViewModel()
 ) {
@@ -64,6 +69,7 @@ fun ProfileScreen(
     val audioSettings by viewModel.audioManager.audioSettingsFlow.collectAsState(initial = AudioSettings())
     val selectedAvatarIndex by viewModel.selectedAvatarIndex.collectAsState()
     var showSoundSettings by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
     var isHeaderExpanded by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
@@ -79,6 +85,47 @@ fun ProfileScreen(
             onGlobalVolumeChange = { viewModel.audioManager.setGlobalVolume(it) },
             onSfxVolumeChange = { viewModel.audioManager.setSfxVolume(it) },
             onBgMusicVolumeChange = { viewModel.audioManager.setBgMusicVolume(it) }
+        )
+    }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = {
+                Text(
+                    text = "Keluar",
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = "Apakah kamu yakin ingin keluar dari akun?",
+                    fontFamily = nunitosFontFamily
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showLogoutDialog = false
+                    onLogout()
+                }) {
+                    Text(
+                        text = "Keluar",
+                        color = Color.Red,
+                        fontFamily = nunitosFontFamily,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text(
+                        text = "Batal",
+                        fontFamily = nunitosFontFamily,
+                        color = LitecartesColor.Secondary
+                    )
+                }
+            }
         )
     }
 
@@ -201,6 +248,31 @@ fun ProfileScreen(
                                 unlocked = achievement.unlocked
                             )
                         }
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .border(
+                                width = 1.dp,
+                                color = Color.Red.copy(alpha = 0.5f),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .clickable { showLogoutDialog = true }
+                            .padding(vertical = 14.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Keluar",
+                            fontFamily = nunitosFontFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = Color.Red
+                        )
                     }
                 }
             }

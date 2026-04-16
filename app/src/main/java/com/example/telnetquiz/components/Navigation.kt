@@ -100,13 +100,15 @@ fun Navigation() {
         SessionState.Authenticated -> {
             MainNavHost(
                 navController = navController,
-                startDestination = Screen.HomeScreen.route
+                startDestination = Screen.HomeScreen.route,
+                onLogout = { authViewModel.logout() }
             )
         }
         SessionState.Unauthenticated -> {
             MainNavHost(
                 navController = navController,
-                startDestination = Screen.AuthStartScreen.route
+                startDestination = Screen.AuthStartScreen.route,
+                onLogout = {}
             )
         }
     }
@@ -154,7 +156,8 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.tabSlideDirection(
 @Composable
 private fun MainNavHost(
     navController: NavHostController,
-    startDestination: String
+    startDestination: String,
+    onLogout: () -> Unit
 ) {
     val context = LocalContext.current
     val entryPoint = remember {
@@ -402,7 +405,7 @@ private fun MainNavHost(
         composable(
             route = Screen.ProfileScreen.route
         ) {
-            ProfileScreen(navController = navController)
+            ProfileScreen(navController = navController, onLogout = onLogout)
         }
         composable(
             route = Screen.EditProfileScreen.route
