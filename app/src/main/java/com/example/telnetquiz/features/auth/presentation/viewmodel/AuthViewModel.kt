@@ -93,9 +93,14 @@ class AuthViewModel @Inject constructor(
                     _state.value = _state.value.copy(isLoggedIn = true)
                 }
                 is Result.Error -> {
-                    tokenManager.clearSession()
-                    _sessionState.value = SessionState.Unauthenticated
-                    _state.value = _state.value.copy(isLoggedIn = false)
+                    val currentToken = authRepository.authToken.first()
+                    if (currentToken == null) {
+                        _sessionState.value = SessionState.Unauthenticated
+                        _state.value = _state.value.copy(isLoggedIn = false)
+                    } else {
+                        _sessionState.value = SessionState.Authenticated
+                        _state.value = _state.value.copy(isLoggedIn = true)
+                    }
                 }
                 is Result.Loading -> {
                     // Stay in loading state

@@ -70,6 +70,7 @@ class TokenManager @Inject constructor(
     }
 
     suspend fun onSessionExpired() {
+        if (_authToken.value == null) return
         clearSession()
         _sessionExpired.emit(Unit)
     }
