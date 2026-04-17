@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -79,11 +80,15 @@ interface AudioManagerEntryPoint {
     fun tutorialPreferenceManager(): TutorialPreferenceManager
 }
 
+val LocalAuthViewModel = staticCompositionLocalOf<AuthViewModel> {
+    error("LocalAuthViewModel not provided")
+}
+
 @Composable
 fun Navigation() {
-    val navController = rememberNavController()
     val authViewModel: AuthViewModel = hiltViewModel()
     val sessionState by authViewModel.sessionState.collectAsState()
+    val navController = rememberNavController()
 
     LaunchedEffect(Unit) {
         authViewModel.sessionExpiredEvent.collectLatest {
@@ -93,23 +98,35 @@ fun Navigation() {
         }
     }
 
-    when (sessionState) {
-        SessionState.Loading -> {
-            SplashLoadingScreen()
+    LaunchedEffect(sessionState) {
+        when (sessionState) {
+            SessionState.Authenticated -> {
+                navController.navigate(Screen.HomeScreen.route) {
+                    popUpTo(0) { inclusive = true }
+                }
+            }
+            SessionState.Unauthenticated -> {
+                navController.navigate(Screen.AuthStartScreen.route) {
+                    popUpTo(0) { inclusive = true }
+                }
+            }
+            SessionState.Loading -> {}
         }
-        SessionState.Authenticated -> {
-            MainNavHost(
-                navController = navController,
-                startDestination = Screen.HomeScreen.route,
-                onLogout = { authViewModel.logout() }
-            )
-        }
-        SessionState.Unauthenticated -> {
-            MainNavHost(
-                navController = navController,
-                startDestination = Screen.AuthStartScreen.route,
-                onLogout = {}
-            )
+    }
+
+    CompositionLocalProvider(LocalAuthViewModel provides authViewModel) {
+        when (sessionState) {
+            SessionState.Loading -> SplashLoadingScreen()
+            else -> {
+                val startDestination = remember {
+                    if (sessionState == SessionState.Authenticated) Screen.HomeScreen.route
+                    else Screen.AuthStartScreen.route
+                }
+                MainNavHost(
+                    navController = navController,
+                    startDestination = startDestination
+                )
+            }
         }
     }
 }
@@ -156,8 +173,7 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.tabSlideDirection(
 @Composable
 private fun MainNavHost(
     navController: NavHostController,
-    startDestination: String,
-    onLogout: () -> Unit
+    startDestination: String
 ) {
     val context = LocalContext.current
     val entryPoint = remember {
@@ -405,7 +421,7 @@ private fun MainNavHost(
         composable(
             route = Screen.ProfileScreen.route
         ) {
-            ProfileScreen(navController = navController, onLogout = onLogout)
+            ProfileScreen(navController = navController)
         }
         composable(
             route = Screen.EditProfileScreen.route

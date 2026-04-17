@@ -175,10 +175,10 @@ class AuthViewModel @Inject constructor(
     }
 
     fun logout() {
+        _sessionState.value = SessionState.Unauthenticated
+        _state.value = AuthState(isLoggedIn = false)
         viewModelScope.launch {
             authRepository.logout()
-            _sessionState.value = SessionState.Unauthenticated
-            _state.value = AuthState(isLoggedIn = false)
         }
     }
 

@@ -5,7 +5,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.telnetquiz.components.LocalAuthViewModel
 import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.constants.Screen
@@ -60,10 +60,10 @@ import com.example.telnetquiz.ui.theme.nunitosFontFamily
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    onLogout: () -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel(),
     achievementViewModel: AchievementViewModel = hiltViewModel()
 ) {
+    val authViewModel = LocalAuthViewModel.current
     val state by viewModel.state.collectAsState()
     val achievementState by achievementViewModel.state.collectAsState()
     val audioSettings by viewModel.audioManager.audioSettingsFlow.collectAsState(initial = AudioSettings())
@@ -107,7 +107,10 @@ fun ProfileScreen(
             confirmButton = {
                 TextButton(onClick = {
                     showLogoutDialog = false
-                    onLogout()
+                    authViewModel.logout()
+                    navController.navigate(Screen.AuthStartScreen.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }) {
                     Text(
                         text = "Keluar",
@@ -257,11 +260,7 @@ fun ProfileScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
-                            .border(
-                                width = 1.dp,
-                                color = Color.Red.copy(alpha = 0.5f),
-                                shape = RoundedCornerShape(12.dp)
-                            )
+                            .background(Color.Red)
                             .clickable { showLogoutDialog = true }
                             .padding(vertical = 14.dp),
                         contentAlignment = Alignment.Center
@@ -271,9 +270,10 @@ fun ProfileScreen(
                             fontFamily = nunitosFontFamily,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 16.sp,
-                            color = Color.Red
+                            color = Color.White
                         )
                     }
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
         }
