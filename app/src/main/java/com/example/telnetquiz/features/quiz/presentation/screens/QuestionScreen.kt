@@ -207,7 +207,7 @@ fun QuestionScreen(
                                     text = currentQuestion.question,
                                     textAlign = TextAlign.Center,
                                     color = LitecartesColor.Secondary,
-                                    fontWeight = FontWeight.SemiBold,
+                                    fontWeight = FontWeight.Bold,
                                     fontFamily = nunitosFontFamily,
                                     fontSize = 15.sp,
                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 8.dp)
