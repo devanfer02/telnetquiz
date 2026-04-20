@@ -79,10 +79,21 @@ android {
         }
     }
 
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a")
+            isUniversalApk = false
+        }
+    }
+
     applicationVariants.all {
         outputs.all {
             val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-            output.outputFileName  = "telnetquiz-${versionName}-${buildType.name}.apk"
+            val abi = output.filters.find { it.filterType == "ABI" }?.identifier
+            val abiSuffix = if (abi != null) "-$abi" else ""
+            output.outputFileName = "telnetquiz-${versionName}-${buildType.name}$abiSuffix.apk"
         }
     }
 }
@@ -103,11 +114,8 @@ dependencies {
     implementation("androidx.compose.material:material")
     implementation("androidx.core:core-splashscreen:1.0.0")
     implementation("io.coil-kt:coil-compose:2.7.0")
-    implementation("io.coil-kt:coil-gif:2.7.0")
     implementation("com.google.dagger:hilt-android:2.51")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation("io.arrow-kt:arrow-core:1.2.0")
-    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0")
 
     // Networking
     implementation("com.squareup.retrofit2:retrofit:2.11.0")

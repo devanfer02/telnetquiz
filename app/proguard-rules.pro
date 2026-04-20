@@ -29,5 +29,3 @@
 -keep,allowobfuscation,allowshrinking class retrofit2.Response
 -keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
 
-# Arrow-kt core types
--keep class arrow.core.** { *; }
