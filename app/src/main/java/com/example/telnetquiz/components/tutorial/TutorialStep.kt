@@ -214,6 +214,7 @@ private val part2Steps = listOf(
         targetKey = null,
         tooltipPosition = TooltipPosition.CENTER_SCREEN,
         mascotResId = R.drawable.group_275,
+        navigateTo = "${Screen.QuestionScreen.route}/1?retry=false",
         route = Screen.QuestionScreen.route
     ),
     TutorialStep(
@@ -255,10 +256,11 @@ private val part2Steps = listOf(
     TutorialStep(
         id = TutorialStepId.REMEDIAL_WELCOME,
         title = "Belajar Lagi!",
-        description = "Ada jawaban yang belum tepat — nggak apa-apa, kita belajar bareng lagi!",
+        description = "Kalau ada jawaban yang belum tepat, kamu bakal diarahkan ke halaman ini — nggak apa-apa, kita belajar bareng lagi!",
         targetKey = null,
         tooltipPosition = TooltipPosition.CENTER_SCREEN,
         mascotResId = R.drawable.mascot_wrong,
+        navigateTo = "${Screen.RemedialScreen.route}/1/1",
         route = Screen.RemedialScreen.route
     ),
     TutorialStep(
@@ -273,11 +275,11 @@ private val part2Steps = listOf(
     TutorialStep(
         id = TutorialStepId.PART_2_FINISH,
         title = "Part 2 Selesai!",
-        description = "Kamu udah paham cara belajar dan kuis. Selanjutnya, Part 3 bakal ngenalin kamu ke halaman profil dan progres. Buka tab Profil atau Peringkat ya!",
+        description = "Kamu udah paham cara belajar dan kuis. Lanjut ke Part 3: halaman profil dan progres.",
         targetKey = null,
         tooltipPosition = TooltipPosition.CENTER_SCREEN,
         mascotResId = R.drawable.chap1,
-        route = Screen.ResultScreen.route
+        route = Screen.RemedialScreen.route
     )
 )
 
@@ -325,6 +327,7 @@ private val part3Steps = listOf(
         targetKey = "edit_avatar_picker",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
         mascotResId = R.drawable.group_275,
+        navigateTo = Screen.EditProfileScreen.route,
         route = Screen.EditProfileScreen.route
     ),
     TutorialStep(
@@ -361,6 +364,7 @@ private val part3Steps = listOf(
         targetKey = "leaderboard_tab_toggle",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
         mascotResId = R.drawable.group_275,
+        navigateTo = Screen.LeaderboardScreen.route,
         route = Screen.LeaderboardScreen.route
     ),
     TutorialStep(

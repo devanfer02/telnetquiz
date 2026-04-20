@@ -102,6 +102,19 @@ private fun TutorialSegmentStarter(
     }
 }
 
+private fun nextPartOf(segmentId: TutorialSegmentId): TutorialSegmentId? = when (segmentId) {
+    TutorialSegmentId.PART_1_INTERFACE -> TutorialSegmentId.PART_2_LEARNING_QUIZ
+    TutorialSegmentId.PART_2_LEARNING_QUIZ -> TutorialSegmentId.PART_3_PROGRESS_PROFILE
+    TutorialSegmentId.PART_3_PROGRESS_PROFILE -> null
+}
+
+private fun firstRouteOf(segmentId: TutorialSegmentId): String? = when (segmentId) {
+    TutorialSegmentId.PART_1_INTERFACE -> Screen.HomeScreen.route
+    TutorialSegmentId.PART_2_LEARNING_QUIZ ->
+        "${Screen.StudyMaterialScreen.route}/1/levels/1/questions/1"
+    TutorialSegmentId.PART_3_PROGRESS_PROFILE -> Screen.ProfileScreen.route
+}
+
 val LocalAuthViewModel = staticCompositionLocalOf<AuthViewModel> {
     error("LocalAuthViewModel not provided")
 }
@@ -208,12 +221,28 @@ private fun MainNavHost(
     val tutorialPreferenceManager = remember { entryPoint.tutorialPreferenceManager() }
     val scope = rememberCoroutineScope()
     val tutorialController = remember {
-        TutorialController(
+        var controllerRef: TutorialController? = null
+        val controller = TutorialController(
             onStepChange = { segment, index ->
                 scope.launch { tutorialPreferenceManager.setSegmentStep(segment, index) }
             },
             onSegmentComplete = { segment ->
-                scope.launch { tutorialPreferenceManager.setSegmentCompleted(segment) }
+                scope.launch {
+                    tutorialPreferenceManager.setSegmentCompleted(segment)
+                    val next = nextPartOf(segment) ?: return@launch
+                    val firstRoute = firstRouteOf(next) ?: return@launch
+                    navController.navigate(firstRoute) { launchSingleTop = true }
+                    controllerRef?.startSegment(next, 0)
+                }
+            },
+            onSegmentSkipped = { segment ->
+                scope.launch {
+                    var s: TutorialSegmentId? = segment
+                    while (s != null) {
+                        tutorialPreferenceManager.setSegmentCompleted(s)
+                        s = nextPartOf(s)
+                    }
+                }
             },
             onNavigate = { route ->
                 navController.navigate(route) {
@@ -221,6 +250,8 @@ private fun MainNavHost(
                 }
             }
         )
+        controllerRef = controller
+        controller
     }
 
     DisposableEffect(navController) {

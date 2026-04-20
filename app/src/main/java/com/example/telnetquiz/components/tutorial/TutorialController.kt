@@ -19,6 +19,7 @@ val LocalTutorialController = staticCompositionLocalOf<TutorialController?> { nu
 class TutorialController(
     private val onStepChange: (TutorialSegmentId, Int) -> Unit,
     private val onSegmentComplete: (TutorialSegmentId) -> Unit,
+    private val onSegmentSkipped: (TutorialSegmentId) -> Unit,
     private val onNavigate: (String) -> Unit
 ) {
     var currentSegment: TutorialSegmentId? by mutableStateOf(null)
@@ -131,7 +132,7 @@ class TutorialController(
 
     fun skip() {
         val seg = currentSegment ?: return
-        onSegmentComplete(seg)
+        onSegmentSkipped(seg)
         clearInternal()
     }
 
