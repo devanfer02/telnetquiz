@@ -9,14 +9,12 @@ import androidx.compose.ui.unit.sp
 import com.example.telnetquiz.R
 
 val nunitosFontFamily = FontFamily(
-    Font(R.font.nunito_black, FontWeight.Black),
-    Font(R.font.nunito_bold, FontWeight.Bold),
-    Font(R.font.nunito_semibold, FontWeight.SemiBold),
     Font(R.font.nunito_regular, FontWeight.Normal),
-    Font(R.font.nunito_light, FontWeight.Light),
     Font(R.font.nunito_medium, FontWeight.Medium),
-    Font(R.font.nunito_extralight, FontWeight.ExtraLight),
+    Font(R.font.nunito_semibold, FontWeight.SemiBold),
+    Font(R.font.nunito_bold, FontWeight.Bold),
     Font(R.font.nunito_extrabold, FontWeight.ExtraBold),
+    Font(R.font.nunito_black, FontWeight.Black),
 )
 
 val Typography = Typography(
