@@ -115,7 +115,7 @@ fun PretestScreen(
                     val selectedOptionId = state.answers[currentQuestion.id]
 
                     QuestionHeaderBox(
-                        title = currentQuestion.chapterTitle ?: "Pretest",
+                        title = currentQuestion.chapterTitle?.let { "Prolog - $it" } ?: "Prolog",
                         description = currentQuestion.description,
                         imageLink = currentQuestion.imageLink,
                         isTtsLoading = isTtsLoading,
