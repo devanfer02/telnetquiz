@@ -60,24 +60,32 @@ This is a native Android app built with Kotlin and Jetpack Compose for TelNetQui
 **Tech Stack:**
 - Kotlin 1.9.0 with Jetpack Compose
 - Navigation Compose for routing
-- Hilt for dependency injection (configured but minimally used)
-- Arrow-kt for functional programming utilities
+- Hilt for dependency injection (ViewModels, repositories, managers — used across ~40 files)
+- Retrofit + OkHttp + Gson for networking
 - Coil for image loading
+- DataStore (preferences) + EncryptedSharedPreferences (token storage)
+- Firebase Crashlytics + Analytics
 - Target SDK 34, Min SDK 24
 
 **Code Organization:**
 
-The app follows a feature-based architecture under `app/src/main/java/com/example/litecartesnative/`:
+The app lives under `app/src/main/java/com/example/telnetquiz/`:
 
-- `components/` - Shared UI components (Button, Navbar, Navigation, StrokedText)
-- `constants/` - Route definitions (Screen sealed class), static quiz data, navigation items
-- `features/` - Feature modules, each with `presentation/` (screens, components) and optionally `domain/` (models)
-  - `auth/` - Authentication screens (start, login, register, about)
-  - `chapter/` - Chapter selection screen
-  - `quiz/` - Quiz functionality (levels, questions, results, feedback)
-  - `pretest/` - Pretest functionality
-  - `user/` - Profile, leaderboard, friends
-- `ui/theme/` - Material 3 theming (LitecartesColor palette, typography with Nunito font)
+- `components/` - Shared UI components (Button, Navbar, Navigation, StrokedText, ProfileTopBar)
+- `constants/` - Route definitions (Screen sealed class), NavItem entries
+- `data/`
+  - `audio/` - AudioManager + AppLifecycleObserver
+  - `local/` - DataStore-backed preferences + singletons (QuizFlowManager, TokenManager, AvatarPreferenceManager, TutorialPreferenceManager, AudioPreferenceManager, FlowResultStore)
+  - `remote/` - Retrofit service + DTOs + auth token interceptor/authenticator
+  - `repository/` - Auth/Chapter/Quiz/Material/Pretest/User repositories consumed by ViewModels
+- `di/` - Hilt modules (NetworkModule, TtsModule, AudioManagerEntryPoint wired in Navigation.kt)
+- `features/` - Feature modules, each with `presentation/{screens,components,viewmodel}/` and optionally `domain/model/`
+  - `auth/` - Start / Login / Register screens + AuthViewModel
+  - `chapter/` - Chapter selection screen + ChapterViewModel
+  - `quiz/` - Levels, Questions, Feedback, StudyMaterial, Remedial, Result screens + QuizViewModel, StudyMaterialViewModel
+  - `pretest/` - Pretest screen + PretestViewModel
+  - `user/` - Profile, Leaderboard, EditProfile, Achievement screens + ViewModels
+- `ui/theme/` - Material 3 theming (LitecartesColor palette, typography with Nunito font — only Normal/Medium/SemiBold/Bold/ExtraBold/Black weights are loaded)
 
 **Navigation:**
 
@@ -87,10 +95,10 @@ Routes defined as sealed class objects in `constants/Screen.kt`. The NavHost in 
 
 **State Management:**
 
-- Singleton objects for global state: `WrongQuizManager` (tracks wrong answers in ArrayDeque), `MarkAsDoneManager` (2D BooleanArray for completed levels)
-- Local state via Compose `remember { mutableStateOf() }`
-- No ViewModel/LiveData pattern in use
+- Hilt-injected ViewModels (`@HiltViewModel` + `hiltViewModel()` at screen composables) expose UI state via `StateFlow`.
+- Singletons for cross-screen flow state: `QuizFlowManager`, `WrongQuizManager`, `MarkAsDoneManager`, `FlowResultStore`.
+- Local state via Compose `remember { mutableStateOf() }`.
 
 **Data:**
 
-Quiz content is hardcoded in `constants/` (chaptersData, pretestsData, levelsData). Models in `features/*/domain/model/` are data classes (Chapter, LevelData, Question, Material, QuizIndex).
+Quiz content is sourced from the remote CMS via `ChapterRepository`, `QuizRepository`, `MaterialRepository`, and `PretestRepository` (Retrofit). Models in `features/*/domain/model/` + `data/remote/dto/` are Kotlin data classes.
