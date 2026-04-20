@@ -27,6 +27,9 @@ class TutorialController(
     var currentStepIndex by mutableIntStateOf(0)
         private set
 
+    var currentRoute: String? by mutableStateOf(null)
+        private set
+
     val currentSteps: List<TutorialStep>
         get() = currentSegment?.let { tutorialSegments[it] } ?: emptyList()
 
@@ -34,7 +37,10 @@ class TutorialController(
         get() = currentSteps.getOrNull(currentStepIndex)
 
     val isActive: Boolean
-        get() = currentStep != null
+        get() {
+            val step = currentStep ?: return false
+            return stepMatchesRoute(step, currentRoute)
+        }
 
     var isWaitingForBounds by mutableStateOf(false)
         private set
@@ -72,7 +78,29 @@ class TutorialController(
         currentStepIndex = safeIndex
         _targetBounds.clear()
         val step = steps[safeIndex]
-        isWaitingForBounds = step.targetKey != null
+        isWaitingForBounds = step.targetKey != null && stepMatchesRoute(step, currentRoute)
+    }
+
+    fun onRouteChanged(newRoute: String?) {
+        currentRoute = newRoute
+        val seg = currentSegment ?: return
+        val steps = currentSteps
+        if (steps.isEmpty()) return
+        val cur = steps.getOrNull(currentStepIndex) ?: return
+        if (stepMatchesRoute(cur, newRoute)) {
+            isWaitingForBounds = cur.targetKey != null && !_targetBounds.containsKey(cur.targetKey)
+            return
+        }
+        for (i in (currentStepIndex + 1) until steps.size) {
+            val s = steps[i]
+            if (stepMatchesRoute(s, newRoute)) {
+                currentStepIndex = i
+                onStepChange(seg, i)
+                isWaitingForBounds = s.targetKey != null && !_targetBounds.containsKey(s.targetKey)
+                return
+            }
+        }
+        isWaitingForBounds = false
     }
 
     fun nextStep() {
@@ -93,7 +121,8 @@ class TutorialController(
             onNavigate(nextStep.navigateTo)
         } else {
             isWaitingForBounds = nextStep.targetKey != null &&
-                !_targetBounds.containsKey(nextStep.targetKey)
+                !_targetBounds.containsKey(nextStep.targetKey) &&
+                stepMatchesRoute(nextStep, currentRoute)
         }
 
         currentStepIndex = nextIndex
@@ -115,5 +144,11 @@ class TutorialController(
         currentStepIndex = 0
         isWaitingForBounds = false
         _targetBounds.clear()
+    }
+
+    private fun stepMatchesRoute(step: TutorialStep, route: String?): Boolean {
+        val stepRoute = step.route ?: return true
+        val cur = route ?: return false
+        return cur.startsWith(stepRoute)
     }
 }

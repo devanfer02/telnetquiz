@@ -89,12 +89,14 @@ private fun TutorialSegmentStarter(
     segmentId: TutorialSegmentId,
     controller: TutorialController,
     prefs: TutorialPreferenceManager,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    requiredPrevious: TutorialSegmentId? = null
 ) {
     LaunchedEffect(segmentId, enabled) {
         if (!enabled) return@LaunchedEffect
         if (controller.currentSegment == segmentId) return@LaunchedEffect
         if (prefs.isSegmentCompleted(segmentId)) return@LaunchedEffect
+        if (requiredPrevious != null && !prefs.isSegmentCompleted(requiredPrevious)) return@LaunchedEffect
         val startIndex = prefs.getSegmentStep(segmentId)
         controller.startSegment(segmentId, startIndex)
     }
@@ -250,6 +252,7 @@ private fun MainNavHost(
         LitecartesColor.DarkerSurface else LitecartesColor.Surface
 
     LaunchedEffect(currentRoute) {
+        tutorialController.onRouteChanged(currentRoute)
         val seg = tutorialController.currentSegment ?: return@LaunchedEffect
         val route = currentRoute ?: return@LaunchedEffect
         if (seg.allowedRoutePrefixes().none { route.startsWith(it) }) {
@@ -358,7 +361,7 @@ private fun MainNavHost(
             }
 
             TutorialSegmentStarter(
-                segmentId = TutorialSegmentId.HOME_INTRO,
+                segmentId = TutorialSegmentId.PART_1_INTERFACE,
                 controller = tutorialController,
                 prefs = tutorialPreferenceManager,
                 enabled = !profileState.isLoading && profileState.profile?.hasTakenPretest != false
@@ -398,12 +401,6 @@ private fun MainNavHost(
             val quizId = it.arguments?.getInt("quizId") ?: 1
             val isRetry = it.arguments?.getBoolean("retry") ?: false
 
-            TutorialSegmentStarter(
-                segmentId = TutorialSegmentId.QUIZ_INTRO,
-                controller = tutorialController,
-                prefs = tutorialPreferenceManager
-            )
-
             QuestionScreen(
                 quizId = quizId,
                 isRetry = isRetry,
@@ -434,9 +431,10 @@ private fun MainNavHost(
             val materialId = it.arguments?.getInt("materialId") ?: 0
 
             TutorialSegmentStarter(
-                segmentId = TutorialSegmentId.STUDY_MATERIAL_INTRO,
+                segmentId = TutorialSegmentId.PART_2_LEARNING_QUIZ,
                 controller = tutorialController,
-                prefs = tutorialPreferenceManager
+                prefs = tutorialPreferenceManager,
+                requiredPrevious = TutorialSegmentId.PART_1_INTERFACE
             )
 
             StudyMaterialScreen(
@@ -460,12 +458,6 @@ private fun MainNavHost(
             val wrongCount = it.arguments?.getInt("wrongCount") ?: 0
             val totalCount = it.arguments?.getInt("totalCount") ?: 0
 
-            TutorialSegmentStarter(
-                segmentId = TutorialSegmentId.REMEDIAL_INTRO,
-                controller = tutorialController,
-                prefs = tutorialPreferenceManager
-            )
-
             RemedialScreen(
                 navController = navController,
                 wrongCount = wrongCount,
@@ -476,9 +468,10 @@ private fun MainNavHost(
             route = Screen.LeaderboardScreen.route
         ) {
             TutorialSegmentStarter(
-                segmentId = TutorialSegmentId.LEADERBOARD_INTRO,
+                segmentId = TutorialSegmentId.PART_3_PROGRESS_PROFILE,
                 controller = tutorialController,
-                prefs = tutorialPreferenceManager
+                prefs = tutorialPreferenceManager,
+                requiredPrevious = TutorialSegmentId.PART_2_LEARNING_QUIZ
             )
             LeaderboardScreen(navController = navController)
         }
@@ -486,20 +479,16 @@ private fun MainNavHost(
             route = Screen.ProfileScreen.route
         ) {
             TutorialSegmentStarter(
-                segmentId = TutorialSegmentId.PROFILE_INTRO,
+                segmentId = TutorialSegmentId.PART_3_PROGRESS_PROFILE,
                 controller = tutorialController,
-                prefs = tutorialPreferenceManager
+                prefs = tutorialPreferenceManager,
+                requiredPrevious = TutorialSegmentId.PART_2_LEARNING_QUIZ
             )
             ProfileScreen(navController = navController)
         }
         composable(
             route = Screen.EditProfileScreen.route
         ) {
-            TutorialSegmentStarter(
-                segmentId = TutorialSegmentId.EDIT_PROFILE_INTRO,
-                controller = tutorialController,
-                prefs = tutorialPreferenceManager
-            )
             EditProfileScreen(navController = navController)
         }
         composable(

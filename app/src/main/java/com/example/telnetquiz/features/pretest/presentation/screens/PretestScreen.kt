@@ -114,23 +114,6 @@ fun PretestScreen(
                 currentQuestion != null -> {
                     val selectedOptionId = state.answers[currentQuestion.id]
 
-                    QuestionHeaderBox(
-                        title = currentQuestion.chapterTitle?.let { "Prolog - $it" } ?: "Prolog",
-                        description = currentQuestion.description,
-                        imageLink = currentQuestion.imageLink,
-                        isTtsLoading = isTtsLoading,
-                        isTtsPlaying = isTtsPlaying,
-                        onStopClick = { viewModel.stopTts() },
-                        onSpeakClick = {
-                            val optionsText = currentQuestion.options
-                                .mapIndexed { i, opt -> "${letters.getOrElse(i) { ' ' }}. ${opt.text}" }
-                                .joinToString(". ")
-                            val textToRead = "${currentQuestion.description}. ${currentQuestion.question}. Pilihan jawaban: $optionsText"
-                            viewModel.speak(textToRead)
-                            viewModel.speakContent("pretest", currentQuestion.id, null, currentQuestion.audioLink)
-                        }
-                    )
-
                     Column(
                         modifier = Modifier
                             .weight(1f)
@@ -138,11 +121,26 @@ fun PretestScreen(
                             .background(LitecartesColor.Surface)
                     ) {
                         LazyColumn(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(horizontal = 12.dp)
-                                .padding(top = 16.dp)
+                            modifier = Modifier.weight(1f)
                         ) {
+                            item {
+                                QuestionHeaderBox(
+                                    title = currentQuestion.chapterTitle?.let { "Prolog - $it" } ?: "Prolog",
+                                    description = currentQuestion.description,
+                                    imageLink = currentQuestion.imageLink,
+                                    isTtsLoading = isTtsLoading,
+                                    isTtsPlaying = isTtsPlaying,
+                                    onStopClick = { viewModel.stopTts() },
+                                    onSpeakClick = {
+                                        val optionsText = currentQuestion.options
+                                            .mapIndexed { i, opt -> "${letters.getOrElse(i) { ' ' }}. ${opt.text}" }
+                                            .joinToString(". ")
+                                        val textToRead = "${currentQuestion.description}. ${currentQuestion.question}. Pilihan jawaban: $optionsText"
+                                        viewModel.speak(textToRead)
+                                        viewModel.speakContent("pretest", currentQuestion.id, null, currentQuestion.audioLink)
+                                    }
+                                )
+                            }
                             item {
                                 Text(
                                     text = currentQuestion.question,
@@ -151,21 +149,23 @@ fun PretestScreen(
                                     fontWeight = FontWeight.Bold,
                                     fontFamily = nunitosFontFamily,
                                     fontSize = 15.sp,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 8.dp)
+                                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp)
                                 )
                             }
                             itemsIndexed(currentQuestion.options) { index, option ->
-                                OptionButton(
-                                    text = option.text,
-                                    letter = letters.getOrElse(index) { ' ' },
-                                    isActive = selectedOptionId == option.id,
-                                    feedback = OptionFeedback.NONE,
-                                    onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                        viewModel.selectAnswer(currentQuestion.id, option.id)
-                                    },
-                                    haptic = haptic
-                                )
+                                Box(modifier = Modifier.padding(horizontal = 12.dp)) {
+                                    OptionButton(
+                                        text = option.text,
+                                        letter = letters.getOrElse(index) { ' ' },
+                                        isActive = selectedOptionId == option.id,
+                                        feedback = OptionFeedback.NONE,
+                                        onClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                            viewModel.selectAnswer(currentQuestion.id, option.id)
+                                        },
+                                        haptic = haptic
+                                    )
+                                }
                             }
                         }
 
