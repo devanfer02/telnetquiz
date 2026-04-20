@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,6 +54,8 @@ fun QuestionHeaderBox(
     imageLink: String?,
     onSpeakClick: () -> Unit,
     isTtsLoading: Boolean = false,
+    isTtsPlaying: Boolean = false,
+    onStopClick: () -> Unit = onSpeakClick,
     modifier: Modifier = Modifier
 ) {
     var isExpanded by remember { mutableStateOf(true) }
@@ -93,12 +96,12 @@ fun QuestionHeaderBox(
                     TtsPulsingDots(modifier = Modifier.size(36.dp))
                 } else {
                     IconButton(
-                        onClick = onSpeakClick,
+                        onClick = if (isTtsPlaying) onStopClick else onSpeakClick,
                         modifier = Modifier.size(36.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.VolumeUp,
-                            contentDescription = "Baca soal",
+                            imageVector = if (isTtsPlaying) Icons.Default.Stop else Icons.Default.VolumeUp,
+                            contentDescription = if (isTtsPlaying) "Hentikan suara" else "Baca soal",
                             tint = Color.White,
                             modifier = Modifier.size(24.dp)
                         )
