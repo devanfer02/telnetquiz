@@ -61,7 +61,10 @@ fun AvatarPickerDialog(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.heightIn(max = 400.dp)
                 ) {
-                    itemsIndexed(AvatarConstants.avatarList) { index, resId ->
+                    itemsIndexed(
+                        AvatarConstants.avatarList,
+                        key = { _, resId -> resId }
+                    ) { index, resId ->
                         val isSelected = index == selectedIndex
                         Image(
                             painter = painterResource(id = resId),

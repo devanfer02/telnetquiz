@@ -258,7 +258,10 @@ fun ProfileScreen(
                         }
                     }
                     else -> {
-                        items(achievementState.achievements) { achievement ->
+                        items(
+                            items = achievementState.achievements,
+                            key = { it.id }
+                        ) { achievement ->
                             AchievementCard(
                                 title = achievement.title,
                                 description = achievement.description,

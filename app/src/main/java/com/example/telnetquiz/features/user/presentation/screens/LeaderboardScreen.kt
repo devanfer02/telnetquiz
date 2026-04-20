@@ -384,7 +384,10 @@ fun LeaderboardScreen(
                                     }
                                 }
 
-                                itemsIndexed(remainingEntries) { _, entry ->
+                                itemsIndexed(
+                                    remainingEntries,
+                                    key = { _, entry -> entry.userId }
+                                ) { _, entry ->
                                     Spacer(modifier = Modifier.padding(4.dp))
                                     PositionCard(
                                         user = entry.toUser(),

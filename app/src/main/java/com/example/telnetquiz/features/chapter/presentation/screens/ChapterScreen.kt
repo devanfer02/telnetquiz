@@ -75,7 +75,10 @@ fun ChapterScreen(
                     LazyColumn(
                         contentPadding = PaddingValues(bottom = 64.dp)
                     ) {
-                        itemsIndexed(state.chapters) { index, chapter ->
+                        itemsIndexed(
+                            state.chapters,
+                            key = { _, chapter -> chapter.id }
+                        ) { index, chapter ->
                             Spacer(modifier = Modifier.padding(5.dp))
                             Box(
                                 modifier = Modifier
