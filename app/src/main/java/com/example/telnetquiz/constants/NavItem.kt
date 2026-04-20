@@ -15,13 +15,6 @@ sealed class NavItem(
         "home"
     )
 
-    object Level : NavItem(
-        Screen.LevelScreen.route,
-        R.drawable.home,
-        R.drawable.active_family_home,
-        "home"
-    )
-
     object Leaderboard : NavItem(
         Screen.LeaderboardScreen.route,
         R.drawable.emoji_events,

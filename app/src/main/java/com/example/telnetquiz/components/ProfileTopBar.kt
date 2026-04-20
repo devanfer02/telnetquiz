@@ -167,7 +167,7 @@ fun ProfileTopBar(
                         ) {
                             BoxPoints(
                                 modifier = Modifier.weight(1f),
-                                imageId = R.drawable.diamon,
+                                imageId = R.drawable.diamond,
                                 points = "${ profileState.profile?.stats?.totalScore ?: 0 }",
                             )
                             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
@@ -224,7 +224,7 @@ fun ProfileTopBar(
                                             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                                     Image(
-                                                        painter = painterResource(id = R.drawable.diamon),
+                                                        painter = painterResource(id = R.drawable.diamond),
                                                         contentDescription = null,
                                                         modifier = Modifier.size(16.dp)
                                                     )
