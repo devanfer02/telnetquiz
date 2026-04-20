@@ -27,6 +27,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -82,6 +84,7 @@ fun LevelScreen(
     val tutorialController = LocalTutorialController.current
     val detailState by viewModel.detailState.collectAsState()
     val isFetchingMaterials by viewModel.isFetchingMaterials.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     var showLevelDialog by remember { mutableStateOf(false) }
     var selectedQuizId by remember { mutableIntStateOf(0) }
@@ -115,6 +118,12 @@ fun LevelScreen(
 
     LaunchedEffect(chapterId) {
         viewModel.loadChapterById(chapterId)
+    }
+
+    LaunchedEffect(detailState.error) {
+        detailState.error?.let {
+            snackbarHostState.showSnackbar("Gagal memuat level. Coba lagi.")
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -307,6 +316,11 @@ fun LevelScreen(
                 onRetry = { viewModel.loadChapterById(chapterId) }
             )
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
 
             IconButton(
                 onClick = {
