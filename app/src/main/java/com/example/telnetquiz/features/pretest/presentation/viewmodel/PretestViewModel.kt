@@ -46,6 +46,7 @@ class PretestViewModel @Inject constructor(
 ) : ViewModel() {
 
     val ttsLoading = ttsProvider.isLoading
+    val ttsPlaying = ttsProvider.isPlaying
     fun speak(text: String) = ttsProvider.speak(text)
     fun speakContent(type: String, id: Int, gender: Boolean?, audioUrl: String? = null) = ttsProvider.speakContent(type, id, gender, audioUrl)
     fun stopTts() = ttsProvider.stop()
