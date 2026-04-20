@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,6 +44,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.components.LocalAuthViewModel
 import com.example.telnetquiz.components.ErrorRetryBox
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
 import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.local.AudioSettings
@@ -71,6 +73,7 @@ fun ProfileScreen(
     var showSoundSettings by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
     var isHeaderExpanded by remember { mutableStateOf(true) }
+    val tutorialController = LocalTutorialController.current
 
     LaunchedEffect(Unit) {
         viewModel.loadProfile()
@@ -141,7 +144,10 @@ fun ProfileScreen(
             AnimatedVisibility(
                 visible = isHeaderExpanded,
                 enter = expandVertically(expandFrom = Alignment.Top),
-                exit = shrinkVertically(shrinkTowards = Alignment.Top)
+                exit = shrinkVertically(shrinkTowards = Alignment.Top),
+                modifier = if (tutorialController != null) Modifier.onGloballyPositioned {
+                    tutorialController.registerTarget("profile_header", it)
+                } else Modifier
             ) {
                 ProfileHeaderSection(
                     profile = state.profile,
@@ -183,7 +189,12 @@ fun ProfileScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                                .padding(horizontal = 16.dp, vertical = 12.dp)
+                                .then(
+                                    if (tutorialController != null) Modifier.onGloballyPositioned {
+                                        tutorialController.registerTarget("profile_stats", it)
+                                    } else Modifier
+                                ),
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             StatCard(
@@ -212,8 +223,11 @@ fun ProfileScreen(
                         fontSize = 20.sp,
                         color = LitecartesColor.Secondary,
                         modifier = Modifier
-                            .padding(
-                                bottom = 12.dp
+                            .padding(bottom = 12.dp)
+                            .then(
+                                if (tutorialController != null) Modifier.onGloballyPositioned {
+                                    tutorialController.registerTarget("profile_achievements", it)
+                                } else Modifier
                             )
                     )
                 }
@@ -262,7 +276,12 @@ fun ProfileScreen(
                             .clip(RoundedCornerShape(12.dp))
                             .background(Color.Red)
                             .clickable { showLogoutDialog = true }
-                            .padding(vertical = 14.dp),
+                            .padding(vertical = 14.dp)
+                            .then(
+                                if (tutorialController != null) Modifier.onGloballyPositioned {
+                                    tutorialController.registerTarget("profile_logout_btn", it)
+                                } else Modifier
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(

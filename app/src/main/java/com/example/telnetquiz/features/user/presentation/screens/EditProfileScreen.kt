@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.telnetquiz.components.Button
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
 import com.example.telnetquiz.constants.AvatarConstants
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.user.presentation.components.AvatarPickerDialog
@@ -56,6 +58,7 @@ fun EditProfileScreen(
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     var showAvatarPicker by remember { mutableStateOf(false) }
+    val tutorialController = LocalTutorialController.current
 
     LaunchedEffect(Unit) {
         viewModel.loadProfile()
@@ -99,13 +102,19 @@ fun EditProfileScreen(
 
             Spacer(modifier = Modifier.padding(16.dp))
 
-            ProfileImagePicker(
-                currentImageUrl = state.selectedImageUri
-                    ?: state.profile?.image
-                    ?: AvatarConstants.getAvatarResId(state.selectedAvatarIndex),
-                gender = state.profile?.gender,
-                onClick = { showAvatarPicker = true }
-            )
+            androidx.compose.foundation.layout.Box(
+                modifier = if (tutorialController != null) Modifier.onGloballyPositioned {
+                    tutorialController.registerTarget("edit_avatar_picker", it)
+                } else Modifier
+            ) {
+                ProfileImagePicker(
+                    currentImageUrl = state.selectedImageUri
+                        ?: state.profile?.image
+                        ?: AvatarConstants.getAvatarResId(state.selectedAvatarIndex),
+                    gender = state.profile?.gender,
+                    onClick = { showAvatarPicker = true }
+                )
+            }
 
             if (showAvatarPicker) {
                 AvatarPickerDialog(
@@ -144,7 +153,13 @@ fun EditProfileScreen(
                         OutlinedTextField(
                             value = state.fullname,
                             onValueChange = { viewModel.onFullnameChanged(it) },
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .then(
+                                    if (tutorialController != null) Modifier.onGloballyPositioned {
+                                        tutorialController.registerTarget("edit_fullname", it)
+                                    } else Modifier
+                                ),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = LitecartesColor.Primary,
@@ -197,7 +212,13 @@ fun EditProfileScreen(
                         OutlinedTextField(
                             value = state.bio,
                             onValueChange = { if (it.length <= 500) viewModel.onBioChanged(it) },
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .then(
+                                    if (tutorialController != null) Modifier.onGloballyPositioned {
+                                        tutorialController.registerTarget("edit_bio", it)
+                                    } else Modifier
+                                ),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = LitecartesColor.Primary,
@@ -232,7 +253,13 @@ fun EditProfileScreen(
                             color = LitecartesColor.Surface,
                             backgroundColor = LitecartesColor.Secondary,
                             textModifier = Modifier.padding(8.dp),
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .then(
+                                    if (tutorialController != null) Modifier.onGloballyPositioned {
+                                        tutorialController.registerTarget("edit_save_btn", it)
+                                    } else Modifier
+                                ),
                             onClick = {
                                 if (!state.isSaving) {
                                     viewModel.saveProfile()

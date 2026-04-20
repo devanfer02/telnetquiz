@@ -18,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.layout.onGloballyPositioned
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,6 +45,7 @@ fun RemedialScreen(
     totalCount: Int,
     viewModel: QuizViewModel = hiltViewModel()
 ) {
+    val tutorialController = LocalTutorialController.current
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -101,7 +104,12 @@ fun RemedialScreen(
                     textModifier = Modifier.padding(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 32.dp),
+                        .padding(horizontal = 32.dp)
+                        .then(
+                            if (tutorialController != null) Modifier.onGloballyPositioned {
+                                tutorialController.registerTarget("remedial_cta_btn", it)
+                            } else Modifier
+                        ),
                     onClick = {
                         val quizIndex = viewModel.startRemedialReview()
                         if (quizIndex != null) {

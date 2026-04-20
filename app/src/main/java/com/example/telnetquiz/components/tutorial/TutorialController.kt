@@ -17,17 +17,24 @@ val LocalTutorialController = staticCompositionLocalOf<TutorialController?> { nu
 
 @Stable
 class TutorialController(
-    private val onComplete: () -> Unit,
+    private val onStepChange: (TutorialSegmentId, Int) -> Unit,
+    private val onSegmentComplete: (TutorialSegmentId) -> Unit,
     private val onNavigate: (String) -> Unit
 ) {
+    var currentSegment: TutorialSegmentId? by mutableStateOf(null)
+        private set
+
     var currentStepIndex by mutableIntStateOf(0)
         private set
 
-    val currentStep: TutorialStep
-        get() = tutorialSteps[currentStepIndex.coerceIn(tutorialSteps.indices)]
+    val currentSteps: List<TutorialStep>
+        get() = currentSegment?.let { tutorialSegments[it] } ?: emptyList()
+
+    val currentStep: TutorialStep?
+        get() = currentSteps.getOrNull(currentStepIndex)
 
     val isActive: Boolean
-        get() = currentStepIndex in tutorialSteps.indices
+        get() = currentStep != null
 
     var isWaitingForBounds by mutableStateOf(false)
         private set
@@ -46,7 +53,7 @@ class TutorialController(
     fun registerTarget(key: String, coordinates: LayoutCoordinates) {
         if (coordinates.isAttached) {
             _targetBounds[key] = coordinates.boundsInWindow()
-            if (isWaitingForBounds && currentStep.targetKey == key) {
+            if (isWaitingForBounds && currentStep?.targetKey == key) {
                 isWaitingForBounds = false
             }
         }
@@ -57,27 +64,56 @@ class TutorialController(
         return windowBounds.translate(-overlayOffset.x, -overlayOffset.y)
     }
 
+    fun startSegment(id: TutorialSegmentId, startIndex: Int = 0) {
+        val steps = tutorialSegments[id] ?: return
+        if (steps.isEmpty()) return
+        val safeIndex = startIndex.coerceIn(0, steps.size - 1)
+        currentSegment = id
+        currentStepIndex = safeIndex
+        _targetBounds.clear()
+        val step = steps[safeIndex]
+        isWaitingForBounds = step.targetKey != null
+    }
+
     fun nextStep() {
-        if (currentStepIndex >= tutorialSteps.size - 1) {
-            currentStepIndex = tutorialSteps.size
-            onComplete()
+        val seg = currentSegment ?: return
+        val steps = currentSteps
+        if (currentStepIndex >= steps.size - 1) {
+            onSegmentComplete(seg)
+            clearInternal()
             return
         }
 
         val nextIndex = currentStepIndex + 1
-        val nextStep = tutorialSteps[nextIndex]
+        val nextStep = steps[nextIndex]
 
         if (nextStep.navigateTo != null) {
             _targetBounds.clear()
             isWaitingForBounds = nextStep.targetKey != null
             onNavigate(nextStep.navigateTo)
+        } else {
+            isWaitingForBounds = nextStep.targetKey != null &&
+                !_targetBounds.containsKey(nextStep.targetKey)
         }
 
         currentStepIndex = nextIndex
+        onStepChange(seg, nextIndex)
     }
 
     fun skip() {
-        currentStepIndex = tutorialSteps.size
-        onComplete()
+        val seg = currentSegment ?: return
+        onSegmentComplete(seg)
+        clearInternal()
+    }
+
+    fun clearSegment() {
+        clearInternal()
+    }
+
+    private fun clearInternal() {
+        currentSegment = null
+        currentStepIndex = 0
+        isWaitingForBounds = false
+        _targetBounds.clear()
     }
 }

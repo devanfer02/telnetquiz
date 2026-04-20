@@ -4,7 +4,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import com.example.telnetquiz.components.tutorial.TutorialSegmentId
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,17 +16,29 @@ import javax.inject.Singleton
 class TutorialPreferenceManager @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
-    companion object {
-        private val TUTORIAL_COMPLETED_KEY = booleanPreferencesKey("tutorial_completed")
+    private fun completedKey(id: TutorialSegmentId) =
+        booleanPreferencesKey("segment_${id.name}_completed")
+
+    private fun stepKey(id: TutorialSegmentId) =
+        intPreferencesKey("segment_${id.name}_step")
+
+    fun segmentCompletedFlow(id: TutorialSegmentId): Flow<Boolean> =
+        dataStore.data.map { it[completedKey(id)] ?: false }
+
+    suspend fun isSegmentCompleted(id: TutorialSegmentId): Boolean =
+        dataStore.data.first()[completedKey(id)] ?: false
+
+    suspend fun getSegmentStep(id: TutorialSegmentId): Int =
+        dataStore.data.first()[stepKey(id)] ?: 0
+
+    suspend fun setSegmentStep(id: TutorialSegmentId, index: Int) {
+        dataStore.edit { it[stepKey(id)] = index }
     }
 
-    val hasCompletedTutorial: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[TUTORIAL_COMPLETED_KEY] ?: false
-    }
-
-    suspend fun setTutorialCompleted() {
-        dataStore.edit { preferences ->
-            preferences[TUTORIAL_COMPLETED_KEY] = true
+    suspend fun setSegmentCompleted(id: TutorialSegmentId) {
+        dataStore.edit {
+            it[completedKey(id)] = true
+            it.remove(stepKey(id))
         }
     }
 }

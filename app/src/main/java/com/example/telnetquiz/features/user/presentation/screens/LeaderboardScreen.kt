@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,6 +47,7 @@ import com.example.telnetquiz.R
 import com.example.telnetquiz.components.TopBarContainer
 import com.example.telnetquiz.components.EmptyStateBox
 import com.example.telnetquiz.components.ErrorRetryBox
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
 import com.example.telnetquiz.data.remote.dto.LeaderboardEntryDto
 import com.example.telnetquiz.features.user.domain.model.User
 import com.example.telnetquiz.features.user.presentation.components.ActivityDateHeaderSkeleton
@@ -75,6 +77,7 @@ fun LeaderboardScreen(
     val activityState by viewModel.activityState.collectAsState()
     val localAvatarResId by viewModel.localAvatarResId.collectAsState()
     var isTop3Expanded by remember { mutableStateOf(true) }
+    val tutorialController = LocalTutorialController.current
 
     LaunchedEffect(Unit) {
         viewModel.loadRecentActivity()
@@ -106,10 +109,16 @@ fun LeaderboardScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    SegmentedToggle(
-                        selectedTab = selectedTab,
-                        onTabSelected = { viewModel.selectTab(it) }
-                    )
+                    Box(
+                        modifier = if (tutorialController != null) Modifier.onGloballyPositioned {
+                            tutorialController.registerTarget("leaderboard_tab_toggle", it)
+                        } else Modifier
+                    ) {
+                        SegmentedToggle(
+                            selectedTab = selectedTab,
+                            onTabSelected = { viewModel.selectTab(it) }
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(12.dp))
 

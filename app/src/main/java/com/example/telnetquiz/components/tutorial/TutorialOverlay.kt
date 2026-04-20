@@ -61,7 +61,7 @@ fun TutorialOverlay(
 ) {
     if (!controller.isActive) return
 
-    val step = controller.currentStep
+    val step = controller.currentStep ?: return
     val localBounds = step.targetKey?.let { controller.getLocalBounds(it) }
     val density = LocalDensity.current
     val paddingPx = with(density) { 8.dp.toPx() }
@@ -91,7 +91,7 @@ fun TutorialOverlay(
             TooltipCard(
                 step = step,
                 stepIndex = controller.currentStepIndex,
-                totalSteps = tutorialSteps.size,
+                totalSteps = controller.currentSteps.size,
                 targetBounds = localBounds,
                 onNext = { controller.nextStep() },
                 onSkip = { controller.skip() }

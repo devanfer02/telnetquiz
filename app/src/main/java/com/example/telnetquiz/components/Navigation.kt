@@ -65,6 +65,8 @@ import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.components.tutorial.LocalTutorialController
 import com.example.telnetquiz.components.tutorial.TutorialController
 import com.example.telnetquiz.components.tutorial.TutorialOverlay
+import com.example.telnetquiz.components.tutorial.TutorialSegmentId
+import com.example.telnetquiz.components.tutorial.allowedRoutePrefixes
 import com.example.telnetquiz.data.local.TutorialPreferenceManager
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
@@ -78,6 +80,22 @@ interface AudioManagerEntryPoint {
     fun audioManager(): AudioManager
     fun flowResultStore(): FlowResultStore
     fun tutorialPreferenceManager(): TutorialPreferenceManager
+}
+
+@Composable
+private fun TutorialSegmentStarter(
+    segmentId: TutorialSegmentId,
+    controller: TutorialController,
+    prefs: TutorialPreferenceManager,
+    enabled: Boolean = true
+) {
+    LaunchedEffect(segmentId, enabled) {
+        if (!enabled) return@LaunchedEffect
+        if (controller.currentSegment == segmentId) return@LaunchedEffect
+        if (prefs.isSegmentCompleted(segmentId)) return@LaunchedEffect
+        val startIndex = prefs.getSegmentStep(segmentId)
+        controller.startSegment(segmentId, startIndex)
+    }
 }
 
 val LocalAuthViewModel = staticCompositionLocalOf<AuthViewModel> {
@@ -182,11 +200,15 @@ private fun MainNavHost(
     val audioManager = remember { entryPoint.audioManager() }
     val flowResultStore = remember { entryPoint.flowResultStore() }
     val tutorialPreferenceManager = remember { entryPoint.tutorialPreferenceManager() }
-    val hasCompletedTutorial by tutorialPreferenceManager.hasCompletedTutorial.collectAsState(initial = true)
     val scope = rememberCoroutineScope()
     val tutorialController = remember {
         TutorialController(
-            onComplete = { scope.launch { tutorialPreferenceManager.setTutorialCompleted() } },
+            onStepChange = { segment, index ->
+                scope.launch { tutorialPreferenceManager.setSegmentStep(segment, index) }
+            },
+            onSegmentComplete = { segment ->
+                scope.launch { tutorialPreferenceManager.setSegmentCompleted(segment) }
+            },
             onNavigate = { route ->
                 navController.navigate(route) {
                     launchSingleTop = true
@@ -223,8 +245,16 @@ private fun MainNavHost(
     val profileTopBarBg = if (currentRoute?.startsWith(Screen.LevelScreen.route) == true)
         LitecartesColor.DarkerSurface else LitecartesColor.Surface
 
+    LaunchedEffect(currentRoute) {
+        val seg = tutorialController.currentSegment ?: return@LaunchedEffect
+        val route = currentRoute ?: return@LaunchedEffect
+        if (seg.allowedRoutePrefixes().none { route.startsWith(it) }) {
+            tutorialController.clearSegment()
+        }
+    }
+
     CompositionLocalProvider(
-        LocalTutorialController provides if (!hasCompletedTutorial) tutorialController else null
+        LocalTutorialController provides tutorialController
     ) {
     Box(modifier = Modifier.fillMaxSize()) {
     Box(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
@@ -323,6 +353,13 @@ private fun MainNavHost(
                 }
             }
 
+            TutorialSegmentStarter(
+                segmentId = TutorialSegmentId.HOME_INTRO,
+                controller = tutorialController,
+                prefs = tutorialPreferenceManager,
+                enabled = !profileState.isLoading && profileState.profile?.hasTakenPretest != false
+            )
+
             if (!profileState.isLoading && profileState.profile?.hasTakenPretest != false) {
                 ChapterScreen(navController = navController)
             }
@@ -357,6 +394,12 @@ private fun MainNavHost(
             val quizId = it.arguments?.getInt("quizId") ?: 1
             val isRetry = it.arguments?.getBoolean("retry") ?: false
 
+            TutorialSegmentStarter(
+                segmentId = TutorialSegmentId.QUIZ_INTRO,
+                controller = tutorialController,
+                prefs = tutorialPreferenceManager
+            )
+
             QuestionScreen(
                 quizId = quizId,
                 isRetry = isRetry,
@@ -386,6 +429,12 @@ private fun MainNavHost(
             val id = it.arguments?.getInt("id") ?: 1
             val materialId = it.arguments?.getInt("materialId") ?: 0
 
+            TutorialSegmentStarter(
+                segmentId = TutorialSegmentId.STUDY_MATERIAL_INTRO,
+                controller = tutorialController,
+                prefs = tutorialPreferenceManager
+            )
+
             StudyMaterialScreen(
                 chapterId = chapterId,
                 level = level,
@@ -407,6 +456,12 @@ private fun MainNavHost(
             val wrongCount = it.arguments?.getInt("wrongCount") ?: 0
             val totalCount = it.arguments?.getInt("totalCount") ?: 0
 
+            TutorialSegmentStarter(
+                segmentId = TutorialSegmentId.REMEDIAL_INTRO,
+                controller = tutorialController,
+                prefs = tutorialPreferenceManager
+            )
+
             RemedialScreen(
                 navController = navController,
                 wrongCount = wrongCount,
@@ -416,16 +471,31 @@ private fun MainNavHost(
         composable(
             route = Screen.LeaderboardScreen.route
         ) {
+            TutorialSegmentStarter(
+                segmentId = TutorialSegmentId.LEADERBOARD_INTRO,
+                controller = tutorialController,
+                prefs = tutorialPreferenceManager
+            )
             LeaderboardScreen(navController = navController)
         }
         composable(
             route = Screen.ProfileScreen.route
         ) {
+            TutorialSegmentStarter(
+                segmentId = TutorialSegmentId.PROFILE_INTRO,
+                controller = tutorialController,
+                prefs = tutorialPreferenceManager
+            )
             ProfileScreen(navController = navController)
         }
         composable(
             route = Screen.EditProfileScreen.route
         ) {
+            TutorialSegmentStarter(
+                segmentId = TutorialSegmentId.EDIT_PROFILE_INTRO,
+                controller = tutorialController,
+                prefs = tutorialPreferenceManager
+            )
             EditProfileScreen(navController = navController)
         }
         composable(
@@ -459,12 +529,7 @@ private fun MainNavHost(
         }
     }
 
-    val showTutorial = !hasCompletedTutorial && (
-        (currentRoute == Screen.HomeScreen.route && tutorialController.targetBounds.containsKey("profile_top_bar")) ||
-        currentRoute?.startsWith(Screen.LevelScreen.route) == true
-    )
-
-    if (showTutorial) {
+    if (tutorialController.isActive) {
         TutorialOverlay(controller = tutorialController)
     }
     }
