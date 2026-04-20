@@ -103,13 +103,13 @@ fun LevelScreen(
         label = "button_alpha"
     )
 
+    LaunchedEffect(Unit) {
+        pathAnimationTarget = 1f
+    }
+
     LaunchedEffect(detailState.chapter) {
         if (detailState.chapter != null) {
-            pathAnimationTarget = 1f
             showButtons = true
-        } else {
-            pathAnimationTarget = 0f
-            showButtons = false
         }
     }
 
@@ -135,217 +135,179 @@ fun LevelScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-                if (detailState.chapter == null && detailState.error == null) {
-                    val placeholderLevels = remember(chapterId) {
-                        generateLevelPositions(4, chapterId)
-                    }
-                    val visibleCount = remember { mutableIntStateOf(0) }
-                    LaunchedEffect(Unit) {
-                        for (i in 1..4) {
-                            delay(250L)
-                            visibleCount.intValue = i
-                        }
-                    }
+        val chapter = detailState.chapter
+        val hasChapter = chapter != null
+        val hasError = detailState.error != null
+        val isLoading = !hasChapter && !hasError
 
-                    var loadingPathTarget by remember { mutableFloatStateOf(0f) }
-                    val loadingPathProgress by animateFloatAsState(
-                        targetValue = loadingPathTarget,
-                        animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
-                        label = "loading_path"
-                    )
-                    LaunchedEffect(Unit) { loadingPathTarget = 1f }
+        val placeholderLevels = remember(chapterId) {
+            generateLevelPositions(4, chapterId)
+        }
+        val levelModels = remember(detailState.chapter) {
+            if (hasChapter) viewModel.getLevelModels() else emptyList()
+        }
+        val dynamicLevels = remember(chapterId, chapter?.quizzes?.size ?: 0) {
+            if (chapter != null) generateLevelPositions(chapter.quizzes.size, chapterId)
+            else placeholderLevels
+        }
+        val displayLevels = if (hasChapter) dynamicLevels else placeholderLevels
 
-                    val pulseTransition = rememberInfiniteTransition(label = "pulse")
-                    val pulseAlpha by pulseTransition.animateFloat(
-                        initialValue = 0.3f,
-                        targetValue = 0.7f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(800),
-                            repeatMode = RepeatMode.Reverse
-                        ),
-                        label = "pulse_alpha"
-                    )
+        val visibleCount = remember { mutableIntStateOf(0) }
+        LaunchedEffect(Unit) {
+            for (i in 1..4) {
+                delay(250L)
+                visibleCount.intValue = i
+            }
+        }
 
-                    BoxWithConstraints(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        val screenWidth = maxWidth
-                        val contentHeight = screenWidth * 1.94f + 72.dp
-                        val density = LocalDensity.current
-                        val buttonCenterOffset = remember(density) {
-                            with(density) { 25.dp.toPx() }
-                        }
-                        val buttonCenterDp = remember(density) {
-                            with(density) { buttonCenterOffset.toDp() }
-                        }
+        val pulseTransition = rememberInfiniteTransition(label = "pulse")
+        val pulseAlpha by pulseTransition.animateFloat(
+            initialValue = 0.3f,
+            targetValue = 0.7f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(800),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "pulse_alpha"
+        )
+
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+        ) {
+            val screenWidth = maxWidth
+            val contentHeight = screenWidth * 1.94f + 72.dp
+            val density = LocalDensity.current
+            val buttonCenterOffset = remember(density) {
+                with(density) { 25.dp.toPx() }
+            }
+            val buttonCenterDp = remember(density) {
+                with(density) { buttonCenterOffset.toDp() }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(contentHeight)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.level_background_no_path),
+                    contentDescription = "bg",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                LevelPath(
+                    levels = displayLevels,
+                    pathAnimationProgress = { pathAnimationProgress },
+                    buttonCenterOffsetPx = buttonCenterOffset,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                if (hasChapter) {
+                    levelModels.forEachIndexed { index, levelModel ->
+                        if (index >= dynamicLevels.size) return@forEachIndexed
+
+                        val levelPosition = dynamicLevels[index]
 
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(contentHeight)
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.level_background_no_path),
-                                contentDescription = "bg",
-                                contentScale = ContentScale.FillBounds,
-                                modifier = Modifier.fillMaxSize()
-                            )
-
-                            LevelPath(
-                                levels = placeholderLevels,
-                                pathAnimationProgress = { loadingPathProgress },
-                                buttonCenterOffsetPx = buttonCenterOffset,
-                                modifier = Modifier.fillMaxSize()
-                            )
-
-                            placeholderLevels.forEachIndexed { index, levelPosition ->
-                                val itemAlpha by animateFloatAsState(
-                                    targetValue = if (index < visibleCount.intValue) 1f else 0f,
-                                    animationSpec = tween(durationMillis = 400),
-                                    label = "item_$index"
+                                .offset(
+                                    x = screenWidth * levelPosition.xFraction - buttonCenterDp,
+                                    y = contentHeight * levelPosition.yFraction
                                 )
-
-                                Box(
-                                    modifier = Modifier
-                                        .offset(
-                                            x = screenWidth * levelPosition.xFraction - buttonCenterDp,
-                                            y = contentHeight * levelPosition.yFraction
-                                        )
-                                        .graphicsLayer { alpha = itemAlpha }
-                                ) {
-                                    Surface(
-                                        modifier = Modifier.size(50.dp),
-                                        shape = CircleShape,
-                                        color = Color.Gray.copy(alpha = pulseAlpha),
-                                        shadowElevation = 0.dp
-                                    ) {}
-                                }
-                            }
-                        }
-                    }
-                }
-                when {
-                    detailState.error != null -> {
-                        ErrorRetryBox(
-                            message = detailState.error ?: "Terjadi kesalahan",
-                            onRetry = { viewModel.loadChapterById(chapterId) }
-                        )
-                    }
-                    detailState.chapter != null -> {
-                        val chapter = detailState.chapter!!
-                        val quizzes = chapter.quizzes
-                        val levelModels = remember(detailState.chapter) { viewModel.getLevelModels() }
-                        val dynamicLevels = remember(chapterId, quizzes.size) {
-                            generateLevelPositions(quizzes.size, chapterId)
-                        }
-
-                        BoxWithConstraints(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(scrollState)
-                        ) {
-                            val screenWidth = maxWidth
-                            val contentHeight = screenWidth * 1.94f + 72.dp
-                            val density = LocalDensity.current
-                            val buttonCenterOffset = remember(density) {
-                                with(density) { 25.dp.toPx() }
-                            }
-                            val buttonCenterDp = remember(density) {
-                                with(density) { buttonCenterOffset.toDp() }
-                            }
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(contentHeight)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.level_background_no_path),
-                                    contentDescription = "bg",
-                                    contentScale = ContentScale.FillBounds,
-                                    modifier = Modifier.fillMaxSize()
-                                )
-
-                                LevelPath(
-                                    levels = dynamicLevels,
-                                    pathAnimationProgress = { pathAnimationProgress },
-                                    buttonCenterOffsetPx = buttonCenterOffset,
-                                    modifier = Modifier.fillMaxSize()
-                                )
-
-                                levelModels.forEachIndexed { index, levelModel ->
-                                    if (index >= dynamicLevels.size) return@forEachIndexed
-
-                                    val levelPosition = dynamicLevels[index]
-
-                                    Box(
-                                        modifier = Modifier
-                                            .offset(
-                                                x = screenWidth * levelPosition.xFraction - buttonCenterDp,
-                                                y = contentHeight * levelPosition.yFraction
-                                            )
-                                            .graphicsLayer { alpha = buttonAlpha }
-                                            .then(
-                                                if (index == 0 && tutorialController != null)
-                                                    Modifier.onGloballyPositioned {
-                                                        tutorialController.registerTarget("level_button_first", it)
-                                                    }
-                                                else Modifier
-                                            )
-                                    ) {
-                                        LevelButton(
-                                            level = index + 1,
-                                            onClick = {
-                                                selectedQuizId = levelModel.quizId
-                                                selectedQuizLevel = levelModel.level
-                                                selectedQuizScore = levelModel.score
-                                                showLevelDialog = true
-                                            },
-                                            onLockedClick = {
-                                                levelModel.lockedMessage?.let { msg ->
-                                                    lockedDialogMessage = msg
-                                                    showLockedDialog = true
-                                                }
-                                            },
-                                            done = levelModel.isCompleted,
-                                            isLocked = !levelModel.isUnlocked,
-                                            score = levelModel.score
-                                        )
-                                    }
-                                }
-
-                                if (showLevelDialog) {
-                                    val selectedIndex = levelModels.indexOfFirst { it.quizId == selectedQuizId }
-                                    if (selectedIndex >= 0 && selectedIndex in dynamicLevels.indices) {
-                                        val levelPosition = dynamicLevels[selectedIndex]
-                                        Box(
-                                            modifier = Modifier.offset(
-                                                x = screenWidth * levelPosition.xFraction - buttonCenterDp,
-                                                y = contentHeight * levelPosition.yFraction
-                                            )
-                                        ) {
-                                            LevelOptionMenu(
-                                                expanded = true,
-                                                onDismiss = { showLevelDialog = false },
-                                                score = selectedQuizScore,
-                                                onLearnFirst = {
-                                                    showLevelDialog = false
-                                                    viewModel.startLearnFirst(selectedQuizId, chapterId, selectedQuizLevel)
-                                                },
-                                                onPlayDirectly = {
-                                                    showLevelDialog = false
-                                                    viewModel.playDirectly(selectedQuizId)
-                                                }
-                                            )
+                                .graphicsLayer { alpha = buttonAlpha }
+                                .then(
+                                    if (index == 0 && tutorialController != null)
+                                        Modifier.onGloballyPositioned {
+                                            tutorialController.registerTarget("level_button_first", it)
                                         }
+                                    else Modifier
+                                )
+                        ) {
+                            LevelButton(
+                                level = index + 1,
+                                onClick = {
+                                    selectedQuizId = levelModel.quizId
+                                    selectedQuizLevel = levelModel.level
+                                    selectedQuizScore = levelModel.score
+                                    showLevelDialog = true
+                                },
+                                onLockedClick = {
+                                    levelModel.lockedMessage?.let { msg ->
+                                        lockedDialogMessage = msg
+                                        showLockedDialog = true
                                     }
-                                }
+                                },
+                                done = levelModel.isCompleted,
+                                isLocked = !levelModel.isUnlocked,
+                                score = levelModel.score
+                            )
+                        }
+                    }
+
+                    if (showLevelDialog) {
+                        val selectedIndex = levelModels.indexOfFirst { it.quizId == selectedQuizId }
+                        if (selectedIndex >= 0 && selectedIndex in dynamicLevels.indices) {
+                            val levelPosition = dynamicLevels[selectedIndex]
+                            Box(
+                                modifier = Modifier.offset(
+                                    x = screenWidth * levelPosition.xFraction - buttonCenterDp,
+                                    y = contentHeight * levelPosition.yFraction
+                                )
+                            ) {
+                                LevelOptionMenu(
+                                    expanded = true,
+                                    onDismiss = { showLevelDialog = false },
+                                    score = selectedQuizScore,
+                                    onLearnFirst = {
+                                        showLevelDialog = false
+                                        viewModel.startLearnFirst(selectedQuizId, chapterId, selectedQuizLevel)
+                                    },
+                                    onPlayDirectly = {
+                                        showLevelDialog = false
+                                        viewModel.playDirectly(selectedQuizId)
+                                    }
+                                )
                             }
                         }
                     }
+                } else if (isLoading) {
+                    placeholderLevels.forEachIndexed { index, levelPosition ->
+                        val itemAlpha by animateFloatAsState(
+                            targetValue = if (index < visibleCount.intValue) 1f else 0f,
+                            animationSpec = tween(durationMillis = 400),
+                            label = "item_$index"
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .offset(
+                                    x = screenWidth * levelPosition.xFraction - buttonCenterDp,
+                                    y = contentHeight * levelPosition.yFraction
+                                )
+                                .graphicsLayer { alpha = itemAlpha }
+                        ) {
+                            Surface(
+                                modifier = Modifier.size(50.dp),
+                                shape = CircleShape,
+                                color = Color.Gray.copy(alpha = pulseAlpha),
+                                shadowElevation = 0.dp
+                            ) {}
+                        }
+                    }
                 }
+            }
+        }
+
+        if (hasError) {
+            ErrorRetryBox(
+                message = detailState.error ?: "Terjadi kesalahan",
+                onRetry = { viewModel.loadChapterById(chapterId) }
+            )
+        }
+
             IconButton(
                 onClick = {
                     navController.navigate(Screen.HomeScreen.route) {
