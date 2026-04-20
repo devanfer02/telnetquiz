@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,7 +39,10 @@ fun MaterialContentCard(
     imageLink: String?,
     onSpeakClick: () -> Unit,
     isTtsLoading: Boolean = false,
-    modifier: Modifier = Modifier
+    isTtsPlaying: Boolean = false,
+    onStopClick: () -> Unit = onSpeakClick,
+    modifier: Modifier = Modifier,
+    audioButtonModifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
@@ -56,15 +60,15 @@ fun MaterialContentCard(
             horizontalArrangement = Arrangement.End
         ) {
             if (isTtsLoading) {
-                TtsPulsingDots(modifier = Modifier.size(32.dp))
+                TtsPulsingDots(modifier = audioButtonModifier.size(32.dp))
             } else {
                 IconButton(
-                    onClick = onSpeakClick,
-                    modifier = Modifier.size(32.dp)
+                    onClick = if (isTtsPlaying) onStopClick else onSpeakClick,
+                    modifier = audioButtonModifier.size(32.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.VolumeUp,
-                        contentDescription = "Baca materi",
+                        imageVector = if (isTtsPlaying) Icons.Default.Stop else Icons.Default.VolumeUp,
+                        contentDescription = if (isTtsPlaying) "Hentikan suara" else "Baca materi",
                         tint = Color.White,
                         modifier = Modifier.size(20.dp)
                     )

@@ -53,6 +53,7 @@ fun PretestScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val isTtsLoading by viewModel.ttsLoading.collectAsState()
+    val isTtsPlaying by viewModel.ttsPlaying.collectAsState()
     val currentQuestion = state.questions.getOrNull(state.currentQuestionIndex)
     val haptic = LocalHapticFeedback.current
 
@@ -118,6 +119,8 @@ fun PretestScreen(
                         description = currentQuestion.description,
                         imageLink = currentQuestion.imageLink,
                         isTtsLoading = isTtsLoading,
+                        isTtsPlaying = isTtsPlaying,
+                        onStopClick = { viewModel.stopTts() },
                         onSpeakClick = {
                             val optionsText = currentQuestion.options
                                 .mapIndexed { i, opt -> "${letters.getOrElse(i) { ' ' }}. ${opt.text}" }

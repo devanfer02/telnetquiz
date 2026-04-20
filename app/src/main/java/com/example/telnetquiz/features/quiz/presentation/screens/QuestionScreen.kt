@@ -31,8 +31,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.layout.onGloballyPositioned
 import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.MascotLoadingScreen
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.quiz.presentation.components.AnswerFeedbackSheet
 import com.example.telnetquiz.components.OptionButton
@@ -56,6 +58,7 @@ fun QuestionScreen(
     val state by viewModel.state.collectAsState()
     val currentQuestion = state.quiz?.questions?.getOrNull(state.currentQuestionIndex)
     val haptic = LocalHapticFeedback.current
+    val tutorialController = LocalTutorialController.current
 
     var showDialog by remember { mutableStateOf(false) }
     var showExitConfirm by remember { mutableStateOf(false) }
@@ -168,12 +171,15 @@ fun QuestionScreen(
                     val verification = state.verifiedQuestions[currentQuestion.id]
 
                     val isTtsLoading by viewModel.ttsLoading.collectAsState()
+                    val isTtsPlaying by viewModel.ttsPlaying.collectAsState()
 
                     QuestionHeaderBox(
                         title = state.quiz?.title ?: "",
                         description = currentQuestion.description,
                         imageLink = currentQuestion.imageLink,
                         isTtsLoading = isTtsLoading,
+                        isTtsPlaying = isTtsPlaying,
+                        onStopClick = { viewModel.stopTts() },
                         onSpeakClick = {
                             val optionsText = currentQuestion.options
                                 .mapIndexed { i, opt -> "${letters.getOrElse(i) { ' ' }}. ${opt.text}" }
@@ -215,21 +221,35 @@ fun QuestionScreen(
                                     else -> OptionFeedback.NONE
                                 }
 
-                                OptionButton(
-                                    text = option.text,
-                                    letter = letters.getOrElse(index) { ' ' },
-                                    isActive = selectedOptionId == option.id && verification == null,
-                                    feedback = optionFeedback,
-                                    onClick = {
-                                        viewModel.selectAnswer(currentQuestion.id, option.id)
-                                    },
-                                    haptic = haptic
-                                )
+                                val optionWrapper =
+                                    if (index == 0 && tutorialController != null) {
+                                        Modifier.onGloballyPositioned {
+                                            tutorialController.registerTarget("quiz_option_first", it)
+                                        }
+                                    } else Modifier
+                                androidx.compose.foundation.layout.Box(modifier = optionWrapper) {
+                                    OptionButton(
+                                        text = option.text,
+                                        letter = letters.getOrElse(index) { ' ' },
+                                        isActive = selectedOptionId == option.id && verification == null,
+                                        feedback = optionFeedback,
+                                        onClick = {
+                                            viewModel.selectAnswer(currentQuestion.id, option.id)
+                                        },
+                                        haptic = haptic
+                                    )
+                                }
                             }
                         }
 
                         Column(
-                            modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp)
+                            modifier = Modifier
+                                .padding(horizontal = 18.dp, vertical = 8.dp)
+                                .then(
+                                    if (tutorialController != null) Modifier.onGloballyPositioned {
+                                        tutorialController.registerTarget("quiz_verify_btn", it)
+                                    } else Modifier
+                                )
                         ) {
                             VerifyButton(
                                 isVisible = selectedOptionId != null && !viewModel.isCurrentQuestionVerified,

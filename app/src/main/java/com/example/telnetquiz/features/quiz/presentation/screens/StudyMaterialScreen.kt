@@ -30,11 +30,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.layout.onGloballyPositioned
 import com.example.telnetquiz.components.Button
 import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.MascotLoadingScreen
 import com.example.telnetquiz.components.MaterialContentCard
 import com.example.telnetquiz.components.ProgressBarFromApi
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.quiz.presentation.viewmodel.StudyMaterialNavEvent
 import com.example.telnetquiz.features.quiz.presentation.viewmodel.StudyMaterialViewModel
@@ -51,8 +53,10 @@ fun StudyMaterialScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val isTtsLoading by viewModel.ttsLoading.collectAsState()
+    val isTtsPlaying by viewModel.ttsPlaying.collectAsState()
     val scrollState = rememberScrollState()
     var showExitConfirm by remember { mutableStateOf(false) }
+    val tutorialController = LocalTutorialController.current
 
     BackHandler { showExitConfirm = true }
 
@@ -168,16 +172,24 @@ fun StudyMaterialScreen(
                 }
                 state.material != null -> {
                     val material = state.material!!
+                    val audioModifier = if (tutorialController != null) {
+                        Modifier.onGloballyPositioned {
+                            tutorialController.registerTarget("study_audio_btn", it)
+                        }
+                    } else Modifier
                     MaterialContentCard(
                         title = material.title,
                         content = material.content,
                         imageLink = material.imageLink,
                         isTtsLoading = isTtsLoading,
+                        isTtsPlaying = isTtsPlaying,
+                        onStopClick = { viewModel.stopTts() },
                         onSpeakClick = {
                             val plainContent = material.content.replace(Regex("<[^>]*>"), "")
                             viewModel.speak("${material.title}. $plainContent")
                             viewModel.speakContent("material", material.id, null, material.audioLink)
-                        }
+                        },
+                        audioButtonModifier = audioModifier
                     )
                 }
                 else -> {
@@ -198,7 +210,14 @@ fun StudyMaterialScreen(
                 backgroundColor = LitecartesColor.Secondary,
                 onClick = { viewModel.onContinue() },
                 textModifier = Modifier.padding(8.dp),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+                    .then(
+                        if (tutorialController != null) Modifier.onGloballyPositioned {
+                            tutorialController.registerTarget("study_next_btn", it)
+                        } else Modifier
+                    ),
                 fontSize = 16.sp
             )
             if (viewModel.canGoPrevious) {
@@ -209,7 +228,14 @@ fun StudyMaterialScreen(
                     backgroundColor = LitecartesColor.Surface,
                     onClick = { viewModel.onPrevious() },
                     textModifier = Modifier.padding(4.dp),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                        .then(
+                            if (tutorialController != null) Modifier.onGloballyPositioned {
+                                tutorialController.registerTarget("study_prev_btn", it)
+                            } else Modifier
+                        ),
                     fontSize = 14.sp
                 )
             }
