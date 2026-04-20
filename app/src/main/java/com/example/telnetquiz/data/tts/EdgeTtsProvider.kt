@@ -33,6 +33,8 @@ class EdgeTtsProvider(
     private var currentJob: Job? = null
     private val _isLoading = MutableStateFlow(false)
     override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    private val _isPlaying = MutableStateFlow(false)
+    override val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
 
     override fun speakContent(type: String, id: Int, gender: Boolean?, audioUrl: String?) {
         stop()
@@ -81,6 +83,7 @@ class EdgeTtsProvider(
             }
         } catch (_: IllegalStateException) {}
         mediaPlayer = null
+        _isPlaying.value = false
     }
 
     override fun shutdown() {
@@ -108,8 +111,10 @@ class EdgeTtsProvider(
             setOnCompletionListener {
                 it.release()
                 if (mediaPlayer === it) mediaPlayer = null
+                _isPlaying.value = false
             }
             start()
         }
+        _isPlaying.value = true
     }
 }
