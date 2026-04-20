@@ -29,7 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -122,8 +125,10 @@ fun AuthLoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.start_screen),
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(R.drawable.start_screen)
+                        .build(),
                     contentDescription = null,
                     modifier = Modifier.size(260.dp)
                 )
@@ -228,8 +233,10 @@ fun AuthLoginScreen(
                     .fillMaxWidth(),
                 contentAlignment = Alignment.TopStart
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.login_screen),
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(R.drawable.login_screen)
+                        .build(),
                     contentDescription = "Yuk Masuk"
                 )
             }

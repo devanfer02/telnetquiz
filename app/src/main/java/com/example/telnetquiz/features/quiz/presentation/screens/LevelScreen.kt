@@ -51,7 +51,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -200,8 +203,10 @@ fun LevelScreen(
                     .fillMaxWidth()
                     .height(contentHeight)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.level_background_no_path),
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(R.drawable.level_background_no_path)
+                        .build(),
                     contentDescription = "bg",
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier.fillMaxSize()

@@ -112,7 +112,7 @@ fun AuthRegisterScreen(
     Scaffold(
         topBar = {
             AuthTopBar(
-                painter = painterResource(id = R.drawable.register_screen),
+                imageId = R.drawable.register_screen,
                 contentAlignment = Alignment.TopEnd
             )
         },
