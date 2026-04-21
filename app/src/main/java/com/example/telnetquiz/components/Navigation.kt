@@ -89,30 +89,15 @@ private fun TutorialSegmentStarter(
     segmentId: TutorialSegmentId,
     controller: TutorialController,
     prefs: TutorialPreferenceManager,
-    enabled: Boolean = true,
-    requiredPrevious: TutorialSegmentId? = null
+    enabled: Boolean = true
 ) {
     LaunchedEffect(segmentId, enabled) {
         if (!enabled) return@LaunchedEffect
         if (controller.currentSegment == segmentId) return@LaunchedEffect
         if (prefs.isSegmentCompleted(segmentId)) return@LaunchedEffect
-        if (requiredPrevious != null && !prefs.isSegmentCompleted(requiredPrevious)) return@LaunchedEffect
         val startIndex = prefs.getSegmentStep(segmentId)
         controller.startSegment(segmentId, startIndex)
     }
-}
-
-private fun nextPartOf(segmentId: TutorialSegmentId): TutorialSegmentId? = when (segmentId) {
-    TutorialSegmentId.PART_1_INTERFACE -> TutorialSegmentId.PART_2_LEARNING_QUIZ
-    TutorialSegmentId.PART_2_LEARNING_QUIZ -> TutorialSegmentId.PART_3_PROGRESS_PROFILE
-    TutorialSegmentId.PART_3_PROGRESS_PROFILE -> null
-}
-
-private fun firstRouteOf(segmentId: TutorialSegmentId): String? = when (segmentId) {
-    TutorialSegmentId.PART_1_INTERFACE -> Screen.HomeScreen.route
-    TutorialSegmentId.PART_2_LEARNING_QUIZ ->
-        "${Screen.StudyMaterialScreen.route}/1/levels/1/questions/1"
-    TutorialSegmentId.PART_3_PROGRESS_PROFILE -> Screen.ProfileScreen.route
 }
 
 val LocalAuthViewModel = staticCompositionLocalOf<AuthViewModel> {
@@ -221,37 +206,17 @@ private fun MainNavHost(
     val tutorialPreferenceManager = remember { entryPoint.tutorialPreferenceManager() }
     val scope = rememberCoroutineScope()
     val tutorialController = remember {
-        var controllerRef: TutorialController? = null
-        val controller = TutorialController(
+        TutorialController(
             onStepChange = { segment, index ->
                 scope.launch { tutorialPreferenceManager.setSegmentStep(segment, index) }
             },
             onSegmentComplete = { segment ->
-                scope.launch {
-                    tutorialPreferenceManager.setSegmentCompleted(segment)
-                    val next = nextPartOf(segment) ?: return@launch
-                    val firstRoute = firstRouteOf(next) ?: return@launch
-                    navController.navigate(firstRoute) { launchSingleTop = true }
-                    controllerRef?.startSegment(next, 0)
-                }
+                scope.launch { tutorialPreferenceManager.setSegmentCompleted(segment) }
             },
             onSegmentSkipped = { segment ->
-                scope.launch {
-                    var s: TutorialSegmentId? = segment
-                    while (s != null) {
-                        tutorialPreferenceManager.setSegmentCompleted(s)
-                        s = nextPartOf(s)
-                    }
-                }
-            },
-            onNavigate = { route ->
-                navController.navigate(route) {
-                    launchSingleTop = true
-                }
+                scope.launch { tutorialPreferenceManager.setSegmentCompleted(segment) }
             }
         )
-        controllerRef = controller
-        controller
     }
 
     DisposableEffect(navController) {
@@ -392,7 +357,7 @@ private fun MainNavHost(
             }
 
             TutorialSegmentStarter(
-                segmentId = TutorialSegmentId.PART_1_INTERFACE,
+                segmentId = TutorialSegmentId.MAIN,
                 controller = tutorialController,
                 prefs = tutorialPreferenceManager,
                 enabled = !profileState.isLoading && profileState.profile?.hasTakenPretest != false
@@ -461,13 +426,6 @@ private fun MainNavHost(
             val id = it.arguments?.getInt("id") ?: 1
             val materialId = it.arguments?.getInt("materialId") ?: 0
 
-            TutorialSegmentStarter(
-                segmentId = TutorialSegmentId.PART_2_LEARNING_QUIZ,
-                controller = tutorialController,
-                prefs = tutorialPreferenceManager,
-                requiredPrevious = TutorialSegmentId.PART_1_INTERFACE
-            )
-
             StudyMaterialScreen(
                 chapterId = chapterId,
                 level = level,
@@ -498,23 +456,11 @@ private fun MainNavHost(
         composable(
             route = Screen.LeaderboardScreen.route
         ) {
-            TutorialSegmentStarter(
-                segmentId = TutorialSegmentId.PART_3_PROGRESS_PROFILE,
-                controller = tutorialController,
-                prefs = tutorialPreferenceManager,
-                requiredPrevious = TutorialSegmentId.PART_2_LEARNING_QUIZ
-            )
             LeaderboardScreen(navController = navController)
         }
         composable(
             route = Screen.ProfileScreen.route
         ) {
-            TutorialSegmentStarter(
-                segmentId = TutorialSegmentId.PART_3_PROGRESS_PROFILE,
-                controller = tutorialController,
-                prefs = tutorialPreferenceManager,
-                requiredPrevious = TutorialSegmentId.PART_2_LEARNING_QUIZ
-            )
             ProfileScreen(navController = navController)
         }
         composable(

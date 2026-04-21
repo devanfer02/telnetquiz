@@ -236,6 +236,9 @@ fun QuestionScreen(
                                         feedback = optionFeedback,
                                         onClick = {
                                             viewModel.selectAnswer(currentQuestion.id, option.id)
+                                            if (index == 0) {
+                                                tutorialController?.notifyTargetClicked("quiz_option_first")
+                                            }
                                         },
                                         haptic = haptic
                                     )
@@ -257,7 +260,10 @@ fun QuestionScreen(
                                 isVerifying = state.isVerifying,
                                 isSubmitting = state.isSubmitting,
                                 isLastQuestion = viewModel.isLastQuestion,
-                                onVerify = { viewModel.verifyCurrentAnswer() }
+                                onVerify = {
+                                    viewModel.verifyCurrentAnswer()
+                                    tutorialController?.notifyTargetClicked("quiz_verify_btn")
+                                }
                             )
                         }
 

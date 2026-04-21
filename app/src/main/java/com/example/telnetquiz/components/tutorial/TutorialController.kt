@@ -19,8 +19,7 @@ val LocalTutorialController = staticCompositionLocalOf<TutorialController?> { nu
 class TutorialController(
     private val onStepChange: (TutorialSegmentId, Int) -> Unit,
     private val onSegmentComplete: (TutorialSegmentId) -> Unit,
-    private val onSegmentSkipped: (TutorialSegmentId) -> Unit,
-    private val onNavigate: (String) -> Unit
+    private val onSegmentSkipped: (TutorialSegmentId) -> Unit
 ) {
     var currentSegment: TutorialSegmentId? by mutableStateOf(null)
         private set
@@ -64,6 +63,10 @@ class TutorialController(
                 isWaitingForBounds = false
             }
         }
+    }
+
+    fun unregisterTarget(key: String) {
+        _targetBounds.remove(key)
     }
 
     fun getLocalBounds(key: String): Rect? {
@@ -116,18 +119,20 @@ class TutorialController(
         val nextIndex = currentStepIndex + 1
         val nextStep = steps[nextIndex]
 
-        if (nextStep.navigateTo != null) {
-            _targetBounds.clear()
-            isWaitingForBounds = nextStep.targetKey != null
-            onNavigate(nextStep.navigateTo)
-        } else {
-            isWaitingForBounds = nextStep.targetKey != null &&
-                !_targetBounds.containsKey(nextStep.targetKey) &&
-                stepMatchesRoute(nextStep, currentRoute)
-        }
+        isWaitingForBounds = nextStep.targetKey != null &&
+            !_targetBounds.containsKey(nextStep.targetKey) &&
+            stepMatchesRoute(nextStep, currentRoute)
 
         currentStepIndex = nextIndex
         onStepChange(seg, nextIndex)
+    }
+
+    fun notifyTargetClicked(key: String) {
+        val step = currentStep ?: return
+        if (!step.requiresInteraction) return
+        if (step.targetKey != key) return
+        if (!stepMatchesRoute(step, currentRoute)) return
+        nextStep()
     }
 
     fun skip() {

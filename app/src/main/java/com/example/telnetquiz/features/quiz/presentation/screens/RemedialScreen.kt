@@ -111,6 +111,7 @@ fun RemedialScreen(
                             } else Modifier
                         ),
                     onClick = {
+                        tutorialController?.notifyTargetClicked("remedial_cta_btn")
                         val quizIndex = viewModel.startRemedialReview()
                         if (quizIndex != null) {
                             navController.navigate(

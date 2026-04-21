@@ -155,7 +155,10 @@ fun ProfileScreen(
                     error = state.error,
                     localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
                     onSettingsClick = { showSoundSettings = true },
-                    onEditProfile = { navController.navigate(Screen.EditProfileScreen.route) }
+                    onEditProfile = {
+                        tutorialController?.notifyTargetClicked("profile_header")
+                        navController.navigate(Screen.EditProfileScreen.route)
+                    }
                 )
             }
             Box(

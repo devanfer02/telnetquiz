@@ -19,8 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +54,7 @@ fun ResultScreen(
     val wrongCount = (quizResult?.totalQuestions ?: 0) - correctCount
     val scorePercentage = quizResult?.scorePercentage ?: 0.0
     val passed = quizResult?.passed ?: true
+    val tutorialController = LocalTutorialController.current
 
     val titleText = if (passed) "Sempurna" else "Hampir Berhasil!"
     val motivationalText = if (passed)
@@ -105,10 +108,16 @@ fun ResultScreen(
                     modifier = Modifier
                         .size(300.dp)
                 )
-                ScoreCountRow(
-                    correctCount = correctCount,
-                    wrongCount = wrongCount
-                )
+                Box(
+                    modifier = if (tutorialController != null) Modifier.onGloballyPositioned {
+                        tutorialController.registerTarget("result_score_section", it)
+                    } else Modifier
+                ) {
+                    ScoreCountRow(
+                        correctCount = correctCount,
+                        wrongCount = wrongCount
+                    )
+                }
                 Spacer(modifier = Modifier.padding(6.dp))
                 Text(
                     text = motivationalText,
@@ -165,8 +174,14 @@ fun ResultScreen(
                         .fillMaxWidth()
                         .padding(
                             horizontal = 32.dp
+                        )
+                        .then(
+                            if (tutorialController != null) Modifier.onGloballyPositioned {
+                                tutorialController.registerTarget("result_continue_btn", it)
+                            } else Modifier
                         ),
                     onClick = {
+                        tutorialController?.notifyTargetClicked("result_continue_btn")
                         navController.navigate(
                             "${Screen.LevelScreen.route}/${chapterId}"
                         )

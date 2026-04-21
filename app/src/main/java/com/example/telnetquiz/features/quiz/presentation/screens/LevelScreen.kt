@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
@@ -32,8 +33,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -74,6 +77,7 @@ import com.example.telnetquiz.features.quiz.presentation.components.LevelOptionM
 import com.example.telnetquiz.features.quiz.presentation.components.LevelPath
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
+import com.example.telnetquiz.ui.theme.nunitosFontFamily
 import com.example.telnetquiz.components.tutorial.LocalTutorialController
 import androidx.compose.ui.layout.onGloballyPositioned
 
@@ -220,10 +224,12 @@ fun LevelScreen(
                 )
 
                 if (hasChapter) {
+                    val firstLockedIndex = levelModels.indexOfFirst { !it.isUnlocked }
                     levelModels.forEachIndexed { index, levelModel ->
                         if (index >= dynamicLevels.size) return@forEachIndexed
 
                         val levelPosition = dynamicLevels[index]
+                        val isFirstLocked = index == firstLockedIndex
 
                         Box(
                             modifier = Modifier
@@ -233,9 +239,14 @@ fun LevelScreen(
                                 )
                                 .graphicsLayer { alpha = buttonAlpha }
                                 .then(
-                                    if (index == 0 && tutorialController != null)
+                                    if (tutorialController != null && (index == 0 || isFirstLocked))
                                         Modifier.onGloballyPositioned {
-                                            tutorialController.registerTarget("level_button_first", it)
+                                            if (index == 0) {
+                                                tutorialController.registerTarget("level_button_first", it)
+                                            }
+                                            if (isFirstLocked) {
+                                                tutorialController.registerTarget("level_button_locked", it)
+                                            }
                                         }
                                     else Modifier
                                 )
@@ -247,6 +258,9 @@ fun LevelScreen(
                                     selectedQuizLevel = levelModel.level
                                     selectedQuizScore = levelModel.score
                                     showLevelDialog = true
+                                    if (index == 0) {
+                                        tutorialController?.notifyTargetClicked("level_button_first")
+                                    }
                                 },
                                 onLockedClick = {
                                     levelModel.lockedMessage?.let { msg ->
@@ -326,6 +340,35 @@ fun LevelScreen(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
+
+        if (hasChapter) {
+            val minScore = chapter?.minimumScore ?: 0
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 12.dp, end = 12.dp)
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(LitecartesColor.Surface)
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                    .then(
+                        if (tutorialController != null) Modifier.onGloballyPositioned {
+                            tutorialController.registerTarget("level_kkm_display", it)
+                        } else Modifier
+                    )
+            ) {
+                Text(
+                    text = "KKM: $minScore",
+                    color = LitecartesColor.Secondary,
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 13.sp
+                )
+            }
+        }
 
             IconButton(
                 onClick = {

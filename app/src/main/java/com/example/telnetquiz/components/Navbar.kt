@@ -62,11 +62,17 @@ fun Navbar(
                 val isSelected = currentRoute == item.route ||
                     (isOnLevelScreen && item == NavItem.Home)
                 val icon = if (isSelected) item.activeIdIcon else item.idIcon
+                val targetKey = when (item) {
+                    is NavItem.Home -> "navbar_home"
+                    is NavItem.Leaderboard -> "navbar_leaderboard"
+                    is NavItem.Profile -> "navbar_profile"
+                }
 
                 BottomNavigationItem(
                     selected = isSelected,
                     onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        tutorialController?.notifyTargetClicked(targetKey)
                         if (!isSelected) {
                             navController.navigate(item.route) {
                                 popUpTo(navController.graph.findStartDestination().id) {
@@ -90,6 +96,11 @@ fun Navbar(
                     modifier = Modifier
                         .padding(
                             vertical = 5.dp
+                        )
+                        .then(
+                            if (tutorialController != null) Modifier.onGloballyPositioned {
+                                tutorialController.registerTarget(targetKey, it)
+                            } else Modifier
                         )
                 )
             }

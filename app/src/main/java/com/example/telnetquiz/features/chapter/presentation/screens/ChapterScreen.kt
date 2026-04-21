@@ -96,6 +96,9 @@ fun ChapterScreen(
                                 ChapterCardFromApi(
                                     chapter = chapter,
                                     onClick = {
+                                        if (index == 0) {
+                                            tutorialController?.notifyTargetClicked("chapter_card_first")
+                                        }
                                         navController.navigate(
                                             "${Screen.LevelScreen.route}/${chapter.id}"
                                         )

@@ -10,49 +10,43 @@ data class TutorialStep(
     val targetKey: String?,
     val tooltipPosition: TooltipPosition,
     val mascotResId: Int = R.drawable.group_276,
-    val navigateTo: String? = null,
-    val route: String? = null
+    val route: String? = null,
+    val requiresInteraction: Boolean = false
 )
 
 enum class TutorialStepId {
-    // PART 1 — interface intro
     WELCOME,
-    PROFILE_HEADER,
-    CHAPTER_CARDS,
-    BOTTOM_NAVBAR,
-    LEVEL_ROAD,
-    LEVEL_ACTION,
-    PART_1_FINISH,
-
-    // PART 2 — learning & quiz
-    STUDY_WELCOME,
+    PROFILE_TOP_BAR,
+    CHAPTER_CARD,
+    LEVEL_KKM,
+    LEVEL_BUTTON_LOCKED,
+    LEVEL_BUTTON_FIRST,
+    DIALOG_LEARN_FIRST,
+    STUDY_INTRO,
     STUDY_AUDIO,
     STUDY_NEXT,
     STUDY_PREV,
     STUDY_EXIT,
-    STUDY_CLOSING,
-    QUIZ_WELCOME,
+    STUDY_FINAL,
+    QUIZ_INTRO,
     QUIZ_OPTIONS,
     QUIZ_VERIFY,
-    QUIZ_FEEDBACK,
-    QUIZ_EXIT,
-    REMEDIAL_WELCOME,
+    QUIZ_FEEDBACK_INFO,
     REMEDIAL_CTA,
-    PART_2_FINISH,
-
-    // PART 3 — progress & profile
-    PROFILE_HEADER_INFO,
+    REMEDIAL_STUDY,
+    RETRY_OPTIONS,
+    RETRY_VERIFY,
+    RESULT_SCORE,
+    RESULT_KKM_NOTE,
+    RESULT_CONTINUE,
+    NAV_LEADERBOARD,
+    LEADERBOARD_INTRO,
+    NAV_PROFILE,
     PROFILE_STATS,
     PROFILE_ACHIEVEMENTS,
-    PROFILE_LOGOUT,
-    EDIT_AVATAR,
-    EDIT_FULLNAME,
-    EDIT_BIO,
-    EDIT_SAVE,
-    LEADERBOARD_TABS,
-    LEADERBOARD_PODIUM,
-    LEADERBOARD_ACTIVITY,
-    PART_3_FINISH
+    PROFILE_EDIT,
+    EDIT_INFO,
+    FINAL_CONGRATS
 }
 
 enum class TooltipPosition {
@@ -62,101 +56,90 @@ enum class TooltipPosition {
 }
 
 enum class TutorialSegmentId {
-    PART_1_INTERFACE,
-    PART_2_LEARNING_QUIZ,
-    PART_3_PROGRESS_PROFILE
+    MAIN
 }
 
 fun TutorialSegmentId.allowedRoutePrefixes(): List<String> = when (this) {
-    TutorialSegmentId.PART_1_INTERFACE -> listOf(
+    TutorialSegmentId.MAIN -> listOf(
         Screen.HomeScreen.route,
-        Screen.LevelScreen.route
-    )
-    TutorialSegmentId.PART_2_LEARNING_QUIZ -> listOf(
+        Screen.LevelScreen.route,
         Screen.StudyMaterialScreen.route,
         Screen.QuestionScreen.route,
         Screen.RemedialScreen.route,
-        Screen.ResultScreen.route
-    )
-    TutorialSegmentId.PART_3_PROGRESS_PROFILE -> listOf(
+        Screen.ResultScreen.route,
+        Screen.LeaderboardScreen.route,
         Screen.ProfileScreen.route,
-        Screen.EditProfileScreen.route,
-        Screen.LeaderboardScreen.route
+        Screen.EditProfileScreen.route
     )
 }
 
-private val part1Steps = listOf(
+private val mainSteps = listOf(
     TutorialStep(
         id = TutorialStepId.WELCOME,
         title = "Selamat Datang!",
-        description = "Halo! Selamat datang di TelNetQuiz. Yuk, kenalan dulu sama fitur-fiturnya!",
+        description = "Halo, Penjelajah! Yuk kenalan dulu sama TelNetQuiz. Ikuti panduan ini sampai selesai ya!",
         targetKey = null,
         tooltipPosition = TooltipPosition.CENTER_SCREEN,
         mascotResId = R.drawable.group_275,
         route = Screen.HomeScreen.route
     ),
     TutorialStep(
-        id = TutorialStepId.PROFILE_HEADER,
+        id = TutorialStepId.PROFILE_TOP_BAR,
         title = "Profil & Statistik",
-        description = "Di sini kamu bisa lihat foto profil, nama, sekolah, skor total, streak harian, dan gelar bermainmu.",
+        description = "Ini header profilmu: foto, nama, sekolah, skor total, streak harian, dan gelar bermainmu.",
         targetKey = "profile_top_bar",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
-        mascotResId = R.drawable.group_276,
         route = Screen.HomeScreen.route
     ),
     TutorialStep(
-        id = TutorialStepId.CHAPTER_CARDS,
+        id = TutorialStepId.CHAPTER_CARD,
         title = "Daftar Bab",
-        description = "Ini adalah daftar bab materi yang bisa kamu pelajari. Ketuk bab untuk masuk ke level-levelnya.",
+        description = "Ini daftar bab materi. Ayo ketuk bab pertama untuk masuk ke level-levelnya!",
         targetKey = "chapter_card_first",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
         mascotResId = R.drawable.mascot_wrong,
-        route = Screen.HomeScreen.route
+        route = Screen.HomeScreen.route,
+        requiresInteraction = true
     ),
     TutorialStep(
-        id = TutorialStepId.BOTTOM_NAVBAR,
-        title = "Menu Navigasi",
-        description = "Gunakan menu ini untuk berpindah antara Beranda, Peringkat, dan Profil.",
-        targetKey = "bottom_navbar",
-        tooltipPosition = TooltipPosition.ABOVE_TARGET,
-        mascotResId = R.drawable.group_276,
-        route = Screen.HomeScreen.route
-    ),
-    TutorialStep(
-        id = TutorialStepId.LEVEL_ROAD,
-        title = "Level dalam Bab",
-        description = "Ini adalah level-level dalam bab. Selesaikan dari bawah ke atas untuk membuka level berikutnya!",
-        targetKey = null,
-        tooltipPosition = TooltipPosition.CENTER_SCREEN,
-        mascotResId = R.drawable.mascot_wrong,
-        navigateTo = "${Screen.LevelScreen.route}/1",
+        id = TutorialStepId.LEVEL_KKM,
+        title = "Skor Minimum (KKM)",
+        description = "Ini KKM bab ini — skor minimum yang harus kamu capai untuk membuka level berikutnya.",
+        targetKey = "level_kkm_display",
+        tooltipPosition = TooltipPosition.BELOW_TARGET,
         route = Screen.LevelScreen.route
     ),
     TutorialStep(
-        id = TutorialStepId.LEVEL_ACTION,
-        title = "Pilihan Belajar",
-        description = "Ketuk level untuk memulai. Akan muncul dua pilihan: \"Belajar Dulu\" (pelajari materi) atau \"Langsung Main\" (langsung kuis). Kami sarankan \"Belajar Dulu\" biar kamu paham materinya.",
+        id = TutorialStepId.LEVEL_BUTTON_LOCKED,
+        title = "Level Terkunci",
+        description = "Level ini terkunci. Bakal kebuka setelah kamu menyelesaikan level sebelumnya dan lulus KKM.",
+        targetKey = "level_button_locked",
+        tooltipPosition = TooltipPosition.BELOW_TARGET,
+        mascotResId = R.drawable.mascot_wrong,
+        route = Screen.LevelScreen.route
+    ),
+    TutorialStep(
+        id = TutorialStepId.LEVEL_BUTTON_FIRST,
+        title = "Mulai Level 1",
+        description = "Ayo tekan tombol level 1 untuk mulai petualanganmu!",
         targetKey = "level_button_first",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
-        mascotResId = R.drawable.group_276,
-        route = Screen.LevelScreen.route
+        route = Screen.LevelScreen.route,
+        requiresInteraction = true
     ),
     TutorialStep(
-        id = TutorialStepId.PART_1_FINISH,
-        title = "Part 1 Selesai!",
-        description = "Kamu udah kenalan sama antarmuka utama. Nanti saat masuk belajar dan kuis, Part 2 bakal otomatis jalan. Ayo mulai!",
-        targetKey = null,
-        tooltipPosition = TooltipPosition.CENTER_SCREEN,
-        mascotResId = R.drawable.chap1,
-        route = Screen.LevelScreen.route
-    )
-)
-
-private val part2Steps = listOf(
+        id = TutorialStepId.DIALOG_LEARN_FIRST,
+        title = "Belajar Dulu",
+        description = "Pilih \"Belajar Dulu\" biar kamu paham materinya sebelum mengerjakan kuis.",
+        targetKey = "dialog_learn_first_btn",
+        tooltipPosition = TooltipPosition.BELOW_TARGET,
+        route = Screen.LevelScreen.route,
+        requiresInteraction = true
+    ),
     TutorialStep(
-        id = TutorialStepId.STUDY_WELCOME,
+        id = TutorialStepId.STUDY_INTRO,
         title = "Ruang Belajar",
-        description = "Selamat datang di ruang belajar! Di sini kamu bisa pelajari materi sebelum kuis dimulai.",
+        description = "Selamat datang di ruang belajar! Pelajari materi di sini sebelum kuis dimulai.",
         targetKey = null,
         tooltipPosition = TooltipPosition.CENTER_SCREEN,
         mascotResId = R.drawable.group_275,
@@ -164,134 +147,168 @@ private val part2Steps = listOf(
     ),
     TutorialStep(
         id = TutorialStepId.STUDY_AUDIO,
-        title = "Tombol Audio",
-        description = "Ketuk tombol ini buat dengerin materinya dengan suara. Ketuk lagi buat matiin audio.",
+        title = "Putar Audio",
+        description = "Tekan tombol ini buat dengerin materinya. Tekan lagi buat berhenti.",
         targetKey = "study_audio_btn",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
-        mascotResId = R.drawable.group_276,
         route = Screen.StudyMaterialScreen.route
     ),
     TutorialStep(
         id = TutorialStepId.STUDY_NEXT,
         title = "Lanjut Materi",
-        description = "Tekan tombol ini buat lanjut ke materi berikutnya. Saat materi terakhir, tombolnya berubah jadi \"Mulai Kuis\".",
+        description = "Tombol ini buat lanjut ke materi berikutnya. Di materi terakhir, tombolnya berubah jadi \"Mulai Kuis\".",
         targetKey = "study_next_btn",
         tooltipPosition = TooltipPosition.ABOVE_TARGET,
-        mascotResId = R.drawable.group_276,
         route = Screen.StudyMaterialScreen.route
     ),
     TutorialStep(
         id = TutorialStepId.STUDY_PREV,
-        title = "Kembali ke Materi Sebelumnya",
-        description = "Kalau mau baca ulang materi sebelumnya, tekan \"Sebelumnya\". Tombol ini muncul mulai dari materi ke-2.",
+        title = "Materi Sebelumnya",
+        description = "Kalau mau baca ulang, tekan \"Sebelumnya\". Tombol ini muncul mulai materi ke-2.",
         targetKey = "study_prev_btn",
         tooltipPosition = TooltipPosition.ABOVE_TARGET,
-        mascotResId = R.drawable.group_276,
         route = Screen.StudyMaterialScreen.route
     ),
     TutorialStep(
         id = TutorialStepId.STUDY_EXIT,
         title = "Keluar Belajar",
-        description = "Mau keluar? Tekan tombol kembali di HP kamu — nanti muncul konfirmasi biar nggak keluar nggak sengaja.",
+        description = "Mau keluar? Tekan tombol kembali di HP, atau geser dari tepi layar (tergantung mode navigasi HP-mu). Akan muncul konfirmasi biar nggak keluar nggak sengaja.",
         targetKey = null,
         tooltipPosition = TooltipPosition.CENTER_SCREEN,
         mascotResId = R.drawable.mascot_wrong,
         route = Screen.StudyMaterialScreen.route
     ),
     TutorialStep(
-        id = TutorialStepId.STUDY_CLOSING,
-        title = "Siap Menghadapi Kuis!",
-        description = "Setelah semua materi selesai, kamu bakal menghadapi beberapa kuis. Jawab sebisa kamu ya!",
+        id = TutorialStepId.STUDY_FINAL,
+        title = "Baca Sampai Selesai",
+        description = "Lanjutkan membaca sampai kuis dimulai. Saat kuis muncul, aku akan lanjutkan panduannya.",
         targetKey = null,
         tooltipPosition = TooltipPosition.CENTER_SCREEN,
         mascotResId = R.drawable.chap1,
         route = Screen.StudyMaterialScreen.route
     ),
     TutorialStep(
-        id = TutorialStepId.QUIZ_WELCOME,
+        id = TutorialStepId.QUIZ_INTRO,
         title = "Waktunya Kuis!",
-        description = "Saatnya uji pemahamanmu dari materi tadi. Jawab setiap soal dengan teliti!",
+        description = "Saatnya menguji pemahaman. Jawab setiap soal dengan teliti ya!",
         targetKey = null,
         tooltipPosition = TooltipPosition.CENTER_SCREEN,
         mascotResId = R.drawable.group_275,
-        navigateTo = "${Screen.QuestionScreen.route}/1?retry=false",
         route = Screen.QuestionScreen.route
     ),
     TutorialStep(
         id = TutorialStepId.QUIZ_OPTIONS,
         title = "Pilih Jawaban",
-        description = "Ketuk salah satu pilihan jawaban. Kamu masih bisa ganti pilihan sebelum menekan tombol konfirmasi.",
+        description = "Ayo pilih salah satu opsi jawaban. Tekan opsi yang kamu anggap benar.",
         targetKey = "quiz_option_first",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
-        mascotResId = R.drawable.group_276,
-        route = Screen.QuestionScreen.route
+        route = Screen.QuestionScreen.route,
+        requiresInteraction = true
     ),
     TutorialStep(
         id = TutorialStepId.QUIZ_VERIFY,
         title = "Konfirmasi Jawaban",
-        description = "Kalau sudah yakin, tekan tombol ini. Jawabanmu langsung dicek — pilihan salah jadi merah, benar jadi hijau.",
+        description = "Sudah yakin? Tekan tombol ini untuk memeriksa jawabanmu.",
         targetKey = "quiz_verify_btn",
         tooltipPosition = TooltipPosition.ABOVE_TARGET,
-        mascotResId = R.drawable.group_276,
-        route = Screen.QuestionScreen.route
+        route = Screen.QuestionScreen.route,
+        requiresInteraction = true
     ),
     TutorialStep(
-        id = TutorialStepId.QUIZ_FEEDBACK,
-        title = "Kartu Umpan Balik",
-        description = "Setelah konfirmasi, muncul kartu umpan balik dengan tombol \"Lanjut\" (atau \"Selesai\" di soal terakhir) buat ke soal berikutnya.",
+        id = TutorialStepId.QUIZ_FEEDBACK_INFO,
+        title = "Umpan Balik",
+        description = "Opsi salah jadi merah, benar jadi hijau. Kalau masih ada yang salah, kamu akan diarahkan ke halaman Belajar Lagi untuk review materinya.",
         targetKey = null,
         tooltipPosition = TooltipPosition.CENTER_SCREEN,
-        mascotResId = R.drawable.group_276,
         route = Screen.QuestionScreen.route
-    ),
-    TutorialStep(
-        id = TutorialStepId.QUIZ_EXIT,
-        title = "Keluar Kuis",
-        description = "Mau keluar? Tekan tombol kembali di HP. Progres kuis belum tersimpan, jadi kamu harus mulai dari awal.",
-        targetKey = null,
-        tooltipPosition = TooltipPosition.CENTER_SCREEN,
-        mascotResId = R.drawable.mascot_wrong,
-        route = Screen.QuestionScreen.route
-    ),
-    TutorialStep(
-        id = TutorialStepId.REMEDIAL_WELCOME,
-        title = "Belajar Lagi!",
-        description = "Kalau ada jawaban yang belum tepat, kamu bakal diarahkan ke halaman ini — nggak apa-apa, kita belajar bareng lagi!",
-        targetKey = null,
-        tooltipPosition = TooltipPosition.CENTER_SCREEN,
-        mascotResId = R.drawable.mascot_wrong,
-        navigateTo = "${Screen.RemedialScreen.route}/1/1",
-        route = Screen.RemedialScreen.route
     ),
     TutorialStep(
         id = TutorialStepId.REMEDIAL_CTA,
-        title = "Ayo Pelajari!",
-        description = "Tekan tombol ini buat baca ulang materi soal yang kamu jawab salah. Setelah itu kamu dapet satu kesempatan buat jawab lagi.",
+        title = "Ayo Belajar Lagi!",
+        description = "Tekan tombol ini buat baca ulang materi dari soal yang kamu jawab salah.",
         targetKey = "remedial_cta_btn",
         tooltipPosition = TooltipPosition.ABOVE_TARGET,
-        mascotResId = R.drawable.group_276,
-        route = Screen.RemedialScreen.route
+        mascotResId = R.drawable.mascot_wrong,
+        route = Screen.RemedialScreen.route,
+        requiresInteraction = true
     ),
     TutorialStep(
-        id = TutorialStepId.PART_2_FINISH,
-        title = "Part 2 Selesai!",
-        description = "Kamu udah paham cara belajar dan kuis. Lanjut ke Part 3: halaman profil dan progres.",
+        id = TutorialStepId.REMEDIAL_STUDY,
+        title = "Review Materi",
+        description = "Baca ulang materi ini dengan teliti. Setelah selesai, kamu bakal dapet kesempatan satu kali lagi untuk menjawab.",
+        targetKey = null,
+        tooltipPosition = TooltipPosition.CENTER_SCREEN,
+        route = Screen.StudyMaterialScreen.route
+    ),
+    TutorialStep(
+        id = TutorialStepId.RETRY_OPTIONS,
+        title = "Coba Lagi",
+        description = "Pilih jawabanmu lagi. Kali ini pasti bisa!",
+        targetKey = "quiz_option_first",
+        tooltipPosition = TooltipPosition.BELOW_TARGET,
+        route = Screen.QuestionScreen.route,
+        requiresInteraction = true
+    ),
+    TutorialStep(
+        id = TutorialStepId.RETRY_VERIFY,
+        title = "Konfirmasi Lagi",
+        description = "Tekan konfirmasi untuk memeriksa jawaban barunya.",
+        targetKey = "quiz_verify_btn",
+        tooltipPosition = TooltipPosition.ABOVE_TARGET,
+        route = Screen.QuestionScreen.route,
+        requiresInteraction = true
+    ),
+    TutorialStep(
+        id = TutorialStepId.RESULT_SCORE,
+        title = "Hasil Kuis",
+        description = "Skor dan jumlah jawaban benar/salah kamu tampil di sini. Kalau skormu ≥ KKM, kamu lulus!",
+        targetKey = "result_score_section",
+        tooltipPosition = TooltipPosition.BELOW_TARGET,
+        route = Screen.ResultScreen.route
+    ),
+    TutorialStep(
+        id = TutorialStepId.RESULT_KKM_NOTE,
+        title = "Kunci Membuka Level",
+        description = "Ingat: untuk membuka level berikutnya kamu harus MENYELESAIKAN level ini DAN mencapai skor minimum (KKM).",
         targetKey = null,
         tooltipPosition = TooltipPosition.CENTER_SCREEN,
         mascotResId = R.drawable.chap1,
-        route = Screen.RemedialScreen.route
-    )
-)
-
-private val part3Steps = listOf(
+        route = Screen.ResultScreen.route
+    ),
     TutorialStep(
-        id = TutorialStepId.PROFILE_HEADER_INFO,
-        title = "Halaman Profil",
-        description = "Ini halaman profilmu. Foto, nama, dan info sekolah ada di sini. Di dalam header ada ikon gear buat atur suara, dan ikon pensil buat edit profil.",
-        targetKey = "profile_header",
+        id = TutorialStepId.RESULT_CONTINUE,
+        title = "Lanjutkan",
+        description = "Tekan \"Lanjutkan\" untuk kembali ke peta level.",
+        targetKey = "result_continue_btn",
+        tooltipPosition = TooltipPosition.ABOVE_TARGET,
+        route = Screen.ResultScreen.route,
+        requiresInteraction = true
+    ),
+    TutorialStep(
+        id = TutorialStepId.NAV_LEADERBOARD,
+        title = "Papan Peringkat",
+        description = "Tekan ikon piala di navbar untuk lihat peringkat pemain.",
+        targetKey = "navbar_leaderboard",
+        tooltipPosition = TooltipPosition.ABOVE_TARGET,
+        route = Screen.LevelScreen.route,
+        requiresInteraction = true
+    ),
+    TutorialStep(
+        id = TutorialStepId.LEADERBOARD_INTRO,
+        title = "Aktivitas & Ranking",
+        description = "Ada dua tab: \"Aktivitas Harian\" (riwayat kuis) dan \"Papan Peringkat\" (ranking pemain). Tiga teratas tampil di podium.",
+        targetKey = "leaderboard_tab_toggle",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
-        mascotResId = R.drawable.group_275,
-        route = Screen.ProfileScreen.route
+        route = Screen.LeaderboardScreen.route
+    ),
+    TutorialStep(
+        id = TutorialStepId.NAV_PROFILE,
+        title = "Halaman Profil",
+        description = "Tekan ikon profil di navbar untuk buka halaman profilmu.",
+        targetKey = "navbar_profile",
+        tooltipPosition = TooltipPosition.ABOVE_TARGET,
+        route = Screen.LeaderboardScreen.route,
+        requiresInteraction = true
     ),
     TutorialStep(
         id = TutorialStepId.PROFILE_STATS,
@@ -299,105 +316,44 @@ private val part3Steps = listOf(
         description = "Total skor, jumlah level selesai, dan jumlah bab selesai kamu tampil di sini.",
         targetKey = "profile_stats",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
-        mascotResId = R.drawable.group_276,
         route = Screen.ProfileScreen.route
     ),
     TutorialStep(
         id = TutorialStepId.PROFILE_ACHIEVEMENTS,
         title = "Pencapaian",
-        description = "Daftar pencapaian kamu. Selesain kuis terus buat ngumpulin yang lain!",
+        description = "Daftar pencapaianmu. Selesaikan kuis terus buat mengumpulkan yang lain!",
         targetKey = "profile_achievements",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
-        mascotResId = R.drawable.group_276,
         route = Screen.ProfileScreen.route
     ),
     TutorialStep(
-        id = TutorialStepId.PROFILE_LOGOUT,
-        title = "Tombol Keluar",
-        description = "Tekan tombol \"Keluar\" kalau kamu mau logout dari akun. Buka ikon pensil di header profil buat masuk ke halaman edit.",
-        targetKey = "profile_logout_btn",
-        tooltipPosition = TooltipPosition.ABOVE_TARGET,
-        mascotResId = R.drawable.mascot_wrong,
-        route = Screen.ProfileScreen.route
-    ),
-    TutorialStep(
-        id = TutorialStepId.EDIT_AVATAR,
-        title = "Ganti Avatar",
-        description = "Ketuk avatar buat ganti foto profilmu dari pilihan avatar yang tersedia.",
-        targetKey = "edit_avatar_picker",
+        id = TutorialStepId.PROFILE_EDIT,
+        title = "Edit Profil",
+        description = "Tekan ikon pensil di header buat edit foto profil, nama, dan bio-mu.",
+        targetKey = "profile_header",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
-        mascotResId = R.drawable.group_275,
-        navigateTo = Screen.EditProfileScreen.route,
-        route = Screen.EditProfileScreen.route
+        route = Screen.ProfileScreen.route,
+        requiresInteraction = true
     ),
     TutorialStep(
-        id = TutorialStepId.EDIT_FULLNAME,
-        title = "Nama Lengkap",
-        description = "Edit nama lengkapmu di sini. Minimal 3 huruf.",
-        targetKey = "edit_fullname",
-        tooltipPosition = TooltipPosition.BELOW_TARGET,
-        mascotResId = R.drawable.group_276,
-        route = Screen.EditProfileScreen.route
-    ),
-    TutorialStep(
-        id = TutorialStepId.EDIT_BIO,
-        title = "Bio Singkat",
-        description = "Tulis bio singkat tentang kamu. Maksimal 500 karakter.",
-        targetKey = "edit_bio",
-        tooltipPosition = TooltipPosition.BELOW_TARGET,
-        mascotResId = R.drawable.group_276,
-        route = Screen.EditProfileScreen.route
-    ),
-    TutorialStep(
-        id = TutorialStepId.EDIT_SAVE,
-        title = "Simpan Perubahan",
-        description = "Tekan \"Simpan\" kalau sudah selesai. Perubahan kamu langsung tersimpan.",
-        targetKey = "edit_save_btn",
-        tooltipPosition = TooltipPosition.ABOVE_TARGET,
-        mascotResId = R.drawable.chap1,
-        route = Screen.EditProfileScreen.route
-    ),
-    TutorialStep(
-        id = TutorialStepId.LEADERBOARD_TABS,
-        title = "Dua Tab",
-        description = "Ada dua tab di sini: \"Aktivitas Harian\" buat lihat riwayat kuis yang pernah kamu kerjain, dan \"Papan Peringkat\" buat lihat ranking pemain.",
-        targetKey = "leaderboard_tab_toggle",
-        tooltipPosition = TooltipPosition.BELOW_TARGET,
-        mascotResId = R.drawable.group_275,
-        navigateTo = Screen.LeaderboardScreen.route,
-        route = Screen.LeaderboardScreen.route
-    ),
-    TutorialStep(
-        id = TutorialStepId.LEADERBOARD_PODIUM,
-        title = "Podium & Peringkatmu",
-        description = "Di tab \"Papan Peringkat\", tiga teratas tampil di podium. Peringkat kamu sendiri muncul di kotak tersendiri di bawah.",
+        id = TutorialStepId.EDIT_INFO,
+        title = "Halaman Edit Profil",
+        description = "Di sini kamu bisa ganti avatar, nama lengkap, dan bio. Tekan \"Simpan\" kalau sudah selesai.",
         targetKey = null,
         tooltipPosition = TooltipPosition.CENTER_SCREEN,
-        mascotResId = R.drawable.group_276,
-        route = Screen.LeaderboardScreen.route
+        route = Screen.EditProfileScreen.route
     ),
     TutorialStep(
-        id = TutorialStepId.LEADERBOARD_ACTIVITY,
-        title = "Aktivitas Harian",
-        description = "Geser ke tab \"Aktivitas Harian\" buat lihat daftar kuis yang pernah kamu kerjain, dikelompokkan per tanggal.",
-        targetKey = null,
-        tooltipPosition = TooltipPosition.CENTER_SCREEN,
-        mascotResId = R.drawable.group_276,
-        route = Screen.LeaderboardScreen.route
-    ),
-    TutorialStep(
-        id = TutorialStepId.PART_3_FINISH,
-        title = "Selamat!",
-        description = "Tutorial lengkap udah selesai. Sekarang kamu udah siap menjelajahi TelNetQuiz sepenuhnya. Selamat belajar!",
+        id = TutorialStepId.FINAL_CONGRATS,
+        title = "Selamat, Penjelajah!",
+        description = "Tutorial selesai! Sekarang kamu sudah siap menjelajahi TelNetQuiz sepenuhnya. Selamat belajar!",
         targetKey = null,
         tooltipPosition = TooltipPosition.CENTER_SCREEN,
         mascotResId = R.drawable.chap1,
-        route = Screen.LeaderboardScreen.route
+        route = Screen.EditProfileScreen.route
     )
 )
 
 val tutorialSegments: Map<TutorialSegmentId, List<TutorialStep>> = mapOf(
-    TutorialSegmentId.PART_1_INTERFACE to part1Steps,
-    TutorialSegmentId.PART_2_LEARNING_QUIZ to part2Steps,
-    TutorialSegmentId.PART_3_PROGRESS_PROFILE to part3Steps
+    TutorialSegmentId.MAIN to mainSteps
 )

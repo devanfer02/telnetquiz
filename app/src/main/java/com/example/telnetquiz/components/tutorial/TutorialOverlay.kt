@@ -1,6 +1,10 @@
 package com.example.telnetquiz.components.tutorial
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -27,6 +31,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,6 +71,17 @@ fun TutorialOverlay(
     val density = LocalDensity.current
     val paddingPx = with(density) { 8.dp.toPx() }
 
+    val pulseTransition = rememberInfiniteTransition(label = "tutorial_pulse")
+    val pulsePadding by pulseTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = with(density) { 6.dp.toPx() },
+        animationSpec = infiniteRepeatable(
+            animation = tween(900),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "tutorial_pulse_padding"
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -83,7 +99,8 @@ fun TutorialOverlay(
             drawRect(Color.Black.copy(alpha = 0.75f))
 
             if (localBounds != null && !controller.isWaitingForBounds) {
-                drawSpotlight(localBounds, paddingPx)
+                val extraPad = if (step.requiresInteraction) pulsePadding else 0f
+                drawSpotlight(localBounds, paddingPx + extraPad)
             }
         }
 
@@ -240,24 +257,35 @@ private fun TooltipCard(
                         Spacer(modifier = Modifier.width(1.dp))
                     }
 
-                    TextButton(
-                        onClick = onNext,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(LitecartesColor.Surface)
-                            .padding(horizontal = 12.dp)
-                    ) {
+                    val isLast = stepIndex >= totalSteps - 1
+                    if (step.requiresInteraction && !isLast) {
                         Text(
-                            text = when {
-                                stepIndex == 0 -> "Mulai"
-                                stepIndex >= totalSteps - 1 -> "Selesai"
-                                else -> "Lanjut"
-                            },
+                            text = "Tap area yang disorot",
                             fontFamily = nunitosFontFamily,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
-                            color = LitecartesColor.Secondary
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 12.sp,
+                            color = LitecartesColor.Surface.copy(alpha = 0.7f)
                         )
+                    } else {
+                        TextButton(
+                            onClick = onNext,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(LitecartesColor.Surface)
+                                .padding(horizontal = 12.dp)
+                        ) {
+                            Text(
+                                text = when {
+                                    stepIndex == 0 -> "Mulai"
+                                    isLast -> "Selesai"
+                                    else -> "Lanjut"
+                                },
+                                fontFamily = nunitosFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp,
+                                color = LitecartesColor.Secondary
+                            )
+                        }
                     }
                 }
             }

@@ -17,9 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 import com.example.telnetquiz.ui.theme.scoreColor
@@ -32,6 +34,7 @@ fun LevelOptionMenu(
     onLearnFirst: () -> Unit,
     onPlayDirectly: () -> Unit
 ) {
+    val tutorialController = LocalTutorialController.current
     MaterialTheme(
         shapes = MaterialTheme.shapes.copy(
             extraSmall = RoundedCornerShape(16.dp)
@@ -59,8 +62,17 @@ fun LevelOptionMenu(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
                 Button(
-                    onClick = onLearnFirst,
-                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        tutorialController?.notifyTargetClicked("dialog_learn_first_btn")
+                        onLearnFirst()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .then(
+                            if (tutorialController != null) Modifier.onGloballyPositioned {
+                                tutorialController.registerTarget("dialog_learn_first_btn", it)
+                            } else Modifier
+                        ),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = LitecartesColor.Primary,
