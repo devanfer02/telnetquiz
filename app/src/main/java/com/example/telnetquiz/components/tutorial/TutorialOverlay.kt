@@ -13,8 +13,8 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,7 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -82,14 +82,27 @@ fun TutorialOverlay(
         label = "tutorial_pulse_padding"
     )
 
+    val allowPassthrough = step.requiresInteraction && localBounds != null
     Box(
         modifier = Modifier
             .fillMaxSize()
             .onGloballyPositioned { controller.registerOverlay(it) }
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) {}
+            .pointerInput(allowPassthrough, localBounds) {
+                awaitEachGesture {
+                    val down = awaitFirstDown(requireUnconsumed = true)
+                    val insideSpotlight = allowPassthrough &&
+                        localBounds != null &&
+                        localBounds.contains(down.position)
+                    if (!insideSpotlight) {
+                        down.consume()
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            event.changes.forEach { if (it.pressed) it.consume() }
+                            if (event.changes.all { !it.pressed }) break
+                        }
+                    }
+                }
+            }
     ) {
         Canvas(
             modifier = Modifier
