@@ -82,7 +82,7 @@ class TutorialController(
         currentStepIndex = safeIndex
         _targetBounds.clear()
         val step = steps[safeIndex]
-        isWaitingForBounds = step.targetKey != null && stepMatchesRoute(step, currentRoute)
+        isWaitingForBounds = step.expectsBounds() && stepMatchesRoute(step, currentRoute)
     }
 
     fun onRouteChanged(newRoute: String?) {
@@ -92,7 +92,7 @@ class TutorialController(
         if (steps.isEmpty()) return
         val cur = steps.getOrNull(currentStepIndex) ?: return
         if (stepMatchesRoute(cur, newRoute)) {
-            isWaitingForBounds = cur.targetKey != null && !_targetBounds.containsKey(cur.targetKey)
+            isWaitingForBounds = cur.expectsBounds() && !_targetBounds.containsKey(cur.targetKey)
             return
         }
         for (i in (currentStepIndex + 1) until steps.size) {
@@ -100,7 +100,7 @@ class TutorialController(
             if (stepMatchesRoute(s, newRoute)) {
                 currentStepIndex = i
                 onStepChange(seg, i)
-                isWaitingForBounds = s.targetKey != null && !_targetBounds.containsKey(s.targetKey)
+                isWaitingForBounds = s.expectsBounds() && !_targetBounds.containsKey(s.targetKey)
                 return
             }
         }
@@ -119,7 +119,7 @@ class TutorialController(
         val nextIndex = currentStepIndex + 1
         val nextStep = steps[nextIndex]
 
-        isWaitingForBounds = nextStep.targetKey != null &&
+        isWaitingForBounds = nextStep.expectsBounds() &&
             !_targetBounds.containsKey(nextStep.targetKey) &&
             stepMatchesRoute(nextStep, currentRoute)
 

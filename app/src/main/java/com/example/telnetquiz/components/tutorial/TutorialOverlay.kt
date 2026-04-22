@@ -69,7 +69,7 @@ fun TutorialOverlay(
     if (!controller.isActive) return
 
     val step = controller.currentStep ?: return
-    val localBounds = step.targetKey?.let { controller.getLocalBounds(it) }
+    val localBounds = if (step.inPopup) null else step.targetKey?.let { controller.getLocalBounds(it) }
     val density = LocalDensity.current
     val paddingPx = with(density) { 8.dp.toPx() }
 
@@ -329,7 +329,7 @@ private fun TooltipCard(
                     val isLast = stepIndex >= totalSteps - 1
                     if (step.requiresInteraction && !isLast) {
                         Text(
-                            text = "Tap area yang disorot",
+                            text = if (step.inPopup) "Ikuti instruksi di atas" else "Tap area yang disorot",
                             fontFamily = nunitosFontFamily,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 12.sp,

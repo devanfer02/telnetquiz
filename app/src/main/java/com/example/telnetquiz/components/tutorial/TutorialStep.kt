@@ -11,8 +11,11 @@ data class TutorialStep(
     val tooltipPosition: TooltipPosition,
     val mascotResId: Int = R.drawable.group_276,
     val route: String? = null,
-    val requiresInteraction: Boolean = false
+    val requiresInteraction: Boolean = false,
+    val inPopup: Boolean = false
 )
+
+internal fun TutorialStep.expectsBounds(): Boolean = targetKey != null && !inPopup
 
 enum class TutorialStepId {
     WELCOME,
@@ -132,9 +135,10 @@ private val mainSteps = listOf(
         title = "Belajar Dulu",
         description = "Pilih \"Belajar Dulu\" biar kamu paham materinya sebelum mengerjakan kuis.",
         targetKey = "dialog_learn_first_btn",
-        tooltipPosition = TooltipPosition.BELOW_TARGET,
+        tooltipPosition = TooltipPosition.CENTER_SCREEN,
         route = Screen.LevelScreen.route,
-        requiresInteraction = true
+        requiresInteraction = true,
+        inPopup = true
     ),
     TutorialStep(
         id = TutorialStepId.STUDY_INTRO,
@@ -164,9 +168,9 @@ private val mainSteps = listOf(
     TutorialStep(
         id = TutorialStepId.STUDY_PREV,
         title = "Materi Sebelumnya",
-        description = "Kalau mau baca ulang, tekan \"Sebelumnya\". Tombol ini muncul mulai materi ke-2.",
-        targetKey = "study_prev_btn",
-        tooltipPosition = TooltipPosition.ABOVE_TARGET,
+        description = "Kalau mau baca ulang, tekan tombol \"Sebelumnya\" yang muncul mulai materi ke-2.",
+        targetKey = null,
+        tooltipPosition = TooltipPosition.CENTER_SCREEN,
         route = Screen.StudyMaterialScreen.route
     ),
     TutorialStep(
