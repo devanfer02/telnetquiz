@@ -47,6 +47,8 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -82,27 +84,11 @@ fun TutorialOverlay(
         label = "tutorial_pulse_padding"
     )
 
-    val allowPassthrough = step.requiresInteraction && localBounds != null
+    val allowPassthrough = step.requiresInteraction && localBounds != null && !controller.isWaitingForBounds
     Box(
         modifier = Modifier
             .fillMaxSize()
             .onGloballyPositioned { controller.registerOverlay(it) }
-            .pointerInput(allowPassthrough, localBounds) {
-                awaitEachGesture {
-                    val down = awaitFirstDown(requireUnconsumed = true)
-                    val insideSpotlight = allowPassthrough &&
-                        localBounds != null &&
-                        localBounds.contains(down.position)
-                    if (!insideSpotlight) {
-                        down.consume()
-                        while (true) {
-                            val event = awaitPointerEvent()
-                            event.changes.forEach { if (it.pressed) it.consume() }
-                            if (event.changes.all { !it.pressed }) break
-                        }
-                    }
-                }
-            }
     ) {
         Canvas(
             modifier = Modifier
@@ -117,6 +103,32 @@ fun TutorialOverlay(
             }
         }
 
+        if (allowPassthrough && localBounds != null) {
+            val holeRect = Rect(
+                left = localBounds.left - paddingPx,
+                top = localBounds.top - paddingPx,
+                right = localBounds.right + paddingPx,
+                bottom = localBounds.bottom + paddingPx
+            )
+            SpotlightBlockers(hole = holeRect)
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pointerInput(Unit) {
+                        awaitEachGesture {
+                            val down = awaitFirstDown(requireUnconsumed = true)
+                            down.consume()
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                event.changes.forEach { if (it.pressed) it.consume() }
+                                if (event.changes.all { !it.pressed }) break
+                            }
+                        }
+                    }
+            )
+        }
+
         if (!controller.isWaitingForBounds) {
             TooltipCard(
                 step = step,
@@ -126,6 +138,50 @@ fun TutorialOverlay(
                 onNext = { controller.nextStep() },
                 onSkip = { controller.skip() }
             )
+        }
+    }
+}
+
+@Composable
+private fun SpotlightBlockers(hole: Rect) {
+    Layout(
+        modifier = Modifier.fillMaxSize(),
+        content = {
+            repeat(4) {
+                Box(
+                    modifier = Modifier.pointerInput(Unit) {
+                        awaitEachGesture {
+                            val down = awaitFirstDown(requireUnconsumed = true)
+                            down.consume()
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                event.changes.forEach { if (it.pressed) it.consume() }
+                                if (event.changes.all { !it.pressed }) break
+                            }
+                        }
+                    }
+                )
+            }
+        }
+    ) { measurables, constraints ->
+        val w = constraints.maxWidth
+        val h = constraints.maxHeight
+        val holeLeft = hole.left.toInt().coerceIn(0, w)
+        val holeTop = hole.top.toInt().coerceIn(0, h)
+        val holeRight = hole.right.toInt().coerceIn(0, w)
+        val holeBottom = hole.bottom.toInt().coerceIn(0, h)
+        val bandHeight = (holeBottom - holeTop).coerceAtLeast(0)
+
+        val top = measurables[0].measure(Constraints.fixed(w, holeTop))
+        val bottom = measurables[1].measure(Constraints.fixed(w, (h - holeBottom).coerceAtLeast(0)))
+        val left = measurables[2].measure(Constraints.fixed(holeLeft, bandHeight))
+        val right = measurables[3].measure(Constraints.fixed((w - holeRight).coerceAtLeast(0), bandHeight))
+
+        layout(w, h) {
+            top.place(0, 0)
+            bottom.place(0, holeBottom)
+            left.place(0, holeTop)
+            right.place(holeRight, holeTop)
         }
     }
 }
