@@ -74,8 +74,7 @@ class AudioManager @Inject constructor(
 
     fun onScreenChanged(route: String) {
         val baseRoute = route.split("/").first().split("?").first()
-        if (baseRoute.startsWith("auth_")) return
-        if (baseRoute in bgPauseRoutes) {
+        if (baseRoute.startsWith("auth_") || baseRoute in bgPauseRoutes) {
             pauseBgMusic()
         } else {
             resumeBgMusic()

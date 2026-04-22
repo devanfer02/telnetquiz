@@ -6,39 +6,44 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import com.example.telnetquiz.components.tutorial.TutorialSegmentId
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TutorialPreferenceManager @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val tokenManager: TokenManager
 ) {
-    private fun completedKey(id: TutorialSegmentId) =
-        booleanPreferencesKey("segment_${id.name}_completed")
+    private fun completedKey(id: TutorialSegmentId, userKey: String) =
+        booleanPreferencesKey("user_${userKey}_segment_${id.name}_completed")
 
-    private fun stepKey(id: TutorialSegmentId) =
-        intPreferencesKey("segment_${id.name}_step")
+    private fun stepKey(id: TutorialSegmentId, userKey: String) =
+        intPreferencesKey("user_${userKey}_segment_${id.name}_step")
 
-    fun segmentCompletedFlow(id: TutorialSegmentId): Flow<Boolean> =
-        dataStore.data.map { it[completedKey(id)] ?: false }
+    private suspend fun currentUserKey(): String? =
+        tokenManager.userEmail.first()?.takeIf { it.isNotBlank() }
 
-    suspend fun isSegmentCompleted(id: TutorialSegmentId): Boolean =
-        dataStore.data.first()[completedKey(id)] ?: false
+    suspend fun isSegmentCompleted(id: TutorialSegmentId): Boolean {
+        val userKey = currentUserKey() ?: return true
+        return dataStore.data.first()[completedKey(id, userKey)] ?: false
+    }
 
-    suspend fun getSegmentStep(id: TutorialSegmentId): Int =
-        dataStore.data.first()[stepKey(id)] ?: 0
+    suspend fun getSegmentStep(id: TutorialSegmentId): Int {
+        val userKey = currentUserKey() ?: return 0
+        return dataStore.data.first()[stepKey(id, userKey)] ?: 0
+    }
 
     suspend fun setSegmentStep(id: TutorialSegmentId, index: Int) {
-        dataStore.edit { it[stepKey(id)] = index }
+        val userKey = currentUserKey() ?: return
+        dataStore.edit { it[stepKey(id, userKey)] = index }
     }
 
     suspend fun setSegmentCompleted(id: TutorialSegmentId) {
+        val userKey = currentUserKey() ?: return
         dataStore.edit {
-            it[completedKey(id)] = true
-            it.remove(stepKey(id))
+            it[completedKey(id, userKey)] = true
+            it.remove(stepKey(id, userKey))
         }
     }
 }
