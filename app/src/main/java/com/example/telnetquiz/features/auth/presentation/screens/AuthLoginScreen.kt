@@ -52,9 +52,16 @@ import com.example.telnetquiz.features.auth.presentation.components.PasswordInpu
 import com.example.telnetquiz.features.auth.presentation.viewmodel.AuthViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import android.app.Activity
+import android.util.Patterns
 import android.view.WindowManager
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
+
+private fun emailError(value: String): String? = when {
+    value.isBlank() -> null
+    !Patterns.EMAIL_ADDRESS.matcher(value).matches() -> "Format email tidak valid"
+    else -> null
+}
 
 @Composable
 fun AuthLoginScreen(
@@ -93,6 +100,8 @@ fun AuthLoginScreen(
     var errorMessage by remember {
         mutableStateOf("")
     }
+
+    val emailErrorMessage = emailError(email)
 
     LaunchedEffect(state.isLoggedIn) {
         if (state.isLoggedIn) {
@@ -157,7 +166,9 @@ fun AuthLoginScreen(
                     onValueChange = {
                         email = it
                     },
-                    leadingIcon = painterResource(id = R.drawable.ic_email)
+                    leadingIcon = painterResource(id = R.drawable.ic_email),
+                    isError = emailErrorMessage != null,
+                    errorMessage = emailErrorMessage
                 )
                 Spacer(
                     modifier = Modifier.padding(4.dp)
@@ -215,7 +226,8 @@ fun AuthLoginScreen(
                 LoadingButton(
                     text = "masuk".uppercase(),
                     isLoading = state.isLoading,
-                    enabled = email.isNotBlank() && password.isNotBlank(),
+                    enabled = email.isNotBlank() && password.isNotBlank()
+                        && emailErrorMessage == null,
                     onClick = { viewModel.login(email, password) },
                     modifier = Modifier.fillMaxWidth()
                 )

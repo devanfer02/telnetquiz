@@ -21,8 +21,6 @@ import androidx.compose.material.icons.filled.Male
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -51,6 +49,7 @@ import com.example.telnetquiz.R
 import com.example.telnetquiz.components.LoadingButton
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.auth.presentation.components.AuthTopBar
+import com.example.telnetquiz.features.auth.presentation.components.ErrorBottomSheet
 import com.example.telnetquiz.components.Input
 import com.example.telnetquiz.features.auth.presentation.components.PasswordInput
 import com.example.telnetquiz.features.auth.presentation.components.GenderToggleButton
@@ -58,9 +57,23 @@ import com.example.telnetquiz.features.auth.presentation.components.SchoolPicker
 import com.example.telnetquiz.features.auth.presentation.viewmodel.AuthViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import android.app.Activity
+import android.util.Patterns
 import android.view.WindowManager
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
+
+private fun emailError(value: String): String? = when {
+    value.isBlank() -> null
+    !Patterns.EMAIL_ADDRESS.matcher(value).matches() -> "Format email tidak valid"
+    else -> null
+}
+
+private fun passwordError(value: String): String? = when {
+    value.isBlank() -> null
+    value.length < 8 -> "Kata sandi minimal 8 karakter"
+    !value.any { it.isDigit() } -> "Kata sandi harus mengandung angka"
+    else -> null
+}
 
 @Composable
 fun AuthRegisterScreen(
@@ -68,7 +81,8 @@ fun AuthRegisterScreen(
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
+    var showErrorSheet by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     val view = LocalView.current
     DisposableEffect(Unit) {
@@ -91,6 +105,9 @@ fun AuthRegisterScreen(
     var gender by remember { mutableStateOf<Boolean?>(null) }
     var grade by remember { mutableStateOf("") }
 
+    val emailErrorMessage = emailError(email)
+    val passwordErrorMessage = passwordError(password)
+
     // Navigate to QuickCheckScreen on successful registration
     LaunchedEffect(state.successMessage) {
         state.successMessage?.let {
@@ -101,12 +118,10 @@ fun AuthRegisterScreen(
         }
     }
 
-    // Show error in snackbar
-    LaunchedEffect(state.error) {
-        state.error?.let {
-            snackbarHostState.showSnackbar(it)
-            viewModel.clearError()
-        }
+    if (state.error != null && !showErrorSheet) {
+        errorMessage = state.error ?: ""
+        showErrorSheet = true
+        viewModel.clearError()
     }
 
     Scaffold(
@@ -116,7 +131,6 @@ fun AuthRegisterScreen(
                 contentAlignment = Alignment.TopEnd
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = Modifier.systemBarsPadding()
     ) { innerPadding ->
         Column(
@@ -146,14 +160,18 @@ fun AuthRegisterScreen(
                     value = email,
                     label = "Email",
                     onValueChange = { email = it },
-                    leadingIcon = painterResource(id = R.drawable.ic_email)
+                    leadingIcon = painterResource(id = R.drawable.ic_email),
+                    isError = emailErrorMessage != null,
+                    errorMessage = emailErrorMessage
                 )
                 Spacer(modifier = Modifier.padding(4.dp))
                 PasswordInput(
                     value = password,
                     label = "Kata Sandi",
                     onValueChange = { password = it },
-                    leadingIcon = painterResource(id = R.drawable.ic_lock)
+                    leadingIcon = painterResource(id = R.drawable.ic_lock),
+                    isError = passwordErrorMessage != null,
+                    errorMessage = passwordErrorMessage
                 )
                 Spacer(modifier = Modifier.padding(4.dp))
 
@@ -278,7 +296,8 @@ fun AuthRegisterScreen(
                     isLoading = state.isLoading,
                     enabled = fullname.isNotBlank() && email.isNotBlank()
                         && password.isNotBlank() && selectedSchoolId > 0
-                        && gender != null && grade.isNotBlank(),
+                        && gender != null && grade.isNotBlank()
+                        && emailErrorMessage == null && passwordErrorMessage == null,
                     onClick = {
                         viewModel.register(
                             fullname, email, password,
@@ -290,6 +309,14 @@ fun AuthRegisterScreen(
             }
 
             Spacer(modifier = Modifier.padding(16.dp))
+        }
+
+        if (showErrorSheet) {
+            ErrorBottomSheet(
+                title = "Pendaftaran Gagal",
+                message = errorMessage,
+                onDismiss = { showErrorSheet = false }
+            )
         }
     }
 }

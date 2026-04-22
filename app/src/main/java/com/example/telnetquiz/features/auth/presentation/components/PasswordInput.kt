@@ -30,7 +30,9 @@ fun PasswordInput(
     value: String,
     label: String = "Kata Sandi",
     onValueChange: (String) -> Unit,
-    leadingIcon: Painter? = null
+    leadingIcon: Painter? = null,
+    isError: Boolean = false,
+    errorMessage: String? = null
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -92,6 +94,17 @@ fun PasswordInput(
             unfocusedContainerColor = LitecartesColor.DarkerSurface.copy(alpha = 0.3f)
         ),
         shape = RoundedCornerShape(16.dp),
-        singleLine = true
+        singleLine = true,
+        isError = isError,
+        supportingText = errorMessage?.takeIf { isError }?.let {
+            {
+                Text(
+                    text = it,
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 12.sp
+                )
+            }
+        }
     )
 }

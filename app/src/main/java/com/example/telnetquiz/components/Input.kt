@@ -25,6 +25,8 @@ fun Input(
     modifier: Modifier = Modifier,
     leadingIcon: Painter? = null,
     singleLine: Boolean = true,
+    isError: Boolean = false,
+    errorMessage: String? = null,
     textStyle: TextStyle = TextStyle(
         fontFamily = nunitosFontFamily,
         color = LitecartesColor.DarkBrown,
@@ -62,6 +64,17 @@ fun Input(
         } else null,
         colors = colors,
         shape = RoundedCornerShape(16.dp),
-        singleLine = singleLine
+        singleLine = singleLine,
+        isError = isError,
+        supportingText = errorMessage?.takeIf { isError }?.let {
+            {
+                Text(
+                    text = it,
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 12.sp
+                )
+            }
+        }
     )
 }
