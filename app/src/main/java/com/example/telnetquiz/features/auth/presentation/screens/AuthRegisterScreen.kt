@@ -157,7 +157,14 @@ fun AuthRegisterScreen(
                 )
                 Spacer(modifier = Modifier.padding(4.dp))
 
-                // School picker
+                Input(
+                    value = grade,
+                    label = "Kelas",
+                    onValueChange = { grade = it },
+                    leadingIcon = painterResource(id = R.drawable.ic_person)
+                )
+                Spacer(modifier = Modifier.padding(4.dp))
+
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
                         text = "Sekolah",
@@ -210,7 +217,6 @@ fun AuthRegisterScreen(
                 }
                 Spacer(modifier = Modifier.padding(4.dp))
 
-                // Gender toggle
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
                         text = "Jenis Kelamin",
@@ -240,15 +246,6 @@ fun AuthRegisterScreen(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.padding(4.dp))
-
-                // Grade input
-                Input(
-                    value = grade,
-                    label = "Kelas",
-                    onValueChange = { grade = it },
-                    leadingIcon = painterResource(id = R.drawable.ic_person)
-                )
 
                 Row(
                     modifier = Modifier
