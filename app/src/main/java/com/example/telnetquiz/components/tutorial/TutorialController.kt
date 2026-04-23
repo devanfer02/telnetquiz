@@ -19,7 +19,8 @@ val LocalTutorialController = staticCompositionLocalOf<TutorialController?> { nu
 class TutorialController(
     private val onStepChange: (TutorialSegmentId, Int) -> Unit,
     private val onSegmentComplete: (TutorialSegmentId) -> Unit,
-    private val onSegmentSkipped: (TutorialSegmentId) -> Unit
+    private val onSegmentSkipped: (TutorialSegmentId) -> Unit,
+    private val onRequestNavigateBack: (targetRoutePrefix: String) -> Unit = {}
 ) {
     var currentSegment: TutorialSegmentId? by mutableStateOf(null)
         private set
@@ -133,12 +134,17 @@ class TutorialController(
         val prevIndex = currentStepIndex - 1
         val prev = currentSteps[prevIndex]
 
-        isWaitingForBounds = prev.expectsBounds() &&
-            !_targetBounds.containsKey(prev.targetKey) &&
-            stepMatchesRoute(prev, currentRoute)
-
         currentStepIndex = prevIndex
         onStepChange(seg, prevIndex)
+
+        if (prev.route != null && !stepMatchesRoute(prev, currentRoute)) {
+            isWaitingForBounds = false
+            onRequestNavigateBack(prev.route)
+        } else {
+            isWaitingForBounds = prev.expectsBounds() &&
+                !_targetBounds.containsKey(prev.targetKey) &&
+                stepMatchesRoute(prev, currentRoute)
+        }
     }
 
     fun skipCurrentStep() {

@@ -219,6 +219,16 @@ private fun MainNavHost(
             },
             onSegmentSkipped = { segment ->
                 scope.launch { tutorialPreferenceManager.setSegmentCompleted(segment) }
+            },
+            onRequestNavigateBack = { targetRoutePrefix ->
+                val backStack = navController.currentBackStack.value
+                val targetEntry = backStack.findLast { entry ->
+                    entry.destination.route?.startsWith(targetRoutePrefix) == true
+                }
+                val targetRoute = targetEntry?.destination?.route
+                if (targetRoute != null) {
+                    navController.popBackStack(targetRoute, inclusive = false)
+                }
             }
         )
     }
