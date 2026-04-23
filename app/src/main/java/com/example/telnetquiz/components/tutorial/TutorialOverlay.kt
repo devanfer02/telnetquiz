@@ -325,6 +325,7 @@ private fun TooltipCard(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
+                val hideNext = step.requiresInteraction && !step.inPopup && !isLast
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -345,24 +346,26 @@ private fun TooltipCard(
                         )
                     }
 
-                    TextButton(
-                        onClick = onNext,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(LitecartesColor.Surface)
-                            .padding(horizontal = 12.dp)
-                    ) {
-                        Text(
-                            text = when {
-                                isFirst -> "Mulai"
-                                isLast -> "Selesai"
-                                else -> "Sesudah >"
-                            },
-                            fontFamily = nunitosFontFamily,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
-                            color = LitecartesColor.Secondary
-                        )
+                    if (!hideNext) {
+                        TextButton(
+                            onClick = onNext,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(LitecartesColor.Surface)
+                                .padding(horizontal = 12.dp)
+                        ) {
+                            Text(
+                                text = when {
+                                    isFirst -> "Mulai"
+                                    isLast -> "Selesai"
+                                    else -> "Sesudah >"
+                                },
+                                fontFamily = nunitosFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp,
+                                color = LitecartesColor.Secondary
+                            )
+                        }
                     }
                 }
 
