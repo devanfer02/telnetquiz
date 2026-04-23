@@ -47,9 +47,9 @@ enum class TutorialStepId {
     NAV_PROFILE,
     PROFILE_STATS,
     PROFILE_ACHIEVEMENTS,
-    REPLAY_TUTORIAL_BTN,
     PROFILE_EDIT,
     EDIT_INFO,
+    PROFILE_SETTINGS,
     FINAL_CONGRATS
 }
 
@@ -333,14 +333,6 @@ private val mainSteps = listOf(
         route = Screen.ProfileScreen.route
     ),
     TutorialStep(
-        id = TutorialStepId.REPLAY_TUTORIAL_BTN,
-        title = "Ulangi Tutorial",
-        description = "Lupa sesuatu? Tekan tombol ini kapan saja untuk memulai tutorial dari awal.",
-        targetKey = "profile_replay_tutorial_btn",
-        tooltipPosition = TooltipPosition.ABOVE_TARGET,
-        route = Screen.ProfileScreen.route
-    ),
-    TutorialStep(
         id = TutorialStepId.PROFILE_EDIT,
         title = "Edit Profil",
         description = "Tekan ikon pensil di header buat edit foto profil, nama, dan bio-mu.",
@@ -352,10 +344,19 @@ private val mainSteps = listOf(
     TutorialStep(
         id = TutorialStepId.EDIT_INFO,
         title = "Halaman Edit Profil",
-        description = "Di sini kamu bisa ganti avatar, nama lengkap, dan bio. Tekan \"Simpan\" kalau sudah selesai.",
+        description = "Di sini kamu bisa ganti avatar, nama lengkap, dan bio. Tekan \"Simpan\" kalau sudah selesai, lalu kembali ke Profil.",
         targetKey = null,
         tooltipPosition = TooltipPosition.CENTER_SCREEN,
         route = Screen.EditProfileScreen.route
+    ),
+    TutorialStep(
+        id = TutorialStepId.PROFILE_SETTINGS,
+        title = "Pengaturan",
+        description = "Di sini kamu bisa atur suara, ulangi tutorial, lihat panduan umum, atau keluar akun.",
+        targetKey = "profile_settings_btn",
+        tooltipPosition = TooltipPosition.BELOW_TARGET,
+        route = Screen.ProfileScreen.route,
+        requiresInteraction = true
     ),
     TutorialStep(
         id = TutorialStepId.FINAL_CONGRATS,
@@ -364,7 +365,7 @@ private val mainSteps = listOf(
         targetKey = null,
         tooltipPosition = TooltipPosition.CENTER_SCREEN,
         mascotResId = R.drawable.chap1,
-        route = Screen.EditProfileScreen.route
+        route = Screen.ProfileScreen.route
     )
 )
 

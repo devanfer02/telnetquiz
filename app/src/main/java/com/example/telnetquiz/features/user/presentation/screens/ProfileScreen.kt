@@ -51,7 +51,7 @@ import com.example.telnetquiz.data.local.AudioSettings
 import com.example.telnetquiz.features.user.presentation.components.AchievementCard
 import com.example.telnetquiz.features.user.presentation.components.AchievementCardSkeleton
 import com.example.telnetquiz.features.user.presentation.components.ProfileHeaderSection
-import com.example.telnetquiz.features.user.presentation.components.SoundSettingsDialog
+import com.example.telnetquiz.features.user.presentation.components.SettingsDialog
 import com.example.telnetquiz.features.user.presentation.components.StatCard
 import com.example.telnetquiz.features.user.presentation.viewmodel.AchievementViewModel
 import com.example.telnetquiz.features.user.presentation.viewmodel.ProfileViewModel
@@ -83,13 +83,25 @@ fun ProfileScreen(
     }
 
     if (showSoundSettings) {
-        SoundSettingsDialog(
+        SettingsDialog(
             audioSettings = audioSettings,
             onDismiss = { showSoundSettings = false },
             onMutedChange = { viewModel.audioManager.toggleMute() },
             onGlobalVolumeChange = { viewModel.audioManager.setGlobalVolume(it) },
             onSfxVolumeChange = { viewModel.audioManager.setSfxVolume(it) },
-            onBgMusicVolumeChange = { viewModel.audioManager.setBgMusicVolume(it) }
+            onBgMusicVolumeChange = { viewModel.audioManager.setBgMusicVolume(it) },
+            onReplayTutorial = {
+                showSoundSettings = false
+                onReplayTutorial()
+            },
+            onOpenPanduanUmum = {
+                showSoundSettings = false
+                onOpenPanduanUmum()
+            },
+            onLogout = {
+                showSoundSettings = false
+                showLogoutDialog = true
+            }
         )
     }
 
@@ -276,75 +288,6 @@ fun ProfileScreen(
                     }
                 }
 
-                item {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(LitecartesColor.Secondary)
-                            .clickable { onReplayTutorial() }
-                            .padding(vertical = 14.dp)
-                            .then(
-                                if (tutorialController != null) Modifier.onGloballyPositioned {
-                                    tutorialController.registerTarget("profile_replay_tutorial_btn", it)
-                                } else Modifier
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Ulangi Tutorial",
-                            fontFamily = nunitosFontFamily,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp,
-                            color = Color.White
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(LitecartesColor.Primary)
-                            .clickable { onOpenPanduanUmum() }
-                            .padding(vertical = 14.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Lihat Panduan Umum",
-                            fontFamily = nunitosFontFamily,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp,
-                            color = Color.White
-                        )
-                    }
-                }
-                item {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.Red)
-                            .clickable { showLogoutDialog = true }
-                            .padding(vertical = 14.dp)
-                            .then(
-                                if (tutorialController != null) Modifier.onGloballyPositioned {
-                                    tutorialController.registerTarget("profile_logout_btn", it)
-                                } else Modifier
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Keluar",
-                            fontFamily = nunitosFontFamily,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp,
-                            color = Color.White
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
             }
         }
     }

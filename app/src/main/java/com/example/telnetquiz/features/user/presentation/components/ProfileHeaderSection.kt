@@ -23,11 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.telnetquiz.components.AvatarImage
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
 import com.example.telnetquiz.data.remote.dto.UserProfileDto
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -42,6 +44,7 @@ fun ProfileHeaderSection(
     onEditProfile: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val tutorialController = LocalTutorialController.current
     Column(
         modifier = modifier
             .shadow(
@@ -72,16 +75,24 @@ fun ProfileHeaderSection(
             horizontalArrangement = Arrangement.End
         ) {
             IconButton(
-                onClick = onSettingsClick,
+                onClick = {
+                    tutorialController?.notifyTargetClicked("profile_settings_btn")
+                    onSettingsClick()
+                },
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
                     .background(LitecartesColor.Secondary)
                     .padding(4.dp)
+                    .then(
+                        if (tutorialController != null) Modifier.onGloballyPositioned {
+                            tutorialController.registerTarget("profile_settings_btn", it)
+                        } else Modifier
+                    )
             ) {
                 Icon(
                     imageVector = Icons.Default.Settings,
-                    contentDescription = "Sound Settings",
+                    contentDescription = "Pengaturan",
                     tint = LitecartesColor.Surface,
                     modifier = Modifier.size(18.dp)
                 )
