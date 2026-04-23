@@ -183,8 +183,12 @@ fun StudyMaterialScreen(
                         imageLink = material.imageLink,
                         isTtsLoading = isTtsLoading,
                         isTtsPlaying = isTtsPlaying,
-                        onStopClick = { viewModel.stopTts() },
+                        onStopClick = {
+                            tutorialController?.notifyTargetClicked("study_audio_btn")
+                            viewModel.stopTts()
+                        },
                         onSpeakClick = {
+                            tutorialController?.notifyTargetClicked("study_audio_btn")
                             val plainContent = material.content.replace(Regex("<[^>]*>"), "")
                             viewModel.speak("${material.title}. $plainContent")
                             viewModel.speakContent("material", material.id, null, material.audioLink)

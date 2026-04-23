@@ -156,7 +156,8 @@ private val mainSteps = listOf(
         description = "Tekan tombol ini buat dengerin materinya. Tekan lagi buat berhenti.",
         targetKey = "study_audio_btn",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
-        route = Screen.StudyMaterialScreen.route
+        route = Screen.StudyMaterialScreen.route,
+        requiresInteraction = true
     ),
     TutorialStep(
         id = TutorialStepId.STUDY_NEXT,
