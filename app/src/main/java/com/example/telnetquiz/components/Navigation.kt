@@ -334,11 +334,19 @@ private fun MainNavHost(
             )
         }
         composable(
-            route = Screen.PanduanUmumScreen.route
+            route = "${Screen.PanduanUmumScreen.route}?fromProfile={fromProfile}",
+            arguments = listOf(
+                navArgument("fromProfile") {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
+            )
         ) {
+            val fromProfile = it.arguments?.getBoolean("fromProfile") ?: false
             PanduanUmumScreen(
                 navController = navController,
-                onboardingPreferenceManager = onboardingPreferenceManager
+                onboardingPreferenceManager = onboardingPreferenceManager,
+                fromProfile = fromProfile
             )
         }
         composable(
@@ -493,7 +501,9 @@ private fun MainNavHost(
                     }
                 },
                 onOpenPanduanUmum = {
-                    navController.navigate(Screen.PanduanUmumScreen.route)
+                    navController.navigate(
+                        "${Screen.PanduanUmumScreen.route}?fromProfile=true"
+                    )
                 }
             )
         }

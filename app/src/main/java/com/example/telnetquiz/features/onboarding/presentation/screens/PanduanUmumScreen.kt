@@ -81,16 +81,21 @@ private val guidePages = listOf(
 @Composable
 fun PanduanUmumScreen(
     navController: NavController,
-    onboardingPreferenceManager: OnboardingPreferenceManager
+    onboardingPreferenceManager: OnboardingPreferenceManager,
+    fromProfile: Boolean = false
 ) {
     val pagerState = rememberPagerState(pageCount = { guidePages.size })
     val scope = rememberCoroutineScope()
 
     val finish: () -> Unit = {
-        scope.launch {
-            onboardingPreferenceManager.markPanduanUmumSeen()
-            navController.navigate(Screen.QuickCheckScreen.route) {
-                popUpTo(Screen.PanduanUmumScreen.route) { inclusive = true }
+        if (fromProfile) {
+            navController.popBackStack()
+        } else {
+            scope.launch {
+                onboardingPreferenceManager.markPanduanUmumSeen()
+                navController.navigate(Screen.QuickCheckScreen.route) {
+                    popUpTo(Screen.PanduanUmumScreen.route) { inclusive = true }
+                }
             }
         }
     }
@@ -168,7 +173,11 @@ fun PanduanUmumScreen(
                     .padding(horizontal = 20.dp, vertical = 12.dp)
             ) {
                 Text(
-                    text = if (isLast) "Mulai" else "Selanjutnya",
+                    text = when {
+                        !isLast -> "Selanjutnya"
+                        fromProfile -> "Selesai"
+                        else -> "Mulai"
+                    },
                     fontFamily = nunitosFontFamily,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
