@@ -50,6 +50,7 @@ fun QuestionHeaderBox(
     description: String,
     imageLink: String?,
     onSpeakClick: () -> Unit,
+    subtitle: String? = null,
     isTtsLoading: Boolean = false,
     isTtsPlaying: Boolean = false,
     onStopClick: () -> Unit = onSpeakClick,
@@ -80,15 +81,30 @@ fun QuestionHeaderBox(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = title,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontFamily = nunitosFontFamily,
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.weight(1f)
-                )
+                ) {
+                    Text(
+                        text = title,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontFamily = nunitosFontFamily
+                    )
+                    if (!subtitle.isNullOrBlank()) {
+                        Spacer(modifier = Modifier.padding(top = 2.dp))
+                        Text(
+                            text = subtitle,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            fontFamily = nunitosFontFamily
+                        )
+                    }
+                }
                 if (isTtsLoading) {
                     TtsPulsingDots(modifier = Modifier.size(36.dp))
                 } else {
@@ -171,7 +187,8 @@ fun QuestionHeaderBox(
 @Composable
 fun PreviewQuestionHeaderBox() {
     QuestionHeaderBox(
-        title = "Geometri Dasar",
+        title = "Prolog",
+        subtitle = "Prinsip TCP/IP",
         description = "Berapakah luas lingkaran dengan jari-jari 7 cm?",
         imageLink = null,
         onSpeakClick = {}

@@ -125,7 +125,8 @@ fun PretestScreen(
                         ) {
                             item {
                                 QuestionHeaderBox(
-                                    title = currentQuestion.chapterTitle?.let { "Prolog - $it" } ?: "Prolog",
+                                    title = "Prolog",
+                                    subtitle = currentQuestion.chapterTitle,
                                     description = currentQuestion.description,
                                     imageLink = currentQuestion.imageLink,
                                     isTtsLoading = isTtsLoading,

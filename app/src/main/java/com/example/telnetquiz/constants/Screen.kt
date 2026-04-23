@@ -66,4 +66,8 @@ sealed class Screen(
     object RemedialScreen : Screen(
         "remedial_screen"
     )
+
+    object PanduanUmumScreen : Screen(
+        "panduan_umum_screen"
+    )
 }

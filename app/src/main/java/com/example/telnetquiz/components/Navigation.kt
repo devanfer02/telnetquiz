@@ -69,7 +69,9 @@ import com.example.telnetquiz.components.tutorial.TutorialController
 import com.example.telnetquiz.components.tutorial.TutorialOverlay
 import com.example.telnetquiz.components.tutorial.TutorialSegmentId
 import com.example.telnetquiz.components.tutorial.allowedRoutePrefixes
+import com.example.telnetquiz.data.local.OnboardingPreferenceManager
 import com.example.telnetquiz.data.local.TutorialPreferenceManager
+import com.example.telnetquiz.features.onboarding.presentation.screens.PanduanUmumScreen
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -82,6 +84,7 @@ interface AudioManagerEntryPoint {
     fun audioManager(): AudioManager
     fun flowResultStore(): FlowResultStore
     fun tutorialPreferenceManager(): TutorialPreferenceManager
+    fun onboardingPreferenceManager(): OnboardingPreferenceManager
 }
 
 @Composable
@@ -204,6 +207,7 @@ private fun MainNavHost(
     val audioManager = remember { entryPoint.audioManager() }
     val flowResultStore = remember { entryPoint.flowResultStore() }
     val tutorialPreferenceManager = remember { entryPoint.tutorialPreferenceManager() }
+    val onboardingPreferenceManager = remember { entryPoint.onboardingPreferenceManager() }
     val scope = rememberCoroutineScope()
     val tutorialController = remember {
         TutorialController(
@@ -317,6 +321,14 @@ private fun MainNavHost(
         ) {
             AuthRegisterScreen(
                 navController = navController
+            )
+        }
+        composable(
+            route = Screen.PanduanUmumScreen.route
+        ) {
+            PanduanUmumScreen(
+                navController = navController,
+                onboardingPreferenceManager = onboardingPreferenceManager
             )
         }
         composable(
@@ -461,7 +473,19 @@ private fun MainNavHost(
         composable(
             route = Screen.ProfileScreen.route
         ) {
-            ProfileScreen(navController = navController)
+            ProfileScreen(
+                navController = navController,
+                onReplayTutorial = {
+                    scope.launch {
+                        tutorialPreferenceManager.resetSegment(TutorialSegmentId.MAIN)
+                        tutorialController.replay(TutorialSegmentId.MAIN)
+                        navController.navigate(Screen.HomeScreen.route)
+                    }
+                },
+                onOpenPanduanUmum = {
+                    navController.navigate(Screen.PanduanUmumScreen.route)
+                }
+            )
         }
         composable(
             route = Screen.EditProfileScreen.route

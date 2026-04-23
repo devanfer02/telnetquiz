@@ -46,4 +46,12 @@ class TutorialPreferenceManager @Inject constructor(
             it.remove(stepKey(id, userKey))
         }
     }
+
+    suspend fun resetSegment(id: TutorialSegmentId) {
+        val userKey = currentUserKey() ?: return
+        dataStore.edit {
+            it.remove(completedKey(id, userKey))
+            it.remove(stepKey(id, userKey))
+        }
+    }
 }

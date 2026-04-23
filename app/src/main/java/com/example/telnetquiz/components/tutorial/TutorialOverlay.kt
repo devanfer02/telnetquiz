@@ -136,7 +136,9 @@ fun TutorialOverlay(
                 totalSteps = controller.currentSteps.size,
                 targetBounds = localBounds,
                 onNext = { controller.nextStep() },
-                onSkip = { controller.skip() }
+                onPrev = { controller.previousStep() },
+                onSkipStep = { controller.skipCurrentStep() },
+                onSkipTutorial = { controller.skip() }
             )
         }
     }
@@ -209,7 +211,9 @@ private fun TooltipCard(
     totalSteps: Int,
     targetBounds: Rect?,
     onNext: () -> Unit,
-    onSkip: () -> Unit
+    onPrev: () -> Unit,
+    onSkipStep: () -> Unit,
+    onSkipTutorial: () -> Unit
 ) {
     val density = LocalDensity.current
 
@@ -307,52 +311,84 @@ private fun TooltipCard(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
+                val isLast = stepIndex >= totalSteps - 1
+                val isFirst = stepIndex == 0
+
+                if (step.requiresInteraction && !isLast) {
+                    Text(
+                        text = if (step.inPopup) "Ikuti instruksi di atas" else "Tap area yang disorot",
+                        fontFamily = nunitosFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 12.sp,
+                        color = LitecartesColor.Surface.copy(alpha = 0.7f)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (stepIndex < totalSteps - 1) {
-                        TextButton(onClick = onSkip) {
-                            Text(
-                                text = "Lewati",
-                                fontFamily = nunitosFontFamily,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 13.sp,
-                                color = LitecartesColor.Surface.copy(alpha = 0.7f)
-                            )
-                        }
-                    } else {
-                        Spacer(modifier = Modifier.width(1.dp))
-                    }
-
-                    val isLast = stepIndex >= totalSteps - 1
-                    if (step.requiresInteraction && !isLast) {
+                    TextButton(
+                        onClick = onPrev,
+                        enabled = !isFirst
+                    ) {
                         Text(
-                            text = if (step.inPopup) "Ikuti instruksi di atas" else "Tap area yang disorot",
+                            text = "< Sebelum",
                             fontFamily = nunitosFontFamily,
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 12.sp,
-                            color = LitecartesColor.Surface.copy(alpha = 0.7f)
+                            fontSize = 13.sp,
+                            color = LitecartesColor.Surface.copy(
+                                alpha = if (isFirst) 0.3f else 0.85f
+                            )
                         )
-                    } else {
-                        TextButton(
-                            onClick = onNext,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(LitecartesColor.Surface)
-                                .padding(horizontal = 12.dp)
-                        ) {
+                    }
+
+                    TextButton(
+                        onClick = onNext,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(LitecartesColor.Surface)
+                            .padding(horizontal = 12.dp)
+                    ) {
+                        Text(
+                            text = when {
+                                isFirst -> "Mulai"
+                                isLast -> "Selesai"
+                                else -> "Sesudah >"
+                            },
+                            fontFamily = nunitosFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            color = LitecartesColor.Secondary
+                        )
+                    }
+                }
+
+                if (!isLast) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TextButton(onClick = onSkipStep) {
                             Text(
-                                text = when {
-                                    stepIndex == 0 -> "Mulai"
-                                    isLast -> "Selesai"
-                                    else -> "Lanjut"
-                                },
+                                text = "Lewati langkah",
                                 fontFamily = nunitosFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp,
-                                color = LitecartesColor.Secondary
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 11.sp,
+                                color = LitecartesColor.Surface.copy(alpha = 0.55f)
+                            )
+                        }
+                        TextButton(onClick = onSkipTutorial) {
+                            Text(
+                                text = "Lewati tutorial",
+                                fontFamily = nunitosFontFamily,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 11.sp,
+                                color = LitecartesColor.Surface.copy(alpha = 0.55f)
                             )
                         }
                     }

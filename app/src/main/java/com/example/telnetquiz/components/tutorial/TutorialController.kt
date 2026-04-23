@@ -127,6 +127,29 @@ class TutorialController(
         onStepChange(seg, nextIndex)
     }
 
+    fun previousStep() {
+        val seg = currentSegment ?: return
+        if (currentStepIndex <= 0) return
+        val prevIndex = currentStepIndex - 1
+        val prev = currentSteps[prevIndex]
+
+        isWaitingForBounds = prev.expectsBounds() &&
+            !_targetBounds.containsKey(prev.targetKey) &&
+            stepMatchesRoute(prev, currentRoute)
+
+        currentStepIndex = prevIndex
+        onStepChange(seg, prevIndex)
+    }
+
+    fun skipCurrentStep() {
+        nextStep()
+    }
+
+    fun replay(id: TutorialSegmentId) {
+        clearInternal()
+        startSegment(id, 0)
+    }
+
     fun notifyTargetClicked(key: String) {
         val step = currentStep ?: return
         if (!step.requiresInteraction) return

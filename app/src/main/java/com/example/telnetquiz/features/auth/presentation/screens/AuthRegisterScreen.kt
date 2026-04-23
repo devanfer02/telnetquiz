@@ -108,11 +108,10 @@ fun AuthRegisterScreen(
     val emailErrorMessage = emailError(email)
     val passwordErrorMessage = passwordError(password)
 
-    // Navigate to QuickCheckScreen on successful registration
     LaunchedEffect(state.successMessage) {
         state.successMessage?.let {
             viewModel.clearSuccessMessage()
-            navController.navigate(Screen.QuickCheckScreen.route) {
+            navController.navigate(Screen.PanduanUmumScreen.route) {
                 popUpTo(Screen.AuthRegisterScreen.route) { inclusive = true }
             }
         }

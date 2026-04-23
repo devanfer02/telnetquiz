@@ -47,6 +47,7 @@ enum class TutorialStepId {
     NAV_PROFILE,
     PROFILE_STATS,
     PROFILE_ACHIEVEMENTS,
+    REPLAY_TUTORIAL_BTN,
     PROFILE_EDIT,
     EDIT_INFO,
     FINAL_CONGRATS
@@ -89,7 +90,7 @@ private val mainSteps = listOf(
     TutorialStep(
         id = TutorialStepId.PROFILE_TOP_BAR,
         title = "Profil & Statistik",
-        description = "Ini header profilmu: foto, nama, sekolah, skor total, streak harian, dan gelar bermainmu.",
+        description = "Ini informasi profilmu: foto, nama, sekolah, skor total, streak harian, dan gelar bermainmu.",
         targetKey = "profile_top_bar",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
         route = Screen.HomeScreen.route
@@ -97,7 +98,7 @@ private val mainSteps = listOf(
     TutorialStep(
         id = TutorialStepId.CHAPTER_CARD,
         title = "Daftar Bab",
-        description = "Ini daftar bab materi. Ayo ketuk bab pertama untuk masuk ke level-levelnya!",
+        description = "Ini daftar bab materi. Ayo ketuk tombol \"Yuk Main\" untuk masuk ke level-levelnya!",
         targetKey = "chapter_card_first",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
         mascotResId = R.drawable.mascot_wrong,
@@ -328,6 +329,14 @@ private val mainSteps = listOf(
         description = "Daftar pencapaianmu. Selesaikan kuis terus buat mengumpulkan yang lain!",
         targetKey = "profile_achievements",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
+        route = Screen.ProfileScreen.route
+    ),
+    TutorialStep(
+        id = TutorialStepId.REPLAY_TUTORIAL_BTN,
+        title = "Ulangi Tutorial",
+        description = "Lupa sesuatu? Tekan tombol ini kapan saja untuk memulai tutorial dari awal.",
+        targetKey = "profile_replay_tutorial_btn",
+        tooltipPosition = TooltipPosition.ABOVE_TARGET,
         route = Screen.ProfileScreen.route
     ),
     TutorialStep(

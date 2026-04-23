@@ -62,6 +62,8 @@ import com.example.telnetquiz.ui.theme.nunitosFontFamily
 @Composable
 fun ProfileScreen(
     navController: NavController,
+    onReplayTutorial: () -> Unit = {},
+    onOpenPanduanUmum: () -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel(),
     achievementViewModel: AchievementViewModel = hiltViewModel()
 ) {
@@ -275,7 +277,50 @@ fun ProfileScreen(
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(LitecartesColor.Secondary)
+                            .clickable { onReplayTutorial() }
+                            .padding(vertical = 14.dp)
+                            .then(
+                                if (tutorialController != null) Modifier.onGloballyPositioned {
+                                    tutorialController.registerTarget("profile_replay_tutorial_btn", it)
+                                } else Modifier
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Ulangi Tutorial",
+                            fontFamily = nunitosFontFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(LitecartesColor.Primary)
+                            .clickable { onOpenPanduanUmum() }
+                            .padding(vertical = 14.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Lihat Panduan Umum",
+                            fontFamily = nunitosFontFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                    }
+                }
+                item {
+                    Spacer(modifier = Modifier.height(20.dp))
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
