@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.telnetquiz.components.tutorial.LocalTutorialController
+import com.example.telnetquiz.components.tutorial.TutorialStepId
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 import com.example.telnetquiz.ui.theme.scoreColor
@@ -87,13 +88,18 @@ fun LevelOptionMenu(
                     )
                 }
                 Spacer(modifier = Modifier.height(6.dp))
+                val forceLearnFirst =
+                    tutorialController?.currentStep?.id == TutorialStepId.DIALOG_LEARN_FIRST
                 Button(
                     onClick = onPlayDirectly,
+                    enabled = !forceLearnFirst,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = LitecartesColor.Secondary,
-                        contentColor = Color.White
+                        contentColor = Color.White,
+                        disabledContainerColor = LitecartesColor.Secondary.copy(alpha = 0.35f),
+                        disabledContentColor = Color.White.copy(alpha = 0.6f)
                     )
                 ) {
                     Text(
