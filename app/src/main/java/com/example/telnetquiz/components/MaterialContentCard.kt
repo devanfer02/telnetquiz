@@ -75,19 +75,23 @@ fun MaterialContentCard(
                 }
             }
         }
+        val hasImage = !imageLink.isNullOrEmpty()
         Text(
             text = title,
             fontFamily = nunitosFontFamily,
             color = Color.White,
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            modifier = if (hasImage) Modifier else Modifier.padding(bottom = 8.dp)
         )
-        if (!imageLink.isNullOrEmpty()) {
+        if (hasImage) {
             AsyncImage(
                 model = imageLink,
                 contentDescription = title,
-                modifier = Modifier.size(200.dp),
+                modifier = Modifier
+                    .size(200.dp)
+                    .padding(bottom = 8.dp),
                 contentScale = ContentScale.Fit
             )
         }
