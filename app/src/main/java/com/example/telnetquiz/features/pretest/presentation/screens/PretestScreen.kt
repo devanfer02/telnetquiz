@@ -197,10 +197,12 @@ fun PretestScreen(
                                         if (hasSelectedAnswer) {
                                             if (isLastQuestion) {
                                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                viewModel.audioManager.playSfx(SfxType.BTN_CLICK)
                                                 viewModel.audioManager.playSfx(SfxType.PRETEST_SUBMIT)
                                                 viewModel.submitPretest()
                                             } else {
                                                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                                viewModel.audioManager.playSfx(SfxType.BTN_CLICK)
                                                 viewModel.nextQuestion()
                                             }
                                         }

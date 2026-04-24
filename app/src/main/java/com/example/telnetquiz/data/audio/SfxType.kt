@@ -10,5 +10,6 @@ enum class SfxType(val resId: Int) {
     RESULT_FAIL(R.raw.result_fail),
     START_LEVEL(R.raw.start_level),
     PRETEST_SUBMIT(R.raw.pretest_submit),
-    PRETEST_RESULT(R.raw.pretest_result)
+    PRETEST_RESULT(R.raw.pretest_result),
+    BTN_CLICK(R.raw.btn_click)
 }
