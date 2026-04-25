@@ -64,6 +64,13 @@ class StudyMaterialViewModel @Inject constructor(
     val currentMaterialIndex: Int get() = quizFlowManager.currentMaterialIndex
     val totalMaterials: Int get() = quizFlowManager.totalMaterials
     val canGoPrevious: Boolean get() = quizFlowManager.isLearnFirstActive() && quizFlowManager.currentMaterialIndex > 1
+    val isRemedialReview: Boolean
+        get() = quizFlowManager.remedialQuizId > 0 && !quizFlowManager.isLearnFirstActive()
+
+    fun exitRemedial() {
+        quizFlowManager.clearRemedial()
+        quizFlowManager.resetWrongQueue()
+    }
 
     fun onPrevious() {
         stopTts()

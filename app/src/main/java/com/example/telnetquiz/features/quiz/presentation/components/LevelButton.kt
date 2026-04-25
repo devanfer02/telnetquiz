@@ -59,7 +59,7 @@ fun LevelButton(
             )
         } else {
             Text(
-                text = "$level",
+                text = "L$level",
                 color = if (done) {
                     LitecartesColor.PathColor
                 } else {
@@ -67,7 +67,7 @@ fun LevelButton(
                 },
                 fontFamily = nunitosFontFamily,
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
+                fontSize = 18.5.sp
             )
         }
     }

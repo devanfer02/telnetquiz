@@ -69,7 +69,15 @@ fun StudyMaterialScreen(
                 TextButton(onClick = {
                     showExitConfirm = false
                     viewModel.stopTts()
-                    navController.popBackStack()
+                    if (viewModel.isRemedialReview) {
+                        viewModel.exitRemedial()
+                        navController.popBackStack(
+                            "${Screen.LevelScreen.route}/$chapterId",
+                            inclusive = false
+                        )
+                    } else {
+                        navController.popBackStack()
+                    }
                 }) { Text("Keluar") }
             },
             dismissButton = {

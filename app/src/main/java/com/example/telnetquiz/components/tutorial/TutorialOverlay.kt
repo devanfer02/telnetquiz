@@ -84,7 +84,7 @@ fun TutorialOverlay(
         label = "tutorial_pulse_padding"
     )
 
-    val allowPassthrough = step.requiresInteraction && localBounds != null && !controller.isWaitingForBounds
+    val allowPassthrough = localBounds != null && !controller.isWaitingForBounds
     Box(
         modifier = Modifier
             .fillMaxSize()
