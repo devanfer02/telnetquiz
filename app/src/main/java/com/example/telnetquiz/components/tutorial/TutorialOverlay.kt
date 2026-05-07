@@ -325,7 +325,7 @@ private fun TooltipCard(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                val hideNext = step.requiresInteraction && !step.inPopup && !isLast
+                val hideNext = step.requiresInteraction && !isLast
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,

@@ -37,6 +37,7 @@ import com.example.telnetquiz.components.MascotLoadingScreen
 import com.example.telnetquiz.components.MaterialContentCard
 import com.example.telnetquiz.components.ProgressBarFromApi
 import com.example.telnetquiz.components.tutorial.LocalTutorialController
+import com.example.telnetquiz.components.tutorial.TutorialStepId
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.quiz.presentation.viewmodel.StudyMaterialNavEvent
 import com.example.telnetquiz.features.quiz.presentation.viewmodel.StudyMaterialViewModel
@@ -90,6 +91,13 @@ fun StudyMaterialScreen(
 
     DisposableEffect(Unit) {
         onDispose { viewModel.stopTts() }
+    }
+
+    val tutorialStepId = tutorialController?.currentStep?.id
+    LaunchedEffect(tutorialStepId, scrollState.maxValue) {
+        if (tutorialStepId == TutorialStepId.STUDY_NEXT && scrollState.maxValue > 0) {
+            scrollState.animateScrollTo(scrollState.maxValue)
+        }
     }
 
     LaunchedEffect(materialId) {
