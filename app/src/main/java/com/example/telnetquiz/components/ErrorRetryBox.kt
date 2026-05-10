@@ -22,12 +22,32 @@ import com.example.telnetquiz.R
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
+private fun isConnectionError(message: String): Boolean {
+    val lower = message.lowercase()
+    return listOf("terhubung", "koneksi", "jaringan", "internet", "server")
+        .any { it in lower }
+}
+
 @Composable
 fun ErrorRetryBox(
     message: String,
     onRetry: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    hint: String? = null,
 ) {
+    val connectionError = isConnectionError(message)
+    val resolvedTitle = title ?: if (connectionError) {
+        "Tidak dapat terhubung ke server"
+    } else {
+        "Yah, terjadi kesalahan"
+    }
+    val resolvedHint = hint ?: if (connectionError) {
+        "Pastikan kamu terhubung ke internet, lalu tekan tombol di bawah untuk mencoba lagi."
+    } else {
+        null
+    }
+
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -44,6 +64,15 @@ fun ErrorRetryBox(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
+                text = resolvedTitle,
+                color = LitecartesColor.Secondary,
+                textAlign = TextAlign.Center,
+                fontFamily = nunitosFontFamily,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 18.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
                 text = message,
                 color = LitecartesColor.Secondary,
                 textAlign = TextAlign.Center,
@@ -51,8 +80,19 @@ fun ErrorRetryBox(
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp
             )
+            if (resolvedHint != null) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = resolvedHint,
+                    color = LitecartesColor.Secondary.copy(alpha = 0.7f),
+                    textAlign = TextAlign.Center,
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 12.sp
+                )
+            }
             if (onRetry != null) {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 Button(
                     text = "Coba Lagi",
                     color = LitecartesColor.Surface,

@@ -8,7 +8,12 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +32,7 @@ fun Input(
     singleLine: Boolean = true,
     isError: Boolean = false,
     errorMessage: String? = null,
+    onTouched: (() -> Unit)? = null,
     textStyle: TextStyle = TextStyle(
         fontFamily = nunitosFontFamily,
         color = LitecartesColor.DarkBrown,
@@ -40,8 +46,16 @@ fun Input(
         unfocusedContainerColor = LitecartesColor.DarkerSurface.copy(alpha = 0.3f)
     )
 ) {
+    var hasFocused by remember { mutableStateOf(false) }
+    val focusModifier = if (onTouched != null) {
+        Modifier.onFocusChanged { state ->
+            if (state.isFocused) hasFocused = true
+            else if (hasFocused) onTouched()
+        }
+    } else Modifier
+
     OutlinedTextField(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().then(focusModifier),
         value = value,
         onValueChange = onValueChange,
         textStyle = textStyle,

@@ -147,10 +147,6 @@ class TutorialController(
         }
     }
 
-    fun skipCurrentStep() {
-        nextStep()
-    }
-
     fun replay(id: TutorialSegmentId) {
         clearInternal()
         startSegment(id, 0)

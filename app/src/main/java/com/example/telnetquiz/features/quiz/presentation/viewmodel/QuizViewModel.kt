@@ -33,9 +33,17 @@ data class QuizState(
     val isSubmitting: Boolean = false,
     val result: QuizResultDto? = null,
     val error: String? = null,
+    val errorAction: QuizErrorAction? = null,
     val isVerifying: Boolean = false,
     val verifiedQuestions: Map<Int, VerifyAnswerResponse> = emptyMap()
 )
+
+sealed class QuizErrorAction {
+    data object LoadQuiz : QuizErrorAction()
+    data object VerifyAnswer : QuizErrorAction()
+    data object SubmitQuiz : QuizErrorAction()
+    data object SubmitRetry : QuizErrorAction()
+}
 
 sealed class QuizNavEvent {
     data class GoToRemedial(val wrongCount: Int, val totalCount: Int) : QuizNavEvent()
@@ -96,7 +104,11 @@ class QuizViewModel @Inject constructor(
 
     fun loadQuiz(quizId: Int) {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true, error = null)
+            _state.value = _state.value.copy(
+                isLoading = true,
+                error = null,
+                errorAction = null
+            )
             when (val result = quizRepository.getQuizById(quizId)) {
                 is Result.Success -> {
                     _state.value = _state.value.copy(
@@ -111,7 +123,8 @@ class QuizViewModel @Inject constructor(
                 is Result.Error -> {
                     _state.value = _state.value.copy(
                         isLoading = false,
-                        error = result.message
+                        error = result.message,
+                        errorAction = QuizErrorAction.LoadQuiz
                     )
                 }
                 is Result.Loading -> {
@@ -135,7 +148,11 @@ class QuizViewModel @Inject constructor(
         val answeredOptionId = _state.value.answers[question.id] ?: return
 
         viewModelScope.launch {
-            _state.value = _state.value.copy(isVerifying = true)
+            _state.value = _state.value.copy(
+                isVerifying = true,
+                error = null,
+                errorAction = null
+            )
             when (val result = quizRepository.verifyAnswer(quiz.id, question.id, answeredOptionId)) {
                 is Result.Success -> {
                     _state.value = _state.value.copy(
@@ -146,7 +163,8 @@ class QuizViewModel @Inject constructor(
                 is Result.Error -> {
                     _state.value = _state.value.copy(
                         isVerifying = false,
-                        error = result.message
+                        error = result.message,
+                        errorAction = QuizErrorAction.VerifyAnswer
                     )
                 }
                 is Result.Loading -> {
@@ -176,7 +194,11 @@ class QuizViewModel @Inject constructor(
         val quiz = _state.value.quiz ?: return
 
         viewModelScope.launch {
-            _state.value = _state.value.copy(isSubmitting = true, error = null)
+            _state.value = _state.value.copy(
+                isSubmitting = true,
+                error = null,
+                errorAction = null
+            )
 
             val answers = _state.value.answers.map { (questionId, optionId) ->
                 QuizAnswerDto(questionId = questionId, answeredOptionId = optionId)
@@ -236,7 +258,8 @@ class QuizViewModel @Inject constructor(
                 is Result.Error -> {
                     _state.value = _state.value.copy(
                         isSubmitting = false,
-                        error = result.message
+                        error = result.message,
+                        errorAction = QuizErrorAction.SubmitQuiz
                     )
                 }
                 is Result.Loading -> {
@@ -270,7 +293,11 @@ class QuizViewModel @Inject constructor(
         val originalQuiz = quizFlowManager.remedialQuizData ?: return
 
         viewModelScope.launch {
-            _state.value = _state.value.copy(isSubmitting = true, error = null)
+            _state.value = _state.value.copy(
+                isSubmitting = true,
+                error = null,
+                errorAction = null
+            )
 
             val allAnswers = (quizFlowManager.correctAnswers + _state.value.answers).map { (questionId, optionId) ->
                 QuizAnswerDto(questionId = questionId, answeredOptionId = optionId)
@@ -288,13 +315,24 @@ class QuizViewModel @Inject constructor(
                 is Result.Error -> {
                     _state.value = _state.value.copy(
                         isSubmitting = false,
-                        error = result.message
+                        error = result.message,
+                        errorAction = QuizErrorAction.SubmitRetry
                     )
                 }
                 is Result.Loading -> {
                     _state.value = _state.value.copy(isSubmitting = true)
                 }
             }
+        }
+    }
+
+    fun retryLastAction(quizId: Int) {
+        when (_state.value.errorAction) {
+            QuizErrorAction.LoadQuiz -> loadQuiz(quizId)
+            QuizErrorAction.VerifyAnswer -> verifyCurrentAnswer()
+            QuizErrorAction.SubmitQuiz -> submitQuiz()
+            QuizErrorAction.SubmitRetry -> submitRetry()
+            null -> {}
         }
     }
 
@@ -332,6 +370,6 @@ class QuizViewModel @Inject constructor(
     }
 
     fun clearError() {
-        _state.value = _state.value.copy(error = null)
+        _state.value = _state.value.copy(error = null, errorAction = null)
     }
 }

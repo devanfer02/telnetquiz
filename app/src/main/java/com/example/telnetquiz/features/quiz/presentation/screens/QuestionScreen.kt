@@ -42,6 +42,7 @@ import com.example.telnetquiz.components.OptionFeedback
 import com.example.telnetquiz.components.ProgressBarFromApi
 import com.example.telnetquiz.components.QuestionHeaderBox
 import com.example.telnetquiz.features.quiz.presentation.components.VerifyButton
+import com.example.telnetquiz.features.quiz.presentation.viewmodel.QuizErrorAction
 import com.example.telnetquiz.features.quiz.presentation.viewmodel.QuizNavEvent
 import com.example.telnetquiz.features.quiz.presentation.viewmodel.QuizViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
@@ -157,7 +158,7 @@ fun QuestionScreen(
                 state.isLoading -> {
                     MascotLoadingScreen(modifier = Modifier.fillMaxSize())
                 }
-                state.error != null -> {
+                state.error != null && state.errorAction == QuizErrorAction.LoadQuiz -> {
                     ErrorRetryBox(
                         message = state.error ?: "Terjadi kesalahan",
                         onRetry = {
@@ -280,6 +281,35 @@ fun QuestionScreen(
                                     } else {
                                         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                         viewModel.nextQuestion()
+                                    }
+                                }
+                            )
+                        }
+
+                        if (state.error != null && state.errorAction != null &&
+                            state.errorAction != QuizErrorAction.LoadQuiz) {
+                            val dialogTitle = when (state.errorAction) {
+                                QuizErrorAction.SubmitQuiz,
+                                QuizErrorAction.SubmitRetry -> "Gagal Mengirim Jawaban"
+                                QuizErrorAction.VerifyAnswer -> "Gagal Memeriksa Jawaban"
+                                else -> "Terjadi Kesalahan"
+                            }
+                            AlertDialog(
+                                onDismissRequest = { viewModel.clearError() },
+                                title = { androidx.compose.material3.Text(dialogTitle) },
+                                text = {
+                                    androidx.compose.material3.Text(
+                                        state.error ?: "Terjadi kesalahan. Coba lagi."
+                                    )
+                                },
+                                confirmButton = {
+                                    TextButton(onClick = { viewModel.retryLastAction(quizId) }) {
+                                        androidx.compose.material3.Text("Coba Lagi")
+                                    }
+                                },
+                                dismissButton = {
+                                    TextButton(onClick = { viewModel.clearError() }) {
+                                        androidx.compose.material3.Text("Tutup")
                                     }
                                 }
                             )

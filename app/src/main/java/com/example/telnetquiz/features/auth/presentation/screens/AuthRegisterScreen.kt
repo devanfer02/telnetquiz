@@ -62,18 +62,23 @@ import android.view.WindowManager
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
-private fun emailError(value: String): String? = when {
+private fun emailError(value: String, touched: Boolean): String? = when {
+    touched && value.isBlank() -> "Email tidak boleh kosong"
     value.isBlank() -> null
     !Patterns.EMAIL_ADDRESS.matcher(value).matches() -> "Format email tidak valid"
     else -> null
 }
 
-private fun passwordError(value: String): String? = when {
+private fun passwordError(value: String, touched: Boolean): String? = when {
+    touched && value.isBlank() -> "Kata sandi tidak boleh kosong"
     value.isBlank() -> null
     value.length < 8 -> "Kata sandi minimal 8 karakter"
     !value.any { it.isDigit() } -> "Kata sandi harus mengandung angka"
     else -> null
 }
+
+private fun blankError(label: String, value: String, touched: Boolean): String? =
+    if (touched && value.isBlank()) "$label tidak boleh kosong" else null
 
 @Composable
 fun AuthRegisterScreen(
@@ -105,8 +110,15 @@ fun AuthRegisterScreen(
     var gender by remember { mutableStateOf<Boolean?>(null) }
     var grade by remember { mutableStateOf("") }
 
-    val emailErrorMessage = emailError(email)
-    val passwordErrorMessage = passwordError(password)
+    var fullnameTouched by remember { mutableStateOf(false) }
+    var emailTouched by remember { mutableStateOf(false) }
+    var passwordTouched by remember { mutableStateOf(false) }
+    var gradeTouched by remember { mutableStateOf(false) }
+
+    val fullnameErrorMessage = blankError("Nama lengkap", fullname, fullnameTouched)
+    val emailErrorMessage = emailError(email, emailTouched)
+    val passwordErrorMessage = passwordError(password, passwordTouched)
+    val gradeErrorMessage = blankError("Kelas", grade, gradeTouched)
 
     LaunchedEffect(state.successMessage) {
         state.successMessage?.let {
@@ -151,34 +163,54 @@ fun AuthRegisterScreen(
                 Input(
                     value = fullname,
                     label = "Nama Lengkap",
-                    onValueChange = { fullname = it },
-                    leadingIcon = painterResource(id = R.drawable.ic_person)
+                    onValueChange = {
+                        fullname = it
+                        if (it.isNotEmpty()) fullnameTouched = true
+                    },
+                    leadingIcon = painterResource(id = R.drawable.ic_person),
+                    isError = fullnameErrorMessage != null,
+                    errorMessage = fullnameErrorMessage,
+                    onTouched = { fullnameTouched = true }
                 )
                 Spacer(modifier = Modifier.padding(4.dp))
                 Input(
                     value = email,
                     label = "Email",
-                    onValueChange = { email = it },
+                    onValueChange = {
+                        email = it
+                        if (it.isNotEmpty()) emailTouched = true
+                    },
                     leadingIcon = painterResource(id = R.drawable.ic_email),
                     isError = emailErrorMessage != null,
-                    errorMessage = emailErrorMessage
+                    errorMessage = emailErrorMessage,
+                    onTouched = { emailTouched = true }
                 )
                 Spacer(modifier = Modifier.padding(4.dp))
                 PasswordInput(
                     value = password,
                     label = "Kata Sandi",
-                    onValueChange = { password = it },
+                    onValueChange = {
+                        password = it
+                        if (it.isNotEmpty()) passwordTouched = true
+                    },
                     leadingIcon = painterResource(id = R.drawable.ic_lock),
                     isError = passwordErrorMessage != null,
-                    errorMessage = passwordErrorMessage
+                    errorMessage = passwordErrorMessage,
+                    onTouched = { passwordTouched = true }
                 )
                 Spacer(modifier = Modifier.padding(4.dp))
 
                 Input(
                     value = grade,
                     label = "Kelas",
-                    onValueChange = { grade = it },
-                    leadingIcon = painterResource(id = R.drawable.ic_person)
+                    onValueChange = {
+                        grade = it
+                        if (it.isNotEmpty()) gradeTouched = true
+                    },
+                    leadingIcon = painterResource(id = R.drawable.ic_person),
+                    isError = gradeErrorMessage != null,
+                    errorMessage = gradeErrorMessage,
+                    onTouched = { gradeTouched = true }
                 )
                 Spacer(modifier = Modifier.padding(4.dp))
 
@@ -296,12 +328,23 @@ fun AuthRegisterScreen(
                     enabled = fullname.isNotBlank() && email.isNotBlank()
                         && password.isNotBlank() && selectedSchoolId > 0
                         && gender != null && grade.isNotBlank()
-                        && emailErrorMessage == null && passwordErrorMessage == null,
+                        && fullnameErrorMessage == null
+                        && emailErrorMessage == null && passwordErrorMessage == null
+                        && gradeErrorMessage == null,
                     onClick = {
-                        viewModel.register(
-                            fullname, email, password,
-                            selectedSchoolId, gender!!, grade
-                        )
+                        fullnameTouched = true
+                        emailTouched = true
+                        passwordTouched = true
+                        gradeTouched = true
+                        if (fullname.isNotBlank() && email.isNotBlank() &&
+                            password.isNotBlank() && selectedSchoolId > 0 &&
+                            gender != null && grade.isNotBlank() &&
+                            emailErrorMessage == null && passwordErrorMessage == null) {
+                            viewModel.register(
+                                fullname, email, password,
+                                selectedSchoolId, gender!!, grade
+                            )
+                        }
                     },
                     modifier = Modifier.fillMaxWidth()
                 )

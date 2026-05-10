@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -32,12 +33,21 @@ fun PasswordInput(
     onValueChange: (String) -> Unit,
     leadingIcon: Painter? = null,
     isError: Boolean = false,
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    onTouched: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
+    var hasFocused by remember { mutableStateOf(false) }
+    val focusModifier = if (onTouched != null) {
+        Modifier.onFocusChanged { state ->
+            if (state.isFocused) hasFocused = true
+            else if (hasFocused) onTouched()
+        }
+    } else Modifier
 
     OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().then(focusModifier),
         value = value,
         onValueChange = onValueChange,
         textStyle = TextStyle(

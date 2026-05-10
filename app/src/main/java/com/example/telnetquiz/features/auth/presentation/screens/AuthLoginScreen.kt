@@ -57,9 +57,15 @@ import android.view.WindowManager
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
-private fun emailError(value: String): String? = when {
+private fun emailError(value: String, touched: Boolean): String? = when {
+    touched && value.isBlank() -> "Email tidak boleh kosong"
     value.isBlank() -> null
     !Patterns.EMAIL_ADDRESS.matcher(value).matches() -> "Format email tidak valid"
+    else -> null
+}
+
+private fun passwordError(value: String, touched: Boolean): String? = when {
+    touched && value.isBlank() -> "Kata sandi tidak boleh kosong"
     else -> null
 }
 
@@ -89,6 +95,9 @@ fun AuthLoginScreen(
         mutableStateOf("")
     }
 
+    var emailTouched by remember { mutableStateOf(false) }
+    var passwordTouched by remember { mutableStateOf(false) }
+
     var showForgotPasswordDialog by remember {
         mutableStateOf(false)
     }
@@ -101,7 +110,8 @@ fun AuthLoginScreen(
         mutableStateOf("")
     }
 
-    val emailErrorMessage = emailError(email)
+    val emailErrorMessage = emailError(email, emailTouched)
+    val passwordErrorMessage = passwordError(password, passwordTouched)
 
     LaunchedEffect(state.isLoggedIn) {
         if (state.isLoggedIn) {
@@ -165,10 +175,12 @@ fun AuthLoginScreen(
                     label = "Email",
                     onValueChange = {
                         email = it
+                        if (it.isNotEmpty()) emailTouched = true
                     },
                     leadingIcon = painterResource(id = R.drawable.ic_email),
                     isError = emailErrorMessage != null,
-                    errorMessage = emailErrorMessage
+                    errorMessage = emailErrorMessage,
+                    onTouched = { emailTouched = true }
                 )
                 Spacer(
                     modifier = Modifier.padding(4.dp)
@@ -178,8 +190,12 @@ fun AuthLoginScreen(
                     label = "Kata Sandi",
                     onValueChange = {
                         password = it
+                        if (it.isNotEmpty()) passwordTouched = true
                     },
-                    leadingIcon = painterResource(id = R.drawable.ic_lock)
+                    leadingIcon = painterResource(id = R.drawable.ic_lock),
+                    isError = passwordErrorMessage != null,
+                    errorMessage = passwordErrorMessage,
+                    onTouched = { passwordTouched = true }
                 )
                 Row(
                     modifier = Modifier
@@ -227,8 +243,15 @@ fun AuthLoginScreen(
                     text = "masuk".uppercase(),
                     isLoading = state.isLoading,
                     enabled = email.isNotBlank() && password.isNotBlank()
-                        && emailErrorMessage == null,
-                    onClick = { viewModel.login(email, password) },
+                        && emailErrorMessage == null && passwordErrorMessage == null,
+                    onClick = {
+                        emailTouched = true
+                        passwordTouched = true
+                        if (email.isNotBlank() && password.isNotBlank() &&
+                            emailErrorMessage == null) {
+                            viewModel.login(email, password)
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
             }

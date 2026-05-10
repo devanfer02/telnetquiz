@@ -137,7 +137,6 @@ fun TutorialOverlay(
                 targetBounds = localBounds,
                 onNext = { controller.nextStep() },
                 onPrev = { controller.previousStep() },
-                onSkipStep = { controller.skipCurrentStep() },
                 onSkipTutorial = { controller.skip() }
             )
         }
@@ -212,7 +211,6 @@ private fun TooltipCard(
     targetBounds: Rect?,
     onNext: () -> Unit,
     onPrev: () -> Unit,
-    onSkipStep: () -> Unit,
     onSkipTutorial: () -> Unit
 ) {
     val density = LocalDensity.current
@@ -373,18 +371,9 @@ private fun TooltipCard(
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        TextButton(onClick = onSkipStep) {
-                            Text(
-                                text = "Lewati langkah",
-                                fontFamily = nunitosFontFamily,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 11.sp,
-                                color = LitecartesColor.Surface.copy(alpha = 0.55f)
-                            )
-                        }
                         TextButton(onClick = onSkipTutorial) {
                             Text(
                                 text = "Lewati tutorial",
