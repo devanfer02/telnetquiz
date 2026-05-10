@@ -70,7 +70,7 @@ fun AboutScreen(
                     fontSize = 24.sp
                 )
                 Text(
-                    text = "Aplikasi TelNetQuiz adalah aplikasi pembelajaran bagi Anak-anak yang sedang menduduki bangku sekolah dasar. Aplikasi TelNetQuiz dibuat untuk membantu user nya untuk memahami elemen Geometri dan Pengukuran dari Mata Pelajaran Matematika pada tingkat Sekolah Dasar, tepatnya Fase A hingga Fase C. Pengembang aplikasi ini mengacu pada Capaian Pembelajaran mata pelajaran Matematika di Fase A hingga Fase C, yang kami pinjam dari referensi penerapan kurikulum pada Platform Merdeka Mengajar (PMM).",
+                    text = "Aplikasi TelNetQuiz adalah aplikasi media pembelajaran berbasis gim yang dirancang untuk membantu siswa SMK memahami materi Media dan Jaringan Telekomunikasi. Setiap chapter disusun secara berjenjang melalui level kuis interaktif, sehingga siswa dapat menguasai konsep dasar hingga lanjutan secara bertahap dan menyenangkan.",
                     color = Color.White,
                     fontFamily = nunitosFontFamily,
                     textAlign = TextAlign.Justify

@@ -88,7 +88,7 @@ fun QuickCheckScreen(
                             .padding(10.dp)
                     )
                     Text(
-                        text = "Sebelum kita mulai petualangan yang seru, jawab 4 pertanyaan singkat berikut untuk menentukan level pengetahuan kamu tentang bangun datar dan bangun ruang",
+                        text = "Sebelum kita mulai petualangan yang seru, jawab 4 pertanyaan singkat berikut untuk menentukan level pengetahuan kamu tentang Media dan Jaringan Telekomunikasi",
                         textAlign = TextAlign.Center,
                         color = Color.White,
                         fontFamily = nunitosFontFamily,

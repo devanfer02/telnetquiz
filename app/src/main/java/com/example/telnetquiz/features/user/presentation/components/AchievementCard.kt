@@ -114,7 +114,7 @@ fun AchievementCard(
 private fun PreviewAchievementCardUnlocked() {
     LitecartesNativeTheme {
         AchievementCard(
-            title = "Penjelajah Geometri",
+            title = "Penjelajah Jaringan",
             description = "Selesaikan 5 level pertama",
             unlocked = true
         )
@@ -126,7 +126,7 @@ private fun PreviewAchievementCardUnlocked() {
 private fun PreviewAchievementCardLocked() {
     LitecartesNativeTheme {
         AchievementCard(
-            title = "Master Bangun Datar",
+            title = "Master Topologi",
             description = "Selesaikan semua level di Bab 1",
             unlocked = false
         )
