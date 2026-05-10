@@ -11,7 +11,6 @@ import com.example.telnetquiz.data.local.QuizFlowManager
 import com.example.telnetquiz.data.repository.ChapterRepository
 import com.example.telnetquiz.data.repository.QuizRepository
 import com.example.telnetquiz.data.repository.Result
-import com.example.telnetquiz.constants.SCORE_MIN_COMPLETE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -121,12 +120,13 @@ class ChapterViewModel @Inject constructor(
         val quizzes = chapter.quizzes
         val completedQuizIds = chapter.completedQuizIds
         val quizScores = chapter.quizScores
+        val minScore = chapter.minimumScore
 
         return quizzes.mapIndexed { index, quiz ->
             val isCompleted = quiz.id in completedQuizIds
             val prevQuizScore = if (index > 0) quizScores[quizzes[index - 1].id.toString()] ?: 0 else 0
             val isUnlocked = index == 0 ||
-                (quizzes[index - 1].id in completedQuizIds && prevQuizScore > SCORE_MIN_COMPLETE)
+                (quizzes[index - 1].id in completedQuizIds && prevQuizScore >= minScore)
 
             val lockedMessage = if (!isUnlocked && index > 0) {
                 val prevQuiz = quizzes[index - 1]
@@ -134,7 +134,7 @@ class ChapterViewModel @Inject constructor(
                 if (prevQuiz.id !in completedQuizIds) {
                     "Selesaikan Level ${prevQuiz.level} terlebih dahulu"
                 } else {
-                    "Kamu perlu mencapai nilai $SCORE_MIN_COMPLETE di Level ${prevQuiz.level} untuk melanjutkan. Nilai terbaikmu saat ini adalah $prevScore. Yuk, coba lagi! "
+                    "Kamu perlu mencapai nilai $minScore di Level ${prevQuiz.level} untuk melanjutkan. Nilai terbaikmu saat ini adalah $prevScore. Yuk, coba lagi! "
                 }
             } else null
 

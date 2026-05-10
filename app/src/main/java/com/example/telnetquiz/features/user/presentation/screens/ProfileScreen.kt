@@ -258,7 +258,8 @@ fun ProfileScreen(
                     achievementState.error != null -> {
                         item {
                             ErrorRetryBox(
-                                message = achievementState.error ?: "Gagal memuat pencapaian"
+                                message = achievementState.error ?: "Gagal memuat pencapaian",
+                                onRetry = { achievementViewModel.loadAchievements() }
                             )
                         }
                     }

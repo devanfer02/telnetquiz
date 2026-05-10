@@ -294,6 +294,7 @@ fun LeaderboardScreen(
                         activityState.error != null -> {
                             ErrorRetryBox(
                                 message = activityState.error ?: "Terjadi kesalahan",
+                                onRetry = { viewModel.loadRecentActivity() },
                                 modifier = Modifier.weight(1f)
                             )
                         }
@@ -347,6 +348,7 @@ fun LeaderboardScreen(
                         state.error != null -> {
                             ErrorRetryBox(
                                 message = state.error ?: "Terjadi kesalahan",
+                                onRetry = { viewModel.loadLeaderboard() },
                                 modifier = Modifier.weight(1f)
                             )
                         }

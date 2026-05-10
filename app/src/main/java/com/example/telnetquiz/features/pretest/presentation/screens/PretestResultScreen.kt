@@ -174,7 +174,7 @@ fun PretestResultScreen(
                                 modifier = Modifier.weight(1f)
                             )
                             Text(
-                                text = "${weakness.wrongCount}/${weakness.totalQuestions} salah",
+                                text = "${weakness.totalQuestions - weakness.wrongCount}/${weakness.totalQuestions} benar",
                                 color = Color.White.copy(alpha = 0.7f),
                                 fontSize = 12.sp,
                                 fontFamily = nunitosFontFamily
