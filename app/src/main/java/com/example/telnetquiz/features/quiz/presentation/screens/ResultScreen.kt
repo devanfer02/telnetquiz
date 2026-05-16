@@ -9,7 +9,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +25,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -49,6 +47,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,11 +72,16 @@ import kotlin.random.Random
 
 private data class ResultCopy(
     val badgeLabel: String,
-    val title: String
+    val title: String,
+    val subtitle: String? = null
 )
 
 private fun copyFor(passed: Boolean, scorePercentage: Double): ResultCopy = when {
-    !passed -> ResultCopy("BELUM LULUS", "COBA LAGI")
+    !passed -> ResultCopy(
+        badgeLabel = "BELUM LULUS",
+        title = "COBA LAGI",
+        subtitle = "Setiap tantangan bikin kamu makin kuat, Penjelajah. Pelajari lagi materinya dan tunjukkan kemampuanmu di percobaan berikutnya!"
+    )
     scorePercentage >= 100.0 -> ResultCopy("SKOR SEMPURNA", "SEMPURNA")
     scorePercentage >= 80.0 -> ResultCopy("BAGUS BANGET", "BAGUS!")
     else -> ResultCopy("LULUS", "BERHASIL!")
@@ -108,6 +112,12 @@ fun ResultScreen(
         tutorialController?.notifyTargetClicked("result_continue_btn")
         navController.navigate("${Screen.LevelScreen.route}/${chapterId}") {
             popUpTo("${Screen.LevelScreen.route}/${chapterId}") { inclusive = true }
+        }
+    }
+
+    val onBackToHome: () -> Unit = {
+        navController.navigate(Screen.HomeScreen.route) {
+            popUpTo(Screen.HomeScreen.route) { inclusive = true }
         }
     }
 
@@ -159,6 +169,19 @@ fun ResultScreen(
                     )
                 }
 
+                copy.subtitle?.let { motivation ->
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = motivation,
+                        color = LitecartesColor.Secondary.copy(alpha = 0.75f),
+                        fontSize = 13.sp,
+                        fontFamily = nunitosFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 12.dp)
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Box(
@@ -198,35 +221,24 @@ fun ResultScreen(
                     onClick = onExit
                 )
 
+                if (passed) {
+                    Button(
+                        text = "Kembali ke beranda",
+                        color = LitecartesColor.Primary,
+                        backgroundColor = LitecartesColor.Surface,
+                        borderColor = LitecartesColor.Primary,
+                        textModifier = Modifier.padding(vertical = 4.dp),
+                        fontSize = 13.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        onClick = onBackToHome
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(12.dp))
             }
-
-            CloseButton(
-                onClick = onExit,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 12.dp, end = 16.dp)
-            )
         }
-    }
-}
-
-@Composable
-private fun CloseButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .size(36.dp)
-            .clip(CircleShape)
-            .background(LitecartesColor.Primary)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Close,
-            contentDescription = "Tutup",
-            tint = Color.White,
-            modifier = Modifier.size(18.dp)
-        )
     }
 }
 

@@ -109,7 +109,8 @@ fun PretestResultScreen(
                 .fillMaxSize()
                 .background(LitecartesColor.Primary)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 14.dp),
+                .padding(horizontal = 20.dp)
+                .padding(top = 32.dp, bottom = 14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
