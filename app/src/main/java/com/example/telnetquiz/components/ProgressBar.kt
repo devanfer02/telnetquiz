@@ -17,8 +17,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -82,8 +84,23 @@ fun ProgressBarFromApi(
                     modifier = Modifier
                         .fillMaxHeight()
                         .fillMaxWidth(fraction = progress)
-                        .background(barColor, RoundedCornerShape(40))
-                )
+                        .clip(RoundedCornerShape(40))
+                        .background(barColor)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.5f)
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        Color.White.copy(alpha = 0.45f),
+                                        Color.White.copy(alpha = 0.05f)
+                                    )
+                                )
+                            )
+                    )
+                }
             }
             if (showLabel) {
                 Spacer(modifier = Modifier.padding(10.dp))

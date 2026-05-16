@@ -3,16 +3,21 @@ package com.example.telnetquiz.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -101,7 +106,12 @@ fun OptionButton(
                     fontFamily = nunitosFontFamily
                 )
             }
-            Spacer(modifier = Modifier.width(12.dp))
+            Box(
+                modifier = Modifier
+                    .width(10.dp)
+                    .height(2.dp)
+                    .background(borderColor)
+            )
         }
         OutlinedButton(
             modifier = Modifier.weight(1f),
@@ -123,16 +133,39 @@ fun OptionButton(
                 defaultElevation = if (isActive || feedback != OptionFeedback.NONE) 4.dp else 2.dp
             )
         ) {
-            Text(
-                text = text,
-                color = textColor,
-                fontFamily = nunitosFontFamily,
-                fontWeight = if (isActive || feedback != OptionFeedback.NONE) FontWeight.Bold else FontWeight.SemiBold,
-                textAlign = TextAlign.Start,
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-            )
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = text,
+                    color = textColor,
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = if (isActive || feedback != OptionFeedback.NONE) FontWeight.Bold else FontWeight.SemiBold,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+                if (isActive && feedback == OptionFeedback.NONE) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clip(CircleShape)
+                            .background(Color.White),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            tint = LitecartesColor.Secondary,
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
+                }
+            }
         }
     }
 }
