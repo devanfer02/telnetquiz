@@ -19,6 +19,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -217,16 +221,22 @@ fun ProfileScreen(
                             StatCard(
                                 label = "Total Skor",
                                 value = "${stats.totalScore}",
+                                icon = Icons.Filled.EmojiEvents,
+                                iconTint = LitecartesColor.ScoreYellow,
                                 modifier = Modifier.weight(1f)
                             )
                             StatCard(
                                 label = "Level Usai",
                                 value = "${stats.levelsCompleted}",
+                                icon = Icons.Filled.Flag,
+                                iconTint = LitecartesColor.Primary,
                                 modifier = Modifier.weight(1f)
                             )
                             StatCard(
                                 label = "Bab Usai",
                                 value = "${stats.chaptersCompleted}",
+                                icon = Icons.Filled.AutoStories,
+                                iconTint = LitecartesColor.GreenCactus,
                                 modifier = Modifier.weight(1f)
                             )
                         }
