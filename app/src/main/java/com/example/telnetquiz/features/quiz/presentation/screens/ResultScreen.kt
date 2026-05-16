@@ -125,7 +125,7 @@ fun ResultScreen(
         modifier = Modifier.systemBarsPadding(),
         containerColor = LitecartesColor.Surface
     ) { innerPadding ->
-        Box(
+        Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
@@ -133,13 +133,13 @@ fun ResultScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
+                    .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                    .padding(horizontal = 20.dp)
+                    .padding(top = 24.dp, bottom = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(12.dp))
-
                 BadgePill(label = copy.badgeLabel, passed = passed)
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -200,9 +200,15 @@ fun ResultScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     DiamondRewardChip(amount = diamondReward)
                 }
+            }
 
-                Spacer(modifier = Modifier.height(20.dp))
-
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(top = 12.dp, bottom = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Button(
                     text = if (passed) "Lanjut ke level berikutnya" else "Kembali ke peta",
                     color = LitecartesColor.Surface,
@@ -235,8 +241,6 @@ fun ResultScreen(
                         onClick = onBackToHome
                     )
                 }
-
-                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }

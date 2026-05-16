@@ -108,88 +108,98 @@ fun PretestResultScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
                 .background(LitecartesColor.Primary)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp)
-                .padding(top = 32.dp, bottom = 14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "HASIL PRETEST",
-                color = LitecartesColor.Surface,
-                fontSize = 13.sp,
-                fontFamily = nunitosFontFamily,
-                fontWeight = FontWeight.ExtraBold,
-                letterSpacing = 2.sp
-            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp)
+                    .padding(top = 32.dp, bottom = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "HASIL PRETEST",
+                    color = LitecartesColor.Surface,
+                    fontSize = 13.sp,
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = 2.sp
+                )
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            MascotCircle()
+                MascotCircle()
 
-            Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
-            Text(
-                text = "${scorePercentage.toInt()}%",
-                color = Color.White,
-                fontSize = 44.sp,
-                fontFamily = nunitosFontFamily,
-                fontWeight = FontWeight.ExtraBold
-            )
+                Text(
+                    text = "${scorePercentage.toInt()}%",
+                    color = Color.White,
+                    fontSize = 44.sp,
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.ExtraBold
+                )
 
-            Text(
-                text = feedback.title,
-                color = Color.White,
-                fontSize = 18.sp,
-                fontFamily = nunitosFontFamily,
-                fontWeight = FontWeight.ExtraBold
-            )
+                Text(
+                    text = feedback.title,
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.ExtraBold
+                )
 
-            Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
-            Text(
-                text = feedback.description,
-                color = Color.White.copy(alpha = 0.85f),
-                fontSize = 12.sp,
-                fontFamily = nunitosFontFamily,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
+                Text(
+                    text = feedback.description,
+                    color = Color.White.copy(alpha = 0.85f),
+                    fontSize = 12.sp,
+                    fontFamily = nunitosFontFamily,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
 
-            Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
-            StatRow(correctCount = correctCount, wrongCount = wrongCount)
+                StatRow(correctCount = correctCount, wrongCount = wrongCount)
 
-            if (weaknesses.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(16.dp))
-                WeaknessSection(
-                    weaknesses = weaknesses,
-                    onChapterClick = { chapterId ->
+                if (weaknesses.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    WeaknessSection(
+                        weaknesses = weaknesses,
+                        onChapterClick = { chapterId ->
+                            flowResultStore?.clearPretest()
+                            navController.navigate("${Screen.LevelScreen.route}/$chapterId")
+                        }
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(top = 12.dp, bottom = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Button(
+                    text = "Lanjut",
+                    color = LitecartesColor.Secondary,
+                    backgroundColor = LitecartesColor.Surface,
+                    borderColor = LitecartesColor.Secondary,
+                    textModifier = Modifier.padding(vertical = 6.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
+                    onClick = {
                         flowResultStore?.clearPretest()
-                        navController.navigate("${Screen.LevelScreen.route}/$chapterId")
+                        navController.navigate(Screen.HomeScreen.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
                 )
             }
-
-            Spacer(modifier = Modifier.height(18.dp))
-
-            Button(
-                text = "Lanjut",
-                color = LitecartesColor.Secondary,
-                backgroundColor = LitecartesColor.Surface,
-                borderColor = LitecartesColor.Secondary,
-                textModifier = Modifier.padding(vertical = 6.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                onClick = {
-                    flowResultStore?.clearPretest()
-                    navController.navigate(Screen.HomeScreen.route) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
