@@ -1,6 +1,7 @@
 package com.example.telnetquiz.di
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -25,6 +27,7 @@ import javax.inject.Singleton
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "telnetquiz_prefs")
 private const val TIMEOUT: Long = 7;
+private const val HTTP_TAG = "TelNetQuizHttp"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -38,6 +41,18 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
+        return HttpLoggingInterceptor { message -> Log.d(HTTP_TAG, message) }.apply {
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
+        }
+    }
+
+    @Provides
+    @Singleton
     @Named("apiKey")
     fun provideApiKeyInterceptor(): Interceptor {
         return Interceptor { chain ->
@@ -46,7 +61,15 @@ object NetworkModule {
                 .header("x-api-key", BuildConfig.API_KEY)
                 .header("Content-Type", "application/json")
                 .build()
-            chain.proceed(request)
+            Log.d(HTTP_TAG, "--> ${request.method} ${request.url}")
+            try {
+                val response = chain.proceed(request)
+                Log.d(HTTP_TAG, "<-- ${response.code} ${request.method} ${request.url}")
+                response
+            } catch (e: Exception) {
+                Log.e(HTTP_TAG, "xx ${request.method} ${request.url} failed: ${e.javaClass.simpleName}: ${e.message}")
+                throw e
+            }
         }
     }
 
@@ -71,10 +94,12 @@ object NetworkModule {
     @Singleton
     @Named("refreshClient")
     fun provideRefreshOkHttpClient(
-        @Named("apiKey") apiKeyInterceptor: Interceptor
+        @Named("apiKey") apiKeyInterceptor: Interceptor,
+        loggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(apiKeyInterceptor)
+            .addInterceptor(loggingInterceptor)
             .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(TIMEOUT, TimeUnit.SECONDS)
@@ -98,11 +123,13 @@ object NetworkModule {
     fun provideOkHttpClient(
         @Named("apiKey") apiKeyInterceptor: Interceptor,
         @Named("auth") authInterceptor: Interceptor,
-        tokenAuthenticator: TokenAuthenticator
+        tokenAuthenticator: TokenAuthenticator,
+        loggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(apiKeyInterceptor)
             .addInterceptor(authInterceptor)
+            .addInterceptor(loggingInterceptor)
             .authenticator(tokenAuthenticator)
             .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(TIMEOUT, TimeUnit.SECONDS)
@@ -113,6 +140,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+        Log.i(HTTP_TAG, "Retrofit baseUrl=${BuildConfig.BASE_URL} apiKey=${if (BuildConfig.API_KEY.isBlank()) "MISSING" else "set(${BuildConfig.API_KEY.length} chars)"} timeoutSec=$TIMEOUT")
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
