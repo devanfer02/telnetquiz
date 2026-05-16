@@ -378,9 +378,13 @@ private fun MainNavHost(
             val profileViewModel: ProfileViewModel = hiltViewModel()
             val profileState by profileViewModel.state.collectAsState()
 
+            LaunchedEffect(Unit) {
+                profileViewModel.loadProfile()
+            }
+
             LaunchedEffect(profileState.isLoading, profileState.profile?.hasTakenPretest) {
                 if (!profileState.isLoading && profileState.profile?.hasTakenPretest == false) {
-                    navController.navigate(Screen.QuickCheckScreen.route) {
+                    navController.navigate(Screen.PanduanUmumScreen.route) {
                         popUpTo(Screen.HomeScreen.route) { inclusive = true }
                     }
                 }
