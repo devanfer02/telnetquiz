@@ -227,7 +227,8 @@ data class ActivityEntryDto(
     @SerializedName("chapter_title") val chapterTitle: String,
     @SerializedName("quiz_level") val quizLevel: Int,
     @SerializedName("retry_count") val retryCount: Int,
-    @SerializedName("latest_score") val latestScore: Int
+    @SerializedName("latest_score") val latestScore: Int,
+    @SerializedName("latest_time") val latestTime: String? = null
 )
 
 data class VerifyAnswerRequest(
