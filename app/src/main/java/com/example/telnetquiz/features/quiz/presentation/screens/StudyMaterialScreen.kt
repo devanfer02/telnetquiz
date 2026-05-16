@@ -197,6 +197,7 @@ fun StudyMaterialScreen(
                         title = material.title,
                         content = material.content,
                         imageLink = material.imageLink,
+                        level = level,
                         isTtsLoading = isTtsLoading,
                         isTtsPlaying = isTtsPlaying,
                         onStopClick = {
