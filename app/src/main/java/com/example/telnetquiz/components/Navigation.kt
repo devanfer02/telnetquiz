@@ -528,11 +528,13 @@ private fun MainNavHost(
             )
         ) {
             val chapterId = it.arguments?.getInt("chapterId") ?: 0
+            val level = it.arguments?.getInt("level") ?: 0
             val quizResult = flowResultStore.quizResult
 
             ResultScreen(
                 navController = navController,
                 chapterId = chapterId,
+                level = level,
                 quizResult = quizResult,
                 audioManager = audioManager
             )

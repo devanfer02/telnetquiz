@@ -1,40 +1,65 @@
 package com.example.telnetquiz.features.quiz.presentation.screens
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import com.example.telnetquiz.components.tutorial.LocalTutorialController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.Button
-import com.example.telnetquiz.components.ScoreCountRow
+import com.example.telnetquiz.components.StatRow
+import com.example.telnetquiz.components.tutorial.LocalTutorialController
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.audio.AudioManager
 import com.example.telnetquiz.data.audio.SfxType
@@ -42,11 +67,27 @@ import com.example.telnetquiz.data.remote.dto.QuizResultDto
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.random.Random
+
+private data class ResultCopy(
+    val badgeLabel: String,
+    val title: String
+)
+
+private fun copyFor(passed: Boolean, scorePercentage: Double): ResultCopy = when {
+    !passed -> ResultCopy("BELUM LULUS", "COBA LAGI")
+    scorePercentage >= 100.0 -> ResultCopy("SKOR SEMPURNA", "SEMPURNA")
+    scorePercentage >= 80.0 -> ResultCopy("BAGUS BANGET", "BAGUS!")
+    else -> ResultCopy("LULUS", "BERHASIL!")
+}
 
 @Composable
 fun ResultScreen(
     navController: NavController,
     chapterId: Int,
+    level: Int = 0,
     quizResult: QuizResultDto? = null,
     audioManager: AudioManager? = null
 ) {
@@ -55,12 +96,7 @@ fun ResultScreen(
     val scorePercentage = quizResult?.scorePercentage ?: 0.0
     val passed = quizResult?.passed ?: true
     val tutorialController = LocalTutorialController.current
-
-    val titleText = if (passed) "Sempurna" else "Hampir Berhasil!"
-    val motivationalText = if (passed)
-        "Luar biasa, Penjelajah! Kamu berhasil menaklukkan level ini! Terus jelajahi dan raih lebih banyak berlian!"
-    else
-        "Jangan menyerah, Penjelajah! Setiap tantangan membuatmu lebih kuat. Pelajari materinya dan coba lagi!"
+    val copy = copyFor(passed, scorePercentage)
     val diamondReward = if (passed) scorePercentage.toInt() else 0
 
     LaunchedEffect(Unit) {
@@ -68,127 +104,307 @@ fun ResultScreen(
         else audioManager?.playSfx(SfxType.RESULT_FAIL)
     }
 
-    Scaffold { innerPadding ->
+    val onExit: () -> Unit = {
+        tutorialController?.notifyTargetClicked("result_continue_btn")
+        navController.navigate("${Screen.LevelScreen.route}/${chapterId}") {
+            popUpTo("${Screen.LevelScreen.route}/${chapterId}") { inclusive = true }
+        }
+    }
+
+    Scaffold(
+        modifier = Modifier.systemBarsPadding(),
+        containerColor = LitecartesColor.Surface
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .background(LitecartesColor.Surface),
-            contentAlignment = Alignment.Center
+                .background(LitecartesColor.Surface)
         ) {
             Column(
                 modifier = Modifier
-                    .shadow(
-                        elevation = 10.dp,
-                        shape = RoundedCornerShape(12.dp),
-                        clip = false
-                    )
-                    .clip(
-                        RoundedCornerShape(12.dp)
-                    )
-                    .background(LitecartesColor.Primary)
-                    .padding(
-                        vertical = 40.dp,
-                        horizontal = 20.dp
-                    ),
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp, vertical = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(12.dp))
+
+                BadgePill(label = copy.badgeLabel, passed = passed)
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                MascotWithParticles(passed = passed)
+
+                Spacer(modifier = Modifier.height(10.dp))
+
                 Text(
-                    text = titleText.uppercase(),
-                    color = LitecartesColor.Surface,
-                    fontSize = 28.sp,
+                    text = copy.title,
+                    color = LitecartesColor.Secondary,
+                    fontSize = 36.sp,
                     fontFamily = nunitosFontFamily,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = 1.sp
                 )
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(R.drawable.result)
-                        .build(),
-                    contentDescription = "result",
-                    modifier = Modifier
-                        .size(300.dp)
-                )
+
+                if (level > 0) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = "LEVEL $level",
+                        color = LitecartesColor.Secondary.copy(alpha = 0.7f),
+                        fontSize = 13.sp,
+                        fontFamily = nunitosFontFamily,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 1.5.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 Box(
                     modifier = if (tutorialController != null) Modifier.onGloballyPositioned {
                         tutorialController.registerTarget("result_score_section", it)
                     } else Modifier
                 ) {
-                    ScoreCountRow(
+                    StatRow(
                         correctCount = correctCount,
-                        wrongCount = wrongCount
+                        wrongCount = wrongCount,
+                        cardBackground = LitecartesColor.DarkerSurface
                     )
                 }
-                Spacer(modifier = Modifier.padding(6.dp))
-                Text(
-                    text = motivationalText,
-                    color = LitecartesColor.Surface,
-                    fontSize = 14.sp,
-                    fontFamily = nunitosFontFamily,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 12.dp)
-                )
-                Spacer(
-                    modifier = Modifier
-                        .padding(6.dp)
-                )
+
                 if (diamondReward > 0) {
-                    Row(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(LitecartesColor.Surface)
-                            .padding(
-                                vertical = 10.dp,
-                                horizontal = 14.dp
-                            ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Yeay kamu mendapatkan ",
-                            color = LitecartesColor.Secondary,
-                            fontSize = 16.sp,
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
-                            text = " +$diamondReward ",
-                            color = LitecartesColor.Primary,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
-                        )
-                        Image(
-                            painter = painterResource(id = R.drawable.diamond),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(20.dp)
-                        )
-                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    DiamondRewardChip(amount = diamondReward)
                 }
-                Spacer(modifier = Modifier.padding(5.dp))
+
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Button(
-                    text = "Lanjutkan",
-                    borderColor = LitecartesColor.Secondary,
+                    text = if (passed) "Lanjut ke level berikutnya" else "Kembali ke peta",
                     color = LitecartesColor.Surface,
-                    backgroundColor = LitecartesColor.Secondary,
-                    textModifier = Modifier.padding(8.dp),
+                    backgroundColor = LitecartesColor.Primary,
+                    borderColor = LitecartesColor.Primary,
+                    textModifier = Modifier.padding(vertical = 6.dp),
+                    fontSize = 14.sp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            horizontal = 32.dp
-                        )
+                        .padding(horizontal = 8.dp)
                         .then(
                             if (tutorialController != null) Modifier.onGloballyPositioned {
                                 tutorialController.registerTarget("result_continue_btn", it)
                             } else Modifier
                         ),
-                    onClick = {
-                        tutorialController?.notifyTargetClicked("result_continue_btn")
-                        navController.navigate(
-                            "${Screen.LevelScreen.route}/${chapterId}"
-                        )
-                    }
+                    onClick = onExit
                 )
+
+                Spacer(modifier = Modifier.height(12.dp))
             }
+
+            CloseButton(
+                onClick = onExit,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 12.dp, end = 16.dp)
+            )
         }
+    }
+}
+
+@Composable
+private fun CloseButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .size(36.dp)
+            .clip(CircleShape)
+            .background(LitecartesColor.Primary)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Close,
+            contentDescription = "Tutup",
+            tint = Color.White,
+            modifier = Modifier.size(18.dp)
+        )
+    }
+}
+
+@Composable
+private fun BadgePill(label: String, passed: Boolean) {
+    val bg = if (passed) LitecartesColor.Primary else LitecartesColor.ScoreRed
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(bg)
+            .padding(horizontal = 14.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Filled.EmojiEvents,
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier.size(14.dp)
+        )
+        Text(
+            text = label,
+            color = Color.White,
+            fontSize = 11.sp,
+            fontFamily = nunitosFontFamily,
+            fontWeight = FontWeight.ExtraBold,
+            letterSpacing = 1.5.sp
+        )
+    }
+}
+
+@Composable
+private fun MascotWithParticles(passed: Boolean) {
+    Box(
+        modifier = Modifier.size(240.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        if (passed) {
+            ParticleField(modifier = Modifier.fillMaxSize())
+        }
+        MascotCircle()
+    }
+}
+
+@Composable
+private fun MascotCircle() {
+    Box(
+        modifier = Modifier.size(180.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawCircle(
+                color = LitecartesColor.Primary.copy(alpha = 0.18f),
+                radius = size.minDimension / 2f,
+                center = Offset(size.width / 2f, size.height / 2f)
+            )
+            val strokeWidth = 3.dp.toPx()
+            val inset = strokeWidth / 2f
+            drawArc(
+                color = LitecartesColor.Primary,
+                startAngle = 0f,
+                sweepAngle = 360f,
+                useCenter = false,
+                topLeft = Offset(inset, inset),
+                size = Size(size.width - strokeWidth, size.height - strokeWidth),
+                style = Stroke(
+                    width = strokeWidth,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 10f), 0f)
+                )
+            )
+        }
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(R.drawable.result)
+                .build(),
+            contentDescription = "Maskot merayakan",
+            modifier = Modifier
+                .size(140.dp)
+                .clip(CircleShape)
+        )
+    }
+}
+
+private data class Particle(
+    val angleDeg: Float,
+    val radiusFraction: Float,
+    val sizeDp: Int,
+    val color: Color,
+    val isSquare: Boolean,
+    val phase: Float
+)
+
+@Composable
+private fun ParticleField(modifier: Modifier = Modifier) {
+    val particles = remember {
+        val palette = listOf(
+            LitecartesColor.ScoreOrange,
+            LitecartesColor.ScoreGreen,
+            LitecartesColor.ScoreYellow,
+            LitecartesColor.Primary,
+            LitecartesColor.DarkBrown
+        )
+        val rng = Random(0)
+        List(18) {
+            Particle(
+                angleDeg = rng.nextFloat() * 360f,
+                radiusFraction = 0.62f + rng.nextFloat() * 0.32f,
+                sizeDp = listOf(4, 5, 6, 8).random(rng),
+                color = palette.random(rng),
+                isSquare = rng.nextBoolean(),
+                phase = rng.nextFloat()
+            )
+        }
+    }
+
+    val transition = rememberInfiniteTransition(label = "particles")
+    val progress by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 4500, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "particleProgress"
+    )
+
+    Box(modifier = modifier) {
+        particles.forEach { p ->
+            val localPhase = (progress + p.phase) % 1f
+            val bob = sin(localPhase * 2f * Math.PI).toFloat()
+            val radiusFactor = p.radiusFraction * (1f + 0.05f * bob)
+            val angleRad = Math.toRadians(p.angleDeg.toDouble()).toFloat()
+            val xFrac = 0.5f + 0.5f * radiusFactor * cos(angleRad)
+            val yFrac = 0.5f + 0.5f * radiusFactor * sin(angleRad)
+            val xBias = (xFrac - 0.5f) * 2f
+            val yBias = (yFrac - 0.5f) * 2f
+
+            Box(
+                modifier = Modifier
+                    .align(BiasAlignment(xBias, yBias))
+                    .rotate(localPhase * 360f)
+                    .size(p.sizeDp.dp)
+                    .clip(if (p.isSquare) RoundedCornerShape(2.dp) else CircleShape)
+                    .background(p.color)
+            )
+        }
+    }
+}
+
+@Composable
+private fun DiamondRewardChip(amount: Int) {
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(14.dp))
+            .background(LitecartesColor.DarkerSurface)
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text(
+            text = "Hadiah:",
+            color = LitecartesColor.Secondary,
+            fontSize = 13.sp,
+            fontFamily = nunitosFontFamily,
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = "+$amount",
+            color = LitecartesColor.Primary,
+            fontSize = 16.sp,
+            fontFamily = nunitosFontFamily,
+            fontWeight = FontWeight.ExtraBold
+        )
+        Image(
+            painter = painterResource(id = R.drawable.diamond),
+            contentDescription = null,
+            modifier = Modifier.size(18.dp)
+        )
     }
 }
 
@@ -198,7 +414,8 @@ fun PreviewResultScreen() {
     LitecartesNativeTheme {
         ResultScreen(
             navController = rememberNavController(),
-            chapterId = 0
+            chapterId = 0,
+            level = 3
         )
     }
 }
