@@ -51,8 +51,8 @@ import com.example.telnetquiz.components.tutorial.LocalTutorialController
 import com.example.telnetquiz.data.remote.dto.LeaderboardEntryDto
 import com.example.telnetquiz.features.user.domain.model.User
 import com.example.telnetquiz.features.user.presentation.components.ActivityDateHeaderSkeleton
-import com.example.telnetquiz.features.user.presentation.components.ActivityEntryCard
 import com.example.telnetquiz.features.user.presentation.components.ActivityEntryCardSkeleton
+import com.example.telnetquiz.features.user.presentation.components.JourneyPathEntry
 import com.example.telnetquiz.features.user.presentation.components.CurrentUserRankBox
 import com.example.telnetquiz.features.user.presentation.components.PositionCard
 import com.example.telnetquiz.features.user.presentation.components.SegmentedToggle
@@ -330,11 +330,12 @@ fun LeaderboardScreen(
                                         }
                                         day.entries.forEachIndexed { idx, entry ->
                                             item {
-                                                ActivityEntryCard(
-                                                    index = idx + 1,
-                                                    entry = entry
+                                                JourneyPathEntry(
+                                                    index = idx,
+                                                    entry = entry,
+                                                    isFirstInDay = idx == 0,
+                                                    isLastInDay = idx == day.entries.lastIndex
                                                 )
-                                                Spacer(modifier = Modifier.height(8.dp))
                                             }
                                         }
                                     }
