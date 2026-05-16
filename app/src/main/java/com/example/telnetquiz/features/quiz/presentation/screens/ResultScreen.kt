@@ -20,10 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material3.Icon
@@ -135,14 +133,13 @@ fun ResultScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp)
                     .padding(top = 24.dp, bottom = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 BadgePill(label = copy.badgeLabel, passed = passed)
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.weight(0.6f))
 
                 MascotWithParticles(passed = passed)
 
@@ -182,7 +179,7 @@ fun ResultScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.weight(1f))
 
                 Box(
                     modifier = if (tutorialController != null) Modifier.onGloballyPositioned {
@@ -200,6 +197,8 @@ fun ResultScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     DiamondRewardChip(amount = diamondReward)
                 }
+
+                Spacer(modifier = Modifier.weight(0.4f))
             }
 
             Column(

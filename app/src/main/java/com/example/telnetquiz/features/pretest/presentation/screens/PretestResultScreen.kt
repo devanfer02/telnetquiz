@@ -17,9 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.MenuBook
@@ -113,7 +111,6 @@ fun PretestResultScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp)
                     .padding(top = 32.dp, bottom = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -127,7 +124,7 @@ fun PretestResultScreen(
                     letterSpacing = 2.sp
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.weight(0.5f))
 
                 MascotCircle()
 
@@ -160,12 +157,12 @@ fun PretestResultScreen(
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.weight(1f))
 
                 StatRow(correctCount = correctCount, wrongCount = wrongCount)
 
                 if (weaknesses.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
                     WeaknessSection(
                         weaknesses = weaknesses,
                         onChapterClick = { chapterId ->
@@ -174,6 +171,8 @@ fun PretestResultScreen(
                         }
                     )
                 }
+
+                Spacer(modifier = Modifier.weight(0.4f))
             }
 
             Column(
