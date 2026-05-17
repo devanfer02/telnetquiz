@@ -391,12 +391,16 @@ private fun MainNavHost(
                 enabled = profileState.profile?.hasTakenPretest == true
             )
 
-            if (profileState.profile?.hasTakenPretest == true) {
+            Box(modifier = Modifier.fillMaxSize()) {
                 Column(modifier = Modifier.fillMaxSize()) {
                     ProfileTopBar(backgroundColor = LitecartesColor.Surface)
                     Box(modifier = Modifier.weight(1f).fillMaxSize()) {
                         ChapterScreen(navController = navController)
                     }
+                }
+                val pretestStatus = profileState.profile?.hasTakenPretest
+                if (pretestStatus == null || pretestStatus == false) {
+                    SplashLoadingScreen()
                 }
             }
         }
