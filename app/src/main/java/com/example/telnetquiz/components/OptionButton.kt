@@ -47,16 +47,18 @@ fun OptionButton(
     haptic: HapticFeedback? = null
 ) {
     val scale by animateFloatAsState(
-        targetValue = if (isActive || feedback != OptionFeedback.NONE) 1.01f else 1f,
+        targetValue = if (isActive) 1.01f else 1f,
         label = "scale"
     )
 
     val feedbackGreen = Color(0xFF4CAF50)
     val feedbackRed = Color(0xFFE53935)
+    val feedbackGreenFill = Color(0xFFEAF6EA)
+    val feedbackRedFill = Color(0xFFFCE6E6)
 
     val containerColor = when (feedback) {
-        OptionFeedback.CORRECT -> feedbackGreen.copy(alpha = 0.15f)
-        OptionFeedback.WRONG -> feedbackRed.copy(alpha = 0.15f)
+        OptionFeedback.CORRECT -> feedbackGreenFill
+        OptionFeedback.WRONG -> feedbackRedFill
         OptionFeedback.NONE -> if (isActive) LitecartesColor.Primary else Color.White
     }
 
@@ -74,8 +76,8 @@ fun OptionButton(
     }
 
     val letterBg = when (feedback) {
-        OptionFeedback.CORRECT -> feedbackGreen.copy(alpha = 0.2f)
-        OptionFeedback.WRONG -> feedbackRed.copy(alpha = 0.2f)
+        OptionFeedback.CORRECT -> Color.White
+        OptionFeedback.WRONG -> Color.White
         OptionFeedback.NONE -> if (isActive) Color.White
         else LitecartesColor.DarkerSurface
     }
@@ -87,20 +89,23 @@ fun OptionButton(
     }
 
     val isInteractive = feedback == OptionFeedback.NONE
+    val isFeedback = feedback != OptionFeedback.NONE
 
     Row(
         modifier = Modifier
             .padding(vertical = 5.dp, horizontal = 5.dp)
             .fillMaxWidth()
             .scale(scale)
-            .shadow(
-                elevation = if (isActive || feedback != OptionFeedback.NONE) 4.dp else 2.dp,
-                shape = RoundedCornerShape(14.dp)
+            .then(
+                if (isFeedback) Modifier else Modifier.shadow(
+                    elevation = if (isActive) 4.dp else 2.dp,
+                    shape = RoundedCornerShape(14.dp)
+                )
             )
             .clip(RoundedCornerShape(14.dp))
             .background(containerColor)
             .border(
-                width = if (isActive || feedback != OptionFeedback.NONE) 2.dp else 1.dp,
+                width = if (isActive || isFeedback) 2.dp else 1.dp,
                 color = borderColor,
                 shape = RoundedCornerShape(14.dp)
             )
