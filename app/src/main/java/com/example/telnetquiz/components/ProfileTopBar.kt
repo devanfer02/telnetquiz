@@ -10,17 +10,24 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
@@ -85,6 +93,7 @@ fun ProfileTopBar(
         cornerRadius = 24.dp,
         backgroundColor = LitecartesColor.Secondary
     ) {
+        TopBarSparkleLayer()
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(vertical = 20.dp, horizontal = 18.dp)
@@ -282,6 +291,57 @@ fun ProfileTopBar(
             }
         }
     }
+}
+
+@Composable
+private fun TopBarSparkleLayer() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        SoftGlow(LitecartesColor.Primary.copy(alpha = 0.35f), 110.dp, (-30).dp, (-40).dp, Alignment.TopStart)
+        SoftGlow(Color.White.copy(alpha = 0.16f), 130.dp, 40.dp, (-50).dp, Alignment.TopEnd)
+        SoftGlow(LitecartesColor.Primary.copy(alpha = 0.22f), 90.dp, (-20).dp, 30.dp, Alignment.BottomStart)
+        Sparkle(Alignment.TopStart, 90.dp, 14.dp, 11.dp)
+        Sparkle(Alignment.TopEnd, (-40).dp, 28.dp, 8.dp)
+        Sparkle(Alignment.BottomStart, 60.dp, (-18).dp, 9.dp)
+        Sparkle(Alignment.BottomEnd, (-30).dp, (-10).dp, 12.dp)
+    }
+}
+
+@Composable
+private fun BoxScope.SoftGlow(
+    color: Color,
+    size: androidx.compose.ui.unit.Dp,
+    offsetX: androidx.compose.ui.unit.Dp,
+    offsetY: androidx.compose.ui.unit.Dp,
+    alignment: Alignment
+) {
+    Box(
+        modifier = Modifier
+            .align(alignment)
+            .offset(x = offsetX, y = offsetY)
+            .size(size)
+            .background(
+                brush = Brush.radialGradient(colors = listOf(color, Color.Transparent)),
+                shape = CircleShape
+            )
+    )
+}
+
+@Composable
+private fun BoxScope.Sparkle(
+    alignment: Alignment,
+    offsetX: androidx.compose.ui.unit.Dp,
+    offsetY: androidx.compose.ui.unit.Dp,
+    size: androidx.compose.ui.unit.Dp
+) {
+    Icon(
+        imageVector = Icons.Filled.AutoAwesome,
+        contentDescription = null,
+        tint = Color.White.copy(alpha = 0.55f),
+        modifier = Modifier
+            .align(alignment)
+            .offset(x = offsetX, y = offsetY)
+            .size(size)
+    )
 }
 
 private val TriangleUpShape = object : Shape {
