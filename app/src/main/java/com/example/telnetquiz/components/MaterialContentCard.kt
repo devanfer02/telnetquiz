@@ -80,31 +80,33 @@ fun MaterialContentCard(
             audioButtonModifier = audioButtonModifier
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         var featureIndex = 0
-        blocks.forEach { block ->
+        blocks.forEachIndexed { i, block ->
+            val isLast = i == blocks.lastIndex
             when (block) {
                 is StudyBlock.Body -> {
                     BodyParagraphCard(block.annotated)
-                    Spacer(modifier = Modifier.height(10.dp))
                 }
                 is StudyBlock.Heading -> {
                     SectionHeading(block.text)
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
                 is StudyBlock.FeatureList -> {
-                    block.items.forEach { item ->
+                    block.items.forEachIndexed { j, item ->
                         FeatureCard(index = featureIndex, item = item)
-                        Spacer(modifier = Modifier.height(8.dp))
+                        if (j != block.items.lastIndex) {
+                            Spacer(modifier = Modifier.height(6.dp))
+                        }
                         featureIndex++
                     }
-                    Spacer(modifier = Modifier.height(2.dp))
                 }
                 is StudyBlock.Conclusion -> {
                     ConclusionCard(block.annotated)
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
+            }
+            if (!isLast) {
+                Spacer(modifier = Modifier.height(6.dp))
             }
         }
 
@@ -130,9 +132,9 @@ private fun IntroHero(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(18.dp))
             .background(LitecartesColor.Primary)
-            .padding(14.dp)
+            .padding(horizontal = 14.dp, vertical = 12.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
@@ -240,7 +242,7 @@ private fun BodyParagraphCard(annotated: AnnotatedString) {
             fontSize = 13.sp,
             fontFamily = nunitosFontFamily,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
         )
     }
 }
@@ -292,14 +294,14 @@ private fun FeatureCard(index: Int, item: FeatureItem) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 10.dp, vertical = 10.dp),
+                .padding(horizontal = 10.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .size(32.dp)
+                    .clip(RoundedCornerShape(9.dp))
                     .background(visual.tint.copy(alpha = 0.18f)),
                 contentAlignment = Alignment.Center
             ) {
@@ -307,7 +309,7 @@ private fun FeatureCard(index: Int, item: FeatureItem) {
                     imageVector = visual.icon,
                     contentDescription = null,
                     tint = visual.tint,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(18.dp)
                 )
             }
             Column(modifier = Modifier.weight(1f)) {
@@ -334,40 +336,48 @@ private fun FeatureCard(index: Int, item: FeatureItem) {
 
 @Composable
 private fun ConclusionCard(annotated: AnnotatedString) {
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(LitecartesColor.Primary.copy(alpha = 0.12f))
-            .padding(14.dp)
+            .height(IntrinsicSize.Min)
+            .clip(RoundedCornerShape(12.dp))
+            .background(LitecartesColor.Surface)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.CheckCircle,
-                contentDescription = null,
-                tint = LitecartesColor.Primary,
-                modifier = Modifier.size(14.dp)
-            )
+        Box(
+            modifier = Modifier
+                .width(3.dp)
+                .fillMaxHeight()
+                .background(LitecartesColor.GreenCactus)
+        )
+        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.CheckCircle,
+                    contentDescription = null,
+                    tint = LitecartesColor.GreenCactus,
+                    modifier = Modifier.size(14.dp)
+                )
+                Text(
+                    text = "KESIMPULAN",
+                    color = LitecartesColor.GreenCactus,
+                    fontSize = 11.sp,
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = 1.sp
+                )
+            }
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "KESIMPULAN",
-                color = LitecartesColor.Primary,
-                fontSize = 11.sp,
+                text = annotated,
+                color = LitecartesColor.Secondary,
+                fontSize = 13.sp,
                 fontFamily = nunitosFontFamily,
-                fontWeight = FontWeight.ExtraBold,
-                letterSpacing = 1.sp
+                fontWeight = FontWeight.SemiBold
             )
         }
-        Spacer(modifier = Modifier.height(6.dp))
-        Text(
-            text = annotated,
-            color = LitecartesColor.Secondary,
-            fontSize = 13.sp,
-            fontFamily = nunitosFontFamily,
-            fontWeight = FontWeight.SemiBold
-        )
     }
 }
 
@@ -447,7 +457,7 @@ internal fun parseInline(html: String): AnnotatedString = buildAnnotatedString {
     val text = html.replace("\n", " ")
     for (m in InlineRegex.findAll(text)) {
         if (m.range.first > cursor) {
-            append(stripTags(text.substring(cursor, m.range.first)))
+            append(stripTagsPreservingSpaces(text.substring(cursor, m.range.first)))
         }
         val tag = m.groupValues[1].lowercase()
         val style = when (tag) {
@@ -458,16 +468,19 @@ internal fun parseInline(html: String): AnnotatedString = buildAnnotatedString {
             "em", "i" -> SpanStyle(fontStyle = FontStyle.Italic)
             else -> SpanStyle()
         }
-        withStyle(style) { append(stripTags(m.groupValues[2])) }
+        withStyle(style) { append(stripTagsPreservingSpaces(m.groupValues[2]).trim()) }
         cursor = m.range.last + 1
     }
     if (cursor < text.length) {
-        append(stripTags(text.substring(cursor)))
+        append(stripTagsPreservingSpaces(text.substring(cursor)))
     }
 }
 
 private fun stripTags(html: String): String =
     html.replace(TagStripper, "").replace("&nbsp;", " ").trim()
+
+private fun stripTagsPreservingSpaces(html: String): String =
+    html.replace(TagStripper, "").replace("&nbsp;", " ").replace(Regex("\\s+"), " ")
 
 @Preview(showBackground = true)
 @Composable
