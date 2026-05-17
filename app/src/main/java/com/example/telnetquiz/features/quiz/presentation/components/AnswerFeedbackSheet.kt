@@ -92,7 +92,7 @@ fun AnswerFeedbackSheet(
                 text = if (isCorrect)
                     "Mantap! Pemahamanmu makin tajam, lanjut ke soal berikutnya."
                 else
-                    "Jangan menyerah — kamu pasti bisa di soal berikutnya!",
+                    "Jangan menyerah, kamu pasti bisa di soal berikutnya!",
                 color = Color(0xFF555555),
                 fontFamily = nunitosFontFamily,
                 fontWeight = FontWeight.SemiBold,

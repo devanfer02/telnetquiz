@@ -68,7 +68,7 @@ class EdgeTtsProvider(
     }
 
     override fun speak(text: String) {
-        // No-op for edge provider — use speakContent instead
+        // No-op for edge provider. Use speakContent instead
     }
 
     @Synchronized

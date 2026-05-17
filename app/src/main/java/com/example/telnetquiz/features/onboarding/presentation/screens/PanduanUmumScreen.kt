@@ -63,7 +63,7 @@ private val guidePages = listOf(
         bullets = listOf(
             "2 Bab: Prinsip TCP/IP dan Prinsip Sistem WLAN",
             "4 Level di tiap bab, dari mudah ke sulit",
-            "Tiap level punya KKM — skor minimum untuk lulus"
+            "Tiap level punya KKM, skor minimum untuk lulus"
         )
     ),
     GuidePage(

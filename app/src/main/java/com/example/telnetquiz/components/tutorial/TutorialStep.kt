@@ -108,7 +108,7 @@ private val mainSteps = listOf(
     TutorialStep(
         id = TutorialStepId.LEVEL_KKM,
         title = "Skor Minimum (KKM)",
-        description = "Ini KKM bab ini — skor minimum yang harus kamu capai untuk membuka level berikutnya.",
+        description = "Ini KKM bab ini, skor minimum yang harus kamu capai untuk membuka level berikutnya.",
         targetKey = "level_kkm_display",
         tooltipPosition = TooltipPosition.BELOW_TARGET,
         route = Screen.LevelScreen.route

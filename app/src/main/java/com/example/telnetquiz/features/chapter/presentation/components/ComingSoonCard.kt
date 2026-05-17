@@ -33,7 +33,7 @@ import com.example.telnetquiz.ui.theme.nunitosFontFamily
 @Composable
 fun ComingSoonCard(
     title: String = "Konten baru sedang dalam proses",
-    subtitle: String = "Pengalamatan IP · Topologi Jaringan — nantikan!",
+    subtitle: String = "Pengalamatan IP · Topologi Jaringan. Nantikan!",
     modifier: Modifier = Modifier
 ) {
     Box(
