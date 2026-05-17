@@ -149,47 +149,44 @@ fun ProfileScreen(
         )
     }
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .background(LitecartesColor.Surface)
-            .fillMaxSize()
+            .fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 64.dp)
     ) {
-        Box(
-            modifier = if (tutorialController != null) Modifier.onGloballyPositioned {
-                tutorialController.registerTarget("profile_header", it)
-            } else Modifier
-        ) {
-            ProfileHeaderSection(
-                profile = state.profile,
-                isLoading = state.isLoading,
-                error = state.error,
-                localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
-                onSettingsClick = { showSoundSettings = true },
-                onEditProfile = {
-                    tutorialController?.notifyTargetClicked("profile_header")
-                    navController.navigate(Screen.EditProfileScreen.route)
-                }
-            )
+        item {
+            Box(
+                modifier = if (tutorialController != null) Modifier.onGloballyPositioned {
+                    tutorialController.registerTarget("profile_header", it)
+                } else Modifier
+            ) {
+                ProfileHeaderSection(
+                    profile = state.profile,
+                    isLoading = state.isLoading,
+                    error = state.error,
+                    localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
+                    onSettingsClick = { showSoundSettings = true },
+                    onEditProfile = {
+                        tutorialController?.notifyTargetClicked("profile_header")
+                        navController.navigate(Screen.EditProfileScreen.route)
+                    }
+                )
+            }
         }
-        LazyColumn(
-            modifier = Modifier
-                .padding(horizontal = 14.dp)
-                .weight(1f),
-            contentPadding = PaddingValues(top = 6.dp, bottom = 64.dp)
-        ) {
-            state.profile?.stats?.let { stats ->
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 10.dp)
-                            .then(
-                                if (tutorialController != null) Modifier.onGloballyPositioned {
-                                    tutorialController.registerTarget("profile_stats", it)
-                                } else Modifier
-                            ),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
+        state.profile?.stats?.let { stats ->
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 10.dp)
+                        .then(
+                            if (tutorialController != null) Modifier.onGloballyPositioned {
+                                tutorialController.registerTarget("profile_stats", it)
+                            } else Modifier
+                        ),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
                         StatCard(
                             label = "Total Skor",
                             value = "${stats.totalScore}",
@@ -269,10 +266,10 @@ fun ProfileScreen(
             }
         }
     }
-}
 
 @Composable
 private fun PencapaianHeader(unlocked: Int, total: Int, modifier: Modifier = Modifier) {
+
     Row(
         modifier = modifier
             .fillMaxWidth()
