@@ -95,7 +95,6 @@ fun ProfileTopBar(
                     tutorialController.registerTarget("profile_top_bar", it)
                 } else Modifier
             )
-            .shadow(elevation = 8.dp, shape = RoundedCornerShape(22.dp))
             .clip(RoundedCornerShape(22.dp))
             .background(LitecartesColor.Secondary)
     ) {
