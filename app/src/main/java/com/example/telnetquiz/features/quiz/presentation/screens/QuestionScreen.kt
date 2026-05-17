@@ -2,15 +2,31 @@ package com.example.telnetquiz.features.quiz.presentation.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -20,7 +36,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
@@ -134,15 +153,10 @@ fun QuestionScreen(
     Scaffold(
         topBar = {
             if (state.quiz != null) {
-                ProgressBarFromApi(
+                QuizProgressHeader(
                     current = state.currentQuestionIndex + 1,
                     total = state.quiz!!.questions.size,
-                    containerColor = LitecartesColor.Primary,
-                    barColor = LitecartesColor.Surface,
-                    borderColor = LitecartesColor.Surface,
-                    useDashedBorder = true,
-                    showLabel = false,
-                    showDivider = true
+                    onBack = { showExitConfirm = true }
                 )
             }
         },
@@ -202,15 +216,37 @@ fun QuestionScreen(
                                 )
                             }
                             item {
-                                Text(
-                                    text = currentQuestion.question,
-                                    textAlign = TextAlign.Center,
-                                    color = LitecartesColor.Secondary,
-                                    fontWeight = FontWeight.Bold,
-                                    fontFamily = nunitosFontFamily,
-                                    fontSize = 15.sp,
-                                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp)
-                                )
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 18.dp, vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(22.dp)
+                                            .clip(CircleShape)
+                                            .background(LitecartesColor.Primary),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.QuestionMark,
+                                            contentDescription = null,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(14.dp)
+                                        )
+                                    }
+                                    Text(
+                                        text = currentQuestion.question,
+                                        textAlign = TextAlign.Start,
+                                        color = LitecartesColor.Secondary,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontFamily = nunitosFontFamily,
+                                        fontSize = 14.sp,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
                             }
                             itemsIndexed(currentQuestion.options) { index, option ->
                                 val optionFeedback = when {
@@ -229,7 +265,7 @@ fun QuestionScreen(
                                             }
                                         } else Modifier
                                     )
-                                androidx.compose.foundation.layout.Box(modifier = optionWrapper) {
+                                Box(modifier = optionWrapper) {
                                     OptionButton(
                                         text = option.text,
                                         letter = letters.getOrElse(index) { ' ' },
@@ -245,27 +281,28 @@ fun QuestionScreen(
                                     )
                                 }
                             }
-                        }
-
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = 18.dp, vertical = 8.dp)
-                                .then(
-                                    if (tutorialController != null) Modifier.onGloballyPositioned {
-                                        tutorialController.registerTarget("quiz_verify_btn", it)
-                                    } else Modifier
-                                )
-                        ) {
-                            VerifyButton(
-                                isVisible = selectedOptionId != null && !viewModel.isCurrentQuestionVerified,
-                                isVerifying = state.isVerifying,
-                                isSubmitting = state.isSubmitting,
-                                isLastQuestion = viewModel.isLastQuestion,
-                                onVerify = {
-                                    viewModel.verifyCurrentAnswer()
-                                    tutorialController?.notifyTargetClicked("quiz_verify_btn")
+                            item {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(horizontal = 18.dp, vertical = 12.dp)
+                                        .then(
+                                            if (tutorialController != null) Modifier.onGloballyPositioned {
+                                                tutorialController.registerTarget("quiz_verify_btn", it)
+                                            } else Modifier
+                                        )
+                                ) {
+                                    VerifyButton(
+                                        isVisible = selectedOptionId != null && !viewModel.isCurrentQuestionVerified,
+                                        isVerifying = state.isVerifying,
+                                        isSubmitting = state.isSubmitting,
+                                        isLastQuestion = viewModel.isLastQuestion,
+                                        onVerify = {
+                                            viewModel.verifyCurrentAnswer()
+                                            tutorialController?.notifyTargetClicked("quiz_verify_btn")
+                                        }
+                                    )
                                 }
-                            )
+                            }
                         }
 
                         if (showDialog && verification != null) {
@@ -318,6 +355,99 @@ fun QuestionScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun QuizProgressHeader(
+    current: Int,
+    total: Int,
+    onBack: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(LitecartesColor.Surface)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(CircleShape)
+                    .background(LitecartesColor.DarkerSurface)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Kembali",
+                    tint = LitecartesColor.Secondary,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            Box(modifier = Modifier.weight(1f)) {
+                ProgressBarFromApi(
+                    current = current,
+                    total = total,
+                    containerColor = LitecartesColor.Surface,
+                    barColor = LitecartesColor.Primary,
+                    borderColor = LitecartesColor.Secondary.copy(alpha = 0.2f),
+                    useDashedBorder = false,
+                    showLabel = false,
+                    showDivider = false
+                )
+                ProgressSparkles()
+            }
+            Text(
+                text = "$current/$total",
+                fontFamily = nunitosFontFamily,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 13.sp,
+                color = LitecartesColor.Secondary
+            )
+        }
+        androidx.compose.material3.Divider(
+            color = LitecartesColor.Secondary.copy(alpha = 0.08f),
+            thickness = 1.dp
+        )
+    }
+}
+
+@Composable
+private fun ProgressSparkles() {
+    Box(modifier = Modifier.fillMaxWidth().height(30.dp)) {
+        Icon(
+            imageVector = Icons.Filled.AutoAwesome,
+            contentDescription = null,
+            tint = Color.White.copy(alpha = 0.75f),
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .offset(x = 12.dp, y = 5.dp)
+                .size(8.dp)
+        )
+        Icon(
+            imageVector = Icons.Filled.AutoAwesome,
+            contentDescription = null,
+            tint = Color.White.copy(alpha = 0.5f),
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .offset(x = 26.dp, y = 0.dp)
+                .size(6.dp)
+        )
+        Icon(
+            imageVector = Icons.Filled.AutoAwesome,
+            contentDescription = null,
+            tint = Color.White.copy(alpha = 0.6f),
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .offset(x = 8.dp, y = (-6).dp)
+                .size(7.dp)
+        )
     }
 }
 
