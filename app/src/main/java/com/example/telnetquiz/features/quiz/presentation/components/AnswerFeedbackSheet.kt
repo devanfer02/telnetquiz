@@ -1,26 +1,46 @@
 package com.example.telnetquiz.features.quiz.presentation.components
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.PretestButton
-import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
 private val feedbackGreen = Color(0xFF4CAF50)
@@ -34,40 +54,126 @@ fun AnswerFeedbackSheet(
     onDismiss: () -> Unit,
     onContinue: () -> Unit
 ) {
+    val accent = if (isCorrect) feedbackGreen else feedbackRed
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = LitecartesColor.Surface
+        containerColor = Color.White
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(350.dp),
+                .padding(horizontal = 20.dp)
+                .padding(top = 4.dp, bottom = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = if (isCorrect) "Jawaban benar!" else "Jawaban salah!",
-                fontFamily = nunitosFontFamily,
-                fontSize = 20.sp,
-                color = if (isCorrect) feedbackGreen else feedbackRed,
-                fontWeight = FontWeight.Bold
-            )
-            Image(
-                painter = painterResource(id = if (isCorrect) R.drawable.chap1 else R.drawable.mascot_wrong),
-                contentDescription = "",
-                modifier = Modifier.size(200.dp)
-            )
-            Column(
-                modifier = Modifier.padding(horizontal = 20.dp)
+            MascotInRing(isCorrect = isCorrect, accent = accent)
+            Spacer(modifier = Modifier.height(14.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                PretestButton(
-                    text = if (isLastQuestion) "Selesai" else "Lanjut",
-                    backgroundColor = LitecartesColor.Secondary,
-                    textColor = LitecartesColor.Surface,
-                    onClick = onContinue
+                Icon(
+                    imageVector = if (isCorrect) Icons.Filled.CheckCircle else Icons.Filled.Cancel,
+                    contentDescription = null,
+                    tint = accent,
+                    modifier = Modifier.size(18.dp)
+                )
+                Text(
+                    text = if (isCorrect) "Jawaban benar!" else "Belum tepat",
+                    color = accent,
+                    fontFamily = nunitosFontFamily,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 20.sp
                 )
             }
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = if (isCorrect)
+                    "Mantap! Pemahamanmu makin tajam, lanjut ke soal berikutnya."
+                else
+                    "Jangan menyerah — kamu pasti bisa di soal berikutnya!",
+                color = Color(0xFF555555),
+                fontFamily = nunitosFontFamily,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(18.dp))
+            PretestButton(
+                text = if (isLastQuestion) "Selesai" else "Lanjut",
+                backgroundColor = accent,
+                textColor = Color.White,
+                onClick = onContinue
+            )
         }
     }
+}
+
+@Composable
+private fun MascotInRing(isCorrect: Boolean, accent: Color) {
+    val ringSize = 180.dp
+    Box(
+        modifier = Modifier.size(ringSize),
+        contentAlignment = Alignment.Center
+    ) {
+        Canvas(modifier = Modifier.size(ringSize)) {
+            val strokeWidth = 3.dp.toPx()
+            val inset = strokeWidth / 2f
+            drawArc(
+                color = accent,
+                startAngle = 0f,
+                sweepAngle = 360f,
+                useCenter = false,
+                topLeft = Offset(inset, inset),
+                size = Size(size.width - strokeWidth, size.height - strokeWidth),
+                style = Stroke(
+                    width = strokeWidth,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 10f), 0f)
+                )
+            )
+        }
+        Box(
+            modifier = Modifier
+                .size(ringSize - 16.dp)
+                .clip(CircleShape)
+                .background(accent.copy(alpha = 0.06f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(
+                    id = if (isCorrect) R.drawable.chap1 else R.drawable.mascot_wrong
+                ),
+                contentDescription = null,
+                modifier = Modifier.size(130.dp)
+            )
+        }
+        FeedbackSparkle(Alignment.TopStart, 16.dp, 14.dp, 12.dp, accent)
+        FeedbackSparkle(Alignment.TopEnd, (-18).dp, 28.dp, 9.dp, accent)
+        FeedbackSparkle(Alignment.CenterStart, 4.dp, 0.dp, 8.dp, accent)
+        FeedbackSparkle(Alignment.CenterEnd, (-8).dp, (-30).dp, 10.dp, accent)
+        FeedbackSparkle(Alignment.BottomStart, 24.dp, (-22).dp, 9.dp, accent)
+        FeedbackSparkle(Alignment.BottomEnd, (-20).dp, (-16).dp, 11.dp, accent)
+    }
+}
+
+@Composable
+private fun BoxScope.FeedbackSparkle(
+    alignment: Alignment,
+    offsetX: Dp,
+    offsetY: Dp,
+    size: Dp,
+    tint: Color
+) {
+    Icon(
+        imageVector = Icons.Filled.AutoAwesome,
+        contentDescription = null,
+        tint = tint.copy(alpha = 0.75f),
+        modifier = Modifier
+            .align(alignment)
+            .offset(x = offsetX, y = offsetY)
+            .size(size)
+    )
 }
 
 @Preview(showBackground = true)
