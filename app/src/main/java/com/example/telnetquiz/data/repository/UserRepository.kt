@@ -111,9 +111,13 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun getLeaderboard(limit: Int = 10, cursor: Int? = null): Result<LeaderboardResponse> {
+    suspend fun getLeaderboard(
+        limit: Int = 10,
+        cursor: Int? = null,
+        period: String? = null
+    ): Result<LeaderboardResponse> {
         return try {
-            val response = api.getLeaderboard(limit, cursor)
+            val response = api.getLeaderboard(limit, cursor, period)
             if (response.isSuccessful) {
                 val leaderboard = response.body()?.data
                 if (leaderboard != null) {

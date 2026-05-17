@@ -164,40 +164,46 @@ data class AchievementsResponse(
 )
 
 data class LeaderboardResponse(
+    @SerializedName("period")
+    val period: String? = null,
     @SerializedName("leaderboard")
-    val leaderboard: List<LeaderboardEntryDto>,
+    val leaderboard: List<LeaderboardEntryDto>? = null,
     @SerializedName("currentUser")
-    val currentUser: LeaderboardUserDto?,
+    val currentUser: LeaderboardUserDto? = null,
     @SerializedName("pagination")
-    val pagination: PaginationDto
+    val pagination: PaginationDto? = null
 )
 
 data class LeaderboardEntryDto(
     @SerializedName("rank")
-    val rank: Int,
+    val rank: Int = 0,
     @SerializedName("userId")
-    val userId: String,
+    val userId: String = "",
     @SerializedName("fullname")
-    val fullname: String?,
+    val fullname: String? = null,
     @SerializedName("image")
-    val image: String?,
+    val image: String? = null,
     @SerializedName("gender")
     val gender: Boolean? = null,
     @SerializedName("totalScore")
-    val totalScore: Int
+    val totalScore: Int = 0,
+    @SerializedName("rankDelta")
+    val rankDelta: Int? = null
 )
 
 data class LeaderboardUserDto(
     @SerializedName("rank")
-    val rank: Int,
+    val rank: Int = 0,
     @SerializedName("fullname")
-    val fullname: String?,
+    val fullname: String? = null,
     @SerializedName("image")
-    val image: String?,
+    val image: String? = null,
     @SerializedName("gender")
     val gender: Boolean? = null,
     @SerializedName("totalScore")
-    val totalScore: Int
+    val totalScore: Int = 0,
+    @SerializedName("rankDelta")
+    val rankDelta: Int? = null
 )
 
 data class PaginationDto(
@@ -218,13 +224,22 @@ data class RecentActivityResponse(
 
 data class DayActivityDto(
     @SerializedName("date") val date: String,
-    @SerializedName("entries") val entries: List<ActivityEntryDto>
+    @SerializedName("level_count") val levelCount: Int = 0,
+    @SerializedName("chapter_groups") val chapterGroups: List<ChapterActivityGroupDto>? = null
+)
+
+data class ChapterActivityGroupDto(
+    @SerializedName("chapter_id") val chapterId: Int = 0,
+    @SerializedName("chapter_title") val chapterTitle: String = "",
+    @SerializedName("total_levels") val totalLevels: Int = 0,
+    @SerializedName("levels_completed_today") val levelsCompletedToday: Int = 0,
+    @SerializedName("average_score") val averageScore: Int = 0,
+    @SerializedName("completion_percentage") val completionPercentage: Int = 0,
+    @SerializedName("entries") val entries: List<ActivityEntryDto>? = null
 )
 
 data class ActivityEntryDto(
     @SerializedName("quiz_id") val quizId: Int,
-    @SerializedName("chapter_id") val chapterId: Int,
-    @SerializedName("chapter_title") val chapterTitle: String,
     @SerializedName("quiz_level") val quizLevel: Int,
     @SerializedName("retry_count") val retryCount: Int,
     @SerializedName("latest_score") val latestScore: Int,

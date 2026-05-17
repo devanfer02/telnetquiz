@@ -23,6 +23,12 @@ enum class LeaderboardTab {
     PROGRESS, LEADERBOARD
 }
 
+enum class LeaderboardPeriod(val apiValue: String, val label: String, val sinceLabel: String) {
+    WEEK("week", "Minggu ini", "minggu ini"),
+    MONTH("month", "Bulan ini", "bulan ini"),
+    ALL("all", "Sepanjang masa", "")
+}
+
 data class ActivityState(
     val isLoading: Boolean = false,
     val days: List<DayActivityDto> = emptyList(),
@@ -35,6 +41,7 @@ data class LeaderboardState(
     val currentUser: LeaderboardUserDto? = null,
     val hasNextPage: Boolean = false,
     val nextCursor: Int? = null,
+    val period: LeaderboardPeriod = LeaderboardPeriod.WEEK,
     val error: String? = null
 )
 
@@ -92,17 +99,24 @@ class LeaderboardViewModel @Inject constructor(
         }
     }
 
+    fun selectPeriod(period: LeaderboardPeriod) {
+        if (_state.value.period == period) return
+        _state.value = _state.value.copy(period = period)
+        loadLeaderboard()
+    }
+
     fun loadLeaderboard() {
         viewModelScope.launch {
+            val period = _state.value.period
             _state.value = _state.value.copy(isLoading = true, error = null)
-            when (val result = userRepository.getLeaderboard()) {
+            when (val result = userRepository.getLeaderboard(period = period.apiValue)) {
                 is Result.Success -> {
                     _state.value = _state.value.copy(
                         isLoading = false,
-                        leaderboard = result.data.leaderboard,
+                        leaderboard = result.data.leaderboard.orEmpty(),
                         currentUser = result.data.currentUser,
-                        hasNextPage = result.data.pagination.hasNextPage,
-                        nextCursor = result.data.pagination.nextCursor
+                        hasNextPage = result.data.pagination?.hasNextPage ?: false,
+                        nextCursor = result.data.pagination?.nextCursor
                     )
                     leaderboardLoaded = true
                 }
@@ -122,15 +136,16 @@ class LeaderboardViewModel @Inject constructor(
     fun loadMore() {
         val cursor = _state.value.nextCursor ?: return
         if (!_state.value.hasNextPage) return
+        val period = _state.value.period
 
         viewModelScope.launch {
-            when (val result = userRepository.getLeaderboard(cursor = cursor)) {
+            when (val result = userRepository.getLeaderboard(cursor = cursor, period = period.apiValue)) {
                 is Result.Success -> {
                     _state.value = _state.value.copy(
-                        leaderboard = _state.value.leaderboard + result.data.leaderboard,
+                        leaderboard = _state.value.leaderboard + result.data.leaderboard.orEmpty(),
                         currentUser = result.data.currentUser,
-                        hasNextPage = result.data.pagination.hasNextPage,
-                        nextCursor = result.data.pagination.nextCursor
+                        hasNextPage = result.data.pagination?.hasNextPage ?: false,
+                        nextCursor = result.data.pagination?.nextCursor
                     )
                 }
                 is Result.Error -> {

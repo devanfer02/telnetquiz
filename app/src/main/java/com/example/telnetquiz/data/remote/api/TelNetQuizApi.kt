@@ -141,7 +141,8 @@ interface TelNetQuizApi {
     @GET("api/leaderboard")
     suspend fun getLeaderboard(
         @Query("limit") limit: Int = 10,
-        @Query("cursor") cursor: Int? = null
+        @Query("cursor") cursor: Int? = null,
+        @Query("period") period: String? = null
     ): Response<ApiResponse<LeaderboardResponse>>
 
     // Pretest status
