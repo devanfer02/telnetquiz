@@ -1,15 +1,22 @@
 package com.example.telnetquiz.features.user.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Lock
@@ -26,12 +33,17 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 private data class AchievementVisual(val icon: ImageVector, val tint: Color)
 
@@ -58,91 +70,133 @@ fun AchievementCard(
     title: String,
     description: String,
     unlocked: Boolean,
+    unlockedAt: String? = null,
     modifier: Modifier = Modifier
 ) {
     val visual = visualFor(title)
+    val tint = if (unlocked) visual.tint else Color.Gray
+    val dateLabel = unlockedAt?.let { formatUnlockedDate(it) }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp)
+            .height(IntrinsicSize.Min)
+            .padding(vertical = 4.dp)
             .shadow(
-                elevation = if (unlocked) 8.dp else 0.dp,
-                shape = RoundedCornerShape(12.dp)
+                elevation = if (unlocked) 5.dp else 0.dp,
+                shape = RoundedCornerShape(14.dp)
             )
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(14.dp))
             .background(
-                if (unlocked) LitecartesColor.DarkerSurface
-                else LitecartesColor.DarkerSurface.copy(alpha = 0.5f)
-            )
-            .padding(12.dp),
+                if (unlocked) LitecartesColor.Surface
+                else LitecartesColor.DarkerSurface.copy(alpha = 0.6f)
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val badgeTint = if (unlocked) visual.tint else Color.Gray
         Box(
             modifier = Modifier
-                .size(50.dp)
-                .background(
-                    if (unlocked) badgeTint.copy(alpha = 0.18f)
-                    else badgeTint.copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(12.dp)
-                ),
+                .width(4.dp)
+                .fillMaxHeight()
+                .background(tint)
+        )
+        Box(
+            modifier = Modifier
+                .padding(start = 10.dp)
+                .size(40.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(tint.copy(alpha = if (unlocked) 0.18f else 0.1f)),
             contentAlignment = Alignment.Center
         ) {
-            if (unlocked) {
-                Icon(
-                    imageVector = visual.icon,
-                    contentDescription = title,
-                    tint = badgeTint,
-                    modifier = Modifier.size(28.dp)
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Default.Lock,
-                    contentDescription = "Locked",
-                    tint = Color.Gray.copy(alpha = 0.5f),
-                    modifier = Modifier.size(28.dp)
-                )
-            }
+            Icon(
+                imageVector = if (unlocked) visual.icon else Icons.Default.Lock,
+                contentDescription = title,
+                tint = if (unlocked) tint else Color.Gray.copy(alpha = 0.55f),
+                modifier = Modifier.size(20.dp)
+            )
         }
-        Spacer(modifier = Modifier.padding(8.dp))
         Column(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 10.dp, vertical = 10.dp)
         ) {
             Text(
                 text = title,
                 fontFamily = nunitosFontFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 13.sp,
                 color = if (unlocked) LitecartesColor.Secondary
-                else LitecartesColor.Secondary.copy(alpha = 0.5f)
+                else LitecartesColor.Secondary.copy(alpha = 0.5f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = description,
                 fontFamily = nunitosFontFamily,
-                fontSize = 12.sp,
-                color = if (unlocked) LitecartesColor.Secondary.copy(alpha = 0.7f)
-                else LitecartesColor.Secondary.copy(alpha = 0.4f)
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 11.sp,
+                color = if (unlocked) LitecartesColor.Secondary.copy(alpha = 0.65f)
+                else LitecartesColor.Secondary.copy(alpha = 0.4f),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
         }
-        if (unlocked) {
-            Text(
-                text = "✓",
-                color = LitecartesColor.Primary,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            modifier = Modifier.padding(end = 12.dp)
+        ) {
+            if (unlocked) {
+                Box(
+                    modifier = Modifier
+                        .size(22.dp)
+                        .clip(CircleShape)
+                        .background(LitecartesColor.GreenCactus),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(14.dp)
+                    )
+                }
+                if (!dateLabel.isNullOrBlank()) {
+                    Text(
+                        text = dateLabel,
+                        fontFamily = nunitosFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 10.sp,
+                        color = LitecartesColor.Secondary.copy(alpha = 0.65f)
+                    )
+                }
+            } else {
+                Icon(
+                    imageVector = Icons.Default.Lock,
+                    contentDescription = "Terkunci",
+                    tint = Color.Gray.copy(alpha = 0.55f),
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         }
     }
 }
+
+private fun formatUnlockedDate(iso: String): String =
+    runCatching {
+        OffsetDateTime.parse(iso)
+            .atZoneSameInstant(ZoneId.systemDefault())
+            .format(DateTimeFormatter.ofPattern("dd MMM", Locale("id", "ID")))
+    }.getOrDefault("")
 
 @Preview(showBackground = true)
 @Composable
 private fun PreviewAchievementCardUnlocked() {
     LitecartesNativeTheme {
         AchievementCard(
-            title = "Penjelajah Jaringan",
-            description = "Selesaikan 5 level pertama",
-            unlocked = true
+            title = "Penjelajah Pretest",
+            description = "Menyelesaikan pretest",
+            unlocked = true,
+            unlockedAt = "2026-05-11T00:00:00Z"
         )
     }
 }

@@ -43,10 +43,10 @@ fun StatCard(
     Card(
         modifier = modifier
             .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(12.dp)
+                elevation = 6.dp,
+                shape = RoundedCornerShape(14.dp)
             ),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(
             containerColor = LitecartesColor.DarkerSurface
         )
@@ -54,7 +54,7 @@ fun StatCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 12.dp, horizontal = 8.dp),
+                .padding(vertical = 12.dp, horizontal = 6.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (icon != null) {
@@ -62,7 +62,7 @@ fun StatCard(
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape)
-                        .background(iconTint.copy(alpha = 0.18f)),
+                        .background(iconTint.copy(alpha = 0.2f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -72,22 +72,22 @@ fun StatCard(
                         modifier = Modifier.size(18.dp)
                     )
                 }
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(8.dp))
             }
             Text(
                 text = value,
                 fontFamily = nunitosFontFamily,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 22.sp,
-                color = LitecartesColor.Primary
+                color = iconTint
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = label,
                 fontFamily = nunitosFontFamily,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.ExtraBold,
                 fontSize = 11.sp,
-                color = LitecartesColor.Secondary.copy(alpha = 0.7f),
+                color = LitecartesColor.Secondary,
                 textAlign = TextAlign.Center
             )
         }

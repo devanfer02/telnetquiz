@@ -1,28 +1,26 @@
 package com.example.telnetquiz.features.user.presentation.screens
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material3.Icon
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
@@ -78,7 +75,6 @@ fun ProfileScreen(
     val selectedAvatarIndex by viewModel.selectedAvatarIndex.collectAsState()
     var showSoundSettings by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
-    var isHeaderExpanded by remember { mutableStateOf(true) }
     val tutorialController = LocalTutorialController.current
 
     LaunchedEffect(Unit) {
@@ -158,150 +154,165 @@ fun ProfileScreen(
             .background(LitecartesColor.Surface)
             .fillMaxSize()
     ) {
-        Column {
-            AnimatedVisibility(
-                visible = isHeaderExpanded,
-                enter = expandVertically(expandFrom = Alignment.Top),
-                exit = shrinkVertically(shrinkTowards = Alignment.Top),
-                modifier = if (tutorialController != null) Modifier.onGloballyPositioned {
-                    tutorialController.registerTarget("profile_header", it)
-                } else Modifier
-            ) {
-                ProfileHeaderSection(
-                    profile = state.profile,
-                    isLoading = state.isLoading,
-                    error = state.error,
-                    localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
-                    onSettingsClick = { showSoundSettings = true },
-                    onEditProfile = {
-                        tutorialController?.notifyTargetClicked("profile_header")
-                        navController.navigate(Screen.EditProfileScreen.route)
-                    }
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { isHeaderExpanded = !isHeaderExpanded }
-                    .padding(vertical = 6.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .width(40.dp)
-                        .height(4.dp)
-                        .clip(RoundedCornerShape(2.dp))
-                        .background(Color.Gray.copy(alpha = 0.3f))
-                )
-            }
-        }
-            LazyColumn(
-                modifier = Modifier
-                    .padding(
-                        top = 8.dp,
-                        start = 20.dp,
-                        end = 20.dp
-                    )
-                    .weight(1f),
-                contentPadding = PaddingValues(bottom = 64.dp)
-            ) {
-                state.profile?.stats?.let { stats ->
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 12.dp)
-                                .then(
-                                    if (tutorialController != null) Modifier.onGloballyPositioned {
-                                        tutorialController.registerTarget("profile_stats", it)
-                                    } else Modifier
-                                ),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            StatCard(
-                                label = "Total Skor",
-                                value = "${stats.totalScore}",
-                                icon = Icons.Filled.EmojiEvents,
-                                iconTint = LitecartesColor.ScoreYellow,
-                                modifier = Modifier.weight(1f)
-                            )
-                            StatCard(
-                                label = "Level Usai",
-                                value = "${stats.levelsCompleted}",
-                                icon = Icons.Filled.Flag,
-                                iconTint = LitecartesColor.Primary,
-                                modifier = Modifier.weight(1f)
-                            )
-                            StatCard(
-                                label = "Bab Usai",
-                                value = "${stats.chaptersCompleted}",
-                                icon = Icons.Filled.AutoStories,
-                                iconTint = LitecartesColor.GreenCactus,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                    }
+        Box(
+            modifier = if (tutorialController != null) Modifier.onGloballyPositioned {
+                tutorialController.registerTarget("profile_header", it)
+            } else Modifier
+        ) {
+            ProfileHeaderSection(
+                profile = state.profile,
+                isLoading = state.isLoading,
+                error = state.error,
+                localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
+                onSettingsClick = { showSoundSettings = true },
+                onEditProfile = {
+                    tutorialController?.notifyTargetClicked("profile_header")
+                    navController.navigate(Screen.EditProfileScreen.route)
                 }
+            )
+        }
+        LazyColumn(
+            modifier = Modifier
+                .padding(horizontal = 14.dp)
+                .weight(1f),
+            contentPadding = PaddingValues(top = 6.dp, bottom = 64.dp)
+        ) {
+            state.profile?.stats?.let { stats ->
                 item {
-                    Text(
-                        text = "Pencapaian",
-                        fontFamily = nunitosFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
-                        color = LitecartesColor.Secondary,
+                    Row(
                         modifier = Modifier
-                            .padding(bottom = 12.dp)
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp)
                             .then(
                                 if (tutorialController != null) Modifier.onGloballyPositioned {
-                                    tutorialController.registerTarget("profile_achievements", it)
+                                    tutorialController.registerTarget("profile_stats", it)
                                 } else Modifier
-                            )
-                    )
-                }
-
-                when {
-                    achievementState.isLoading -> {
-                        items(4) {
-                            AchievementCardSkeleton()
-                        }
-                    }
-                    achievementState.error != null -> {
-                        item {
-                            ErrorRetryBox(
-                                message = achievementState.error ?: "Gagal memuat pencapaian",
-                                onRetry = { achievementViewModel.loadAchievements() }
-                            )
-                        }
-                    }
-                    achievementState.achievements.isEmpty() -> {
-                        item {
-                            Text(
-                                text = "Belum ada pencapaian. Selesaikan quiz untuk mendapatkan pencapaian!",
-                                color = LitecartesColor.Secondary.copy(alpha = 0.7f),
-                                fontFamily = nunitosFontFamily,
-                                fontSize = 14.sp,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    }
-                    else -> {
-                        items(
-                            items = achievementState.achievements,
-                            key = { it.id }
-                        ) { achievement ->
-                            AchievementCard(
-                                title = achievement.title,
-                                description = achievement.description,
-                                unlocked = achievement.unlocked
-                            )
-                        }
+                            ),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        StatCard(
+                            label = "Total Skor",
+                            value = "${stats.totalScore}",
+                            icon = Icons.Filled.Bolt,
+                            iconTint = LitecartesColor.ScoreYellow,
+                            modifier = Modifier.weight(1f)
+                        )
+                        StatCard(
+                            label = "Level Usai",
+                            value = "${stats.levelsCompleted}",
+                            icon = Icons.Filled.Flag,
+                            iconTint = LitecartesColor.Primary,
+                            modifier = Modifier.weight(1f)
+                        )
+                        val chapterValue = if (stats.totalChapters > 0)
+                            "${stats.chaptersCompleted}/${stats.totalChapters}"
+                        else "${stats.chaptersCompleted}"
+                        StatCard(
+                            label = "Bab Usai",
+                            value = chapterValue,
+                            icon = Icons.Filled.AutoStories,
+                            iconTint = LitecartesColor.GreenCactus,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
                 }
-
+            }
+            item {
+                val totalAch = achievementState.achievements.size
+                val unlockedAch = achievementState.achievements.count { it.unlocked }
+                PencapaianHeader(
+                    unlocked = unlockedAch,
+                    total = totalAch,
+                    modifier = if (tutorialController != null) Modifier.onGloballyPositioned {
+                        tutorialController.registerTarget("profile_achievements", it)
+                    } else Modifier
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+            }
+            when {
+                achievementState.isLoading -> {
+                    items(4) { AchievementCardSkeleton() }
+                }
+                achievementState.error != null -> {
+                    item {
+                        ErrorRetryBox(
+                            message = achievementState.error ?: "Gagal memuat pencapaian",
+                            onRetry = { achievementViewModel.loadAchievements() }
+                        )
+                    }
+                }
+                achievementState.achievements.isEmpty() -> {
+                    item {
+                        Text(
+                            text = "Belum ada pencapaian. Selesaikan quiz untuk mendapatkan pencapaian!",
+                            color = LitecartesColor.Secondary.copy(alpha = 0.7f),
+                            fontFamily = nunitosFontFamily,
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+                else -> {
+                    items(
+                        items = achievementState.achievements,
+                        key = { it.id }
+                    ) { achievement ->
+                        AchievementCard(
+                            title = achievement.title,
+                            description = achievement.description,
+                            unlocked = achievement.unlocked,
+                            unlockedAt = achievement.unlockedAt
+                        )
+                    }
+                }
             }
         }
     }
+}
+
+@Composable
+private fun PencapaianHeader(unlocked: Int, total: Int, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp, bottom = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Filled.EmojiEvents,
+            contentDescription = null,
+            tint = LitecartesColor.Primary,
+            modifier = Modifier.size(16.dp)
+        )
+        Spacer(modifier = Modifier.size(6.dp))
+        Text(
+            text = "PENCAPAIAN",
+            fontFamily = nunitosFontFamily,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 12.sp,
+            letterSpacing = 1.sp,
+            color = LitecartesColor.Secondary
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Box(
+            modifier = Modifier
+                .background(
+                    color = LitecartesColor.Primary.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(50)
+                )
+                .padding(horizontal = 10.dp, vertical = 4.dp)
+        ) {
+            Text(
+                text = "$unlocked / $total terbuka",
+                fontFamily = nunitosFontFamily,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 11.sp,
+                color = LitecartesColor.Primary
+            )
+        }
+    }
+}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
