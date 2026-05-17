@@ -64,11 +64,11 @@ fun AnswerFeedbackSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
-                .padding(top = 4.dp, bottom = 20.dp),
+                .padding(top = 4.dp, bottom = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             MascotInRing(isCorrect = isCorrect, accent = accent)
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -87,7 +87,7 @@ fun AnswerFeedbackSheet(
                     fontSize = 20.sp
                 )
             }
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = if (isCorrect)
                     "Mantap! Pemahamanmu makin tajam, lanjut ke soal berikutnya."
@@ -99,7 +99,7 @@ fun AnswerFeedbackSheet(
                 fontSize = 12.sp,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(14.dp))
             PretestButton(
                 text = if (isLastQuestion) "Selesai" else "Lanjut",
                 backgroundColor = accent,
@@ -112,7 +112,7 @@ fun AnswerFeedbackSheet(
 
 @Composable
 private fun MascotInRing(isCorrect: Boolean, accent: Color) {
-    val ringSize = 180.dp
+    val ringSize = 140.dp
     Box(
         modifier = Modifier.size(ringSize),
         contentAlignment = Alignment.Center
@@ -129,13 +129,13 @@ private fun MascotInRing(isCorrect: Boolean, accent: Color) {
                 size = Size(size.width - strokeWidth, size.height - strokeWidth),
                 style = Stroke(
                     width = strokeWidth,
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 10f), 0f)
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 8f), 0f)
                 )
             )
         }
         Box(
             modifier = Modifier
-                .size(ringSize - 16.dp)
+                .size(ringSize - 14.dp)
                 .clip(CircleShape)
                 .background(accent.copy(alpha = 0.06f)),
             contentAlignment = Alignment.Center
@@ -145,15 +145,15 @@ private fun MascotInRing(isCorrect: Boolean, accent: Color) {
                     id = if (isCorrect) R.drawable.chap1 else R.drawable.mascot_wrong
                 ),
                 contentDescription = null,
-                modifier = Modifier.size(130.dp)
+                modifier = Modifier.size(100.dp)
             )
         }
-        FeedbackSparkle(Alignment.TopStart, 16.dp, 14.dp, 12.dp, accent)
-        FeedbackSparkle(Alignment.TopEnd, (-18).dp, 28.dp, 9.dp, accent)
-        FeedbackSparkle(Alignment.CenterStart, 4.dp, 0.dp, 8.dp, accent)
-        FeedbackSparkle(Alignment.CenterEnd, (-8).dp, (-30).dp, 10.dp, accent)
-        FeedbackSparkle(Alignment.BottomStart, 24.dp, (-22).dp, 9.dp, accent)
-        FeedbackSparkle(Alignment.BottomEnd, (-20).dp, (-16).dp, 11.dp, accent)
+        FeedbackSparkle(Alignment.TopStart, 12.dp, 10.dp, 10.dp, accent)
+        FeedbackSparkle(Alignment.TopEnd, (-14).dp, 22.dp, 8.dp, accent)
+        FeedbackSparkle(Alignment.CenterStart, 2.dp, 0.dp, 7.dp, accent)
+        FeedbackSparkle(Alignment.CenterEnd, (-6).dp, (-24).dp, 9.dp, accent)
+        FeedbackSparkle(Alignment.BottomStart, 18.dp, (-18).dp, 8.dp, accent)
+        FeedbackSparkle(Alignment.BottomEnd, (-16).dp, (-12).dp, 10.dp, accent)
     }
 }
 
