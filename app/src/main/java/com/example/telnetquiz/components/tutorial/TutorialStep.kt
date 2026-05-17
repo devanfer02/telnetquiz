@@ -269,7 +269,7 @@ private val mainSteps = listOf(
         title = "Hasil Kuis",
         description = "Skor dan jumlah jawaban benar/salah kamu tampil di sini. Kalau skormu ≥ KKM, kamu lulus!",
         targetKey = "result_score_section",
-        tooltipPosition = TooltipPosition.BELOW_TARGET,
+        tooltipPosition = TooltipPosition.ABOVE_TARGET,
         route = Screen.ResultScreen.route
     ),
     TutorialStep(
