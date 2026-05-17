@@ -80,9 +80,21 @@ private fun copyFor(passed: Boolean, scorePercentage: Double): ResultCopy = when
         title = "COBA LAGI",
         subtitle = "Setiap tantangan bikin kamu makin kuat, Penjelajah. Pelajari lagi materinya dan tunjukkan kemampuanmu di percobaan berikutnya!"
     )
-    scorePercentage >= 100.0 -> ResultCopy("SKOR SEMPURNA", "SEMPURNA")
-    scorePercentage >= 80.0 -> ResultCopy("BAGUS BANGET", "BAGUS!")
-    else -> ResultCopy("LULUS", "BERHASIL!")
+    scorePercentage >= 100.0 -> ResultCopy(
+        badgeLabel = "SKOR SEMPURNA",
+        title = "SEMPURNA",
+        subtitle = "Luar biasa! Pemahamanmu top banget, Penjelajah. Lanjutkan petualangan ke level berikutnya!"
+    )
+    scorePercentage >= 80.0 -> ResultCopy(
+        badgeLabel = "BAGUS BANGET",
+        title = "BAGUS!",
+        subtitle = "Kerja bagus! Kamu makin jago, Penjelajah. Lanjutkan momentum ini ke level berikutnya!"
+    )
+    else -> ResultCopy(
+        badgeLabel = "LULUS",
+        title = "BERHASIL!",
+        subtitle = "Selamat, kamu berhasil melewati level ini! Lanjutkan petualanganmu, Penjelajah!"
+    )
 }
 
 @Composable

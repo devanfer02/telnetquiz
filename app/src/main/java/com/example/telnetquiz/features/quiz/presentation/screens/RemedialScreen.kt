@@ -103,7 +103,7 @@ fun RemedialScreen(
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
 
-                Spacer(modifier = Modifier.weight(0.6f))
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
             Column(
