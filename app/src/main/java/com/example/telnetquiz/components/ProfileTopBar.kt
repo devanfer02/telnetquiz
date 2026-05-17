@@ -1,5 +1,7 @@
 package com.example.telnetquiz.components
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.MilitaryTech
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Icon
@@ -139,15 +142,28 @@ fun ProfileTopBar(
                         val score = profileState.profile?.stats?.totalScore ?: 0
                         val streak = profileState.profile?.stats?.dailyStreak ?: 0
                         ColoredPill(
-                            iconRes = R.drawable.diamond,
                             value = "$score",
-                            background = Color(0xFFFFC93C)
-                        )
+                            background = Color(0xFFFFC93C),
+                            expandedLabel = "Total XP"
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.diamond),
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
                         ColoredPill(
-                            iconRes = R.drawable.lightning,
                             value = "$streak",
-                            background = Color(0xFFFF6F3C)
-                        )
+                            background = Color(0xFFFF6F3C),
+                            expandedLabel = "Streak"
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.LocalFireDepartment,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -262,20 +278,34 @@ private fun DashedAvatar(
 }
 
 @Composable
-private fun ColoredPill(iconRes: Int, value: String, background: Color) {
+private fun ColoredPill(
+    value: String,
+    background: Color,
+    expandedLabel: String,
+    icon: @Composable () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(50))
             .background(background)
-            .padding(horizontal = 8.dp, vertical = 3.dp),
+            .clickable { expanded = !expanded }
+            .padding(horizontal = 8.dp, vertical = 3.dp)
+            .animateContentSize(animationSpec = tween(180)),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Image(
-            painter = painterResource(id = iconRes),
-            contentDescription = null,
-            modifier = Modifier.size(14.dp)
-        )
+        if (expanded) {
+            Text(
+                text = expandedLabel,
+                color = Color.White,
+                fontFamily = nunitosFontFamily,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 10.sp,
+                maxLines = 1
+            )
+        }
+        icon()
         Text(
             text = value,
             color = Color.White,
