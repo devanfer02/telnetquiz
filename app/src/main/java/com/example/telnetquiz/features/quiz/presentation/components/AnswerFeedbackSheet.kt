@@ -41,10 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.telnetquiz.R
 import com.example.telnetquiz.components.PretestButton
+import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
-
-private val feedbackGreen = Color(0xFF4CAF50)
-private val feedbackRed = Color(0xFFE53935)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +52,7 @@ fun AnswerFeedbackSheet(
     onDismiss: () -> Unit,
     onContinue: () -> Unit
 ) {
-    val accent = if (isCorrect) feedbackGreen else feedbackRed
+    val accent = if (isCorrect) LitecartesColor.ScoreGreen else LitecartesColor.ScoreRed
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
