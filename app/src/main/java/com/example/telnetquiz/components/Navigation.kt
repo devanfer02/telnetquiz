@@ -2,9 +2,14 @@ package com.example.telnetquiz.components
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -276,7 +281,17 @@ private fun MainNavHost(
     Box(modifier = Modifier.fillMaxSize()) {
     Box(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            if (showProfileTopBar) ProfileTopBar(backgroundColor = profileTopBarBg)
+            AnimatedVisibility(
+                visible = showProfileTopBar,
+                enter = expandVertically(animationSpec = tween(300)) +
+                    slideInVertically(animationSpec = tween(300)) { -it } +
+                    fadeIn(animationSpec = tween(300)),
+                exit = shrinkVertically(animationSpec = tween(300)) +
+                    slideOutVertically(animationSpec = tween(300)) { -it } +
+                    fadeOut(animationSpec = tween(300))
+            ) {
+                ProfileTopBar(backgroundColor = profileTopBarBg)
+            }
             NavHost(
                 navController = navController,
                 startDestination = startDestination,

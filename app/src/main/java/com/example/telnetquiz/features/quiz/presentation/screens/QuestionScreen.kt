@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -52,6 +53,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import com.example.telnetquiz.components.ErrorRetryBox
 import com.example.telnetquiz.components.MascotLoadingScreen
 import com.example.telnetquiz.components.tutorial.LocalTutorialController
+import com.example.telnetquiz.components.tutorial.TutorialStepId
 import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.features.quiz.presentation.components.AnswerFeedbackSheet
 import com.example.telnetquiz.components.OptionButton
@@ -184,6 +186,17 @@ fun QuestionScreen(
 
                     val isTtsLoading by viewModel.ttsLoading.collectAsState()
                     val isTtsPlaying by viewModel.ttsPlaying.collectAsState()
+                    val listState = rememberLazyListState()
+
+                    val tutorialStepId = tutorialController?.currentStep?.id
+                    LaunchedEffect(tutorialStepId, currentQuestion.id) {
+                        if (tutorialStepId == TutorialStepId.QUIZ_VERIFY ||
+                            tutorialStepId == TutorialStepId.RETRY_VERIFY) {
+                            val lastIndex = (listState.layoutInfo.totalItemsCount - 1)
+                                .coerceAtLeast(0)
+                            listState.animateScrollToItem(lastIndex)
+                        }
+                    }
 
                     Column(
                         modifier = Modifier
@@ -192,7 +205,8 @@ fun QuestionScreen(
                             .background(LitecartesColor.Surface)
                     ) {
                         LazyColumn(
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            state = listState
                         ) {
                             item {
                                 QuestionHeaderBox(

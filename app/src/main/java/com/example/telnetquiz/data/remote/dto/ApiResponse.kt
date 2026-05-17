@@ -257,6 +257,11 @@ data class VerifyAnswerResponse(
     @SerializedName("correct_option_id") val correctOptionId: Int
 )
 
+data class VerifyPretestAnswerRequest(
+    @SerializedName("question_id") val questionId: Int,
+    @SerializedName("answered_option_id") val answeredOptionId: Int
+)
+
 data class QuizMaterialsRequest(
     @SerializedName("quiz_id") val quizId: Int
 )

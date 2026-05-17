@@ -110,6 +110,14 @@ fun AuthLoginScreen(
         mutableStateOf("")
     }
 
+    var showValidationSheet by remember {
+        mutableStateOf(false)
+    }
+
+    var validationMessage by remember {
+        mutableStateOf("")
+    }
+
     val emailErrorMessage = emailError(email, emailTouched)
     val passwordErrorMessage = passwordError(password, passwordTouched)
 
@@ -242,13 +250,25 @@ fun AuthLoginScreen(
                 LoadingButton(
                     text = "masuk".uppercase(),
                     isLoading = state.isLoading,
-                    enabled = email.isNotBlank() && password.isNotBlank()
-                        && emailErrorMessage == null && passwordErrorMessage == null,
+                    enabled = !state.isLoading,
                     onClick = {
                         emailTouched = true
                         passwordTouched = true
-                        if (email.isNotBlank() && password.isNotBlank() &&
-                            emailErrorMessage == null) {
+                        val warning = when {
+                            email.isBlank() && password.isBlank() ->
+                                "Email dan kata sandi belum diisi. Lengkapi dulu yuk!"
+                            email.isBlank() ->
+                                "Email belum diisi. Masukkan email kamu dulu, ya."
+                            password.isBlank() ->
+                                "Kata sandi belum diisi. Yuk lengkapi dulu."
+                            !Patterns.EMAIL_ADDRESS.matcher(email).matches() ->
+                                "Format email belum tepat. Coba periksa lagi, ya."
+                            else -> null
+                        }
+                        if (warning != null) {
+                            validationMessage = warning
+                            showValidationSheet = true
+                        } else {
                             viewModel.login(email, password)
                         }
                     },
@@ -286,6 +306,14 @@ fun AuthLoginScreen(
                 title = "Login Gagal",
                 message = errorMessage,
                 onDismiss = { showErrorSheet = false }
+            )
+        }
+
+        if (showValidationSheet) {
+            ErrorBottomSheet(
+                title = "Belum Lengkap",
+                message = validationMessage,
+                onDismiss = { showValidationSheet = false }
             )
         }
     }

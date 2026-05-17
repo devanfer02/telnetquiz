@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.telnetquiz.data.remote.dto.PretestQuestionDto
 import com.example.telnetquiz.data.remote.dto.PretestResultDto
 import com.example.telnetquiz.data.remote.dto.PretestSubmissionDto
+import com.example.telnetquiz.data.remote.dto.VerifyAnswerResponse
 import com.example.telnetquiz.data.audio.AudioManager
 import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.data.local.FlowResultStore
@@ -30,7 +31,9 @@ data class PretestState(
     val isCompleted: Boolean = false,
     val error: String? = null,
     val successMessage: String? = null,
-    val result: PretestResultDto? = null
+    val result: PretestResultDto? = null,
+    val isVerifying: Boolean = false,
+    val verifiedQuestions: Map<Int, VerifyAnswerResponse> = emptyMap()
 )
 
 sealed class PretestNavEvent {
@@ -60,6 +63,20 @@ class PretestViewModel @Inject constructor(
     val currentQuestion: PretestQuestionDto?
         get() = _state.value.questions.getOrNull(_state.value.currentQuestionIndex)
 
+    val isCurrentQuestionVerified: Boolean
+        get() {
+            val question = currentQuestion ?: return false
+            return _state.value.verifiedQuestions.containsKey(question.id)
+        }
+
+    val isLastQuestion: Boolean
+        get() = _state.value.currentQuestionIndex >= _state.value.questions.size - 1
+
+    fun playAnswerSfx(isCorrect: Boolean) {
+        if (isCorrect) audioManager.playSfx(SfxType.QUESTION_RIGHT)
+        else audioManager.playSfx(SfxType.QUESTION_WRONG)
+    }
+
     val progress: Float
         get() = if (_state.value.questions.isEmpty()) 0f
                 else (_state.value.currentQuestionIndex + 1).toFloat() / _state.value.questions.size
@@ -79,7 +96,8 @@ class PretestViewModel @Inject constructor(
                             isLoading = false,
                             questions = result.data,
                             currentQuestionIndex = 0,
-                            answers = emptyMap()
+                            answers = emptyMap(),
+                            verifiedQuestions = emptyMap()
                         )
                     }
                 }
@@ -97,9 +115,37 @@ class PretestViewModel @Inject constructor(
     }
 
     fun selectAnswer(questionId: Int, optionId: Int) {
+        if (_state.value.verifiedQuestions.containsKey(questionId)) return
         _state.value = _state.value.copy(
             answers = _state.value.answers + (questionId to optionId)
         )
+    }
+
+    fun verifyCurrentAnswer() {
+        val question = currentQuestion ?: return
+        val answeredOptionId = _state.value.answers[question.id] ?: return
+        if (_state.value.verifiedQuestions.containsKey(question.id)) return
+
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isVerifying = true, error = null)
+            when (val result = pretestRepository.verifyAnswer(question.id, answeredOptionId)) {
+                is Result.Success -> {
+                    _state.value = _state.value.copy(
+                        isVerifying = false,
+                        verifiedQuestions = _state.value.verifiedQuestions + (question.id to result.data)
+                    )
+                }
+                is Result.Error -> {
+                    _state.value = _state.value.copy(
+                        isVerifying = false,
+                        error = result.message
+                    )
+                }
+                is Result.Loading -> {
+                    _state.value = _state.value.copy(isVerifying = true)
+                }
+            }
+        }
     }
 
     fun nextQuestion() {

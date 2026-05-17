@@ -31,6 +31,7 @@ import com.example.telnetquiz.data.remote.dto.UpdateProfileRequest
 import com.example.telnetquiz.data.remote.dto.UserProfileDto
 import com.example.telnetquiz.data.remote.dto.VerifyAnswerRequest
 import com.example.telnetquiz.data.remote.dto.VerifyAnswerResponse
+import com.example.telnetquiz.data.remote.dto.VerifyPretestAnswerRequest
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -158,6 +159,13 @@ interface TelNetQuizApi {
     @POST("api/quiz/verify")
     suspend fun verifyAnswer(
         @Body request: VerifyAnswerRequest
+    ): Response<ApiResponse<VerifyAnswerResponse>>
+
+    // Verify pretest answer
+    @Headers("Content-Type: application/json")
+    @POST("api/pretest/verify")
+    suspend fun verifyPretestAnswer(
+        @Body request: VerifyPretestAnswerRequest
     ): Response<ApiResponse<VerifyAnswerResponse>>
 
     // Quiz study materials

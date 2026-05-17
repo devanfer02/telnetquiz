@@ -295,7 +295,7 @@ private fun WeaknessCard(weakness: ChapterWeaknessDto, onClick: () -> Unit) {
                 modifier = Modifier
                     .width(4.dp)
                     .fillMaxHeight()
-                    .background(LitecartesColor.ScoreRed)
+                    .background(LitecartesColor.ScoreBlue)
             )
             Column(
                 modifier = Modifier

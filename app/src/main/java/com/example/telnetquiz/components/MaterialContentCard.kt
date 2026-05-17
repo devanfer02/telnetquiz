@@ -80,11 +80,24 @@ fun MaterialContentCard(
             audioButtonModifier = audioButtonModifier
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(2.dp))
+
+        val nonEmptyBlocks = remember(blocks) {
+            blocks.filter { b ->
+                when (b) {
+                    is StudyBlock.Body -> b.annotated.text.isNotBlank()
+                    is StudyBlock.Heading -> b.text.isNotBlank()
+                    is StudyBlock.Conclusion -> b.annotated.text.isNotBlank()
+                    is StudyBlock.FeatureList -> b.items.any {
+                        it.title.isNotBlank() || it.description.isNotBlank()
+                    }
+                }
+            }
+        }
 
         var featureIndex = 0
-        blocks.forEachIndexed { i, block ->
-            val isLast = i == blocks.lastIndex
+        nonEmptyBlocks.forEachIndexed { i, block ->
+            val isLast = i == nonEmptyBlocks.lastIndex
             when (block) {
                 is StudyBlock.Body -> {
                     BodyParagraphCard(block.annotated)
@@ -94,9 +107,10 @@ fun MaterialContentCard(
                 }
                 is StudyBlock.FeatureList -> {
                     block.items.forEachIndexed { j, item ->
+                        if (item.title.isBlank() && item.description.isBlank()) return@forEachIndexed
                         FeatureCard(index = featureIndex, item = item)
                         if (j != block.items.lastIndex) {
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(2.dp))
                         }
                         featureIndex++
                     }
@@ -106,11 +120,11 @@ fun MaterialContentCard(
                 }
             }
             if (!isLast) {
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(2.dp))
             }
         }
 
-        if (blocks.isEmpty()) {
+        if (nonEmptyBlocks.isEmpty()) {
             BodyParagraphCard(parseInline(content))
         }
     }
@@ -180,39 +194,23 @@ private fun IntroHero(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = title,
-                    color = Color.White,
-                    fontSize = 22.sp,
-                    fontFamily = nunitosFontFamily,
-                    fontWeight = FontWeight.ExtraBold,
-                    modifier = Modifier.weight(1f)
-                )
-                if (hasImage) {
-                    AsyncImage(
-                        model = imageLink,
-                        contentDescription = title,
-                        modifier = Modifier
-                            .size(64.dp)
-                            .clip(RoundedCornerShape(12.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
+            Text(
+                text = title,
+                color = Color.White,
+                fontSize = 22.sp,
+                fontFamily = nunitosFontFamily,
+                fontWeight = FontWeight.ExtraBold,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             if (hasImage) {
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 AsyncImage(
                     model = imageLink,
                     contentDescription = title,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(160.dp)
+                        .height(120.dp)
                         .clip(RoundedCornerShape(12.dp)),
                     contentScale = ContentScale.Fit
                 )
@@ -242,7 +240,7 @@ private fun BodyParagraphCard(annotated: AnnotatedString) {
             fontSize = 13.sp,
             fontFamily = nunitosFontFamily,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
         )
     }
 }
@@ -294,7 +292,7 @@ private fun FeatureCard(index: Int, item: FeatureItem) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 10.dp, vertical = 8.dp),
+                .padding(horizontal = 10.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {

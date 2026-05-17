@@ -42,6 +42,10 @@ import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.features.pretest.presentation.viewmodel.PretestNavEvent
 import com.example.telnetquiz.features.pretest.presentation.viewmodel.PretestViewModel
+import com.example.telnetquiz.features.quiz.presentation.components.AnswerFeedbackSheet
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -59,12 +63,24 @@ fun PretestScreen(
 
     val letters = listOf('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
 
+    var showDialog by remember { mutableStateOf(false) }
+
     DisposableEffect(Unit) {
         onDispose { viewModel.stopTts() }
     }
 
     LaunchedEffect(Unit) {
         viewModel.loadPretestQuestions()
+    }
+
+    LaunchedEffect(state.verifiedQuestions.size) {
+        if (currentQuestion != null && state.verifiedQuestions.containsKey(currentQuestion.id)) {
+            showDialog = true
+            val verification = state.verifiedQuestions[currentQuestion.id]
+            if (verification != null) {
+                viewModel.playAnswerSfx(verification.correct)
+            }
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -113,6 +129,7 @@ fun PretestScreen(
                 }
                 currentQuestion != null -> {
                     val selectedOptionId = state.answers[currentQuestion.id]
+                    val verification = state.verifiedQuestions[currentQuestion.id]
 
                     Column(
                         modifier = Modifier
@@ -154,12 +171,18 @@ fun PretestScreen(
                                 )
                             }
                             itemsIndexed(currentQuestion.options) { index, option ->
+                                val optionFeedback = when {
+                                    verification == null -> OptionFeedback.NONE
+                                    option.id == selectedOptionId && verification.correct -> OptionFeedback.CORRECT
+                                    option.id == selectedOptionId && !verification.correct -> OptionFeedback.WRONG
+                                    else -> OptionFeedback.NONE
+                                }
                                 Box(modifier = Modifier.padding(horizontal = 12.dp)) {
                                     OptionButton(
                                         text = option.text,
                                         letter = letters.getOrElse(index) { ' ' },
-                                        isActive = selectedOptionId == option.id,
-                                        feedback = OptionFeedback.NONE,
+                                        isActive = selectedOptionId == option.id && verification == null,
+                                        feedback = optionFeedback,
                                         onClick = {
                                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                             viewModel.selectAnswer(currentQuestion.id, option.id)
@@ -173,10 +196,10 @@ fun PretestScreen(
                         Column(
                             modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp)
                         ) {
-                            val isLastQuestion = state.currentQuestionIndex >= state.questions.size - 1
                             val hasSelectedAnswer = selectedOptionId != null
+                            val isVerified = verification != null
 
-                            if (state.isSubmitting) {
+                            if (state.isSubmitting || state.isVerifying) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -188,27 +211,41 @@ fun PretestScreen(
                                         modifier = Modifier.size(24.dp)
                                     )
                                 }
-                            } else {
+                            } else if (!isVerified) {
                                 PretestButton(
-                                    text = if (isLastQuestion) "Selesai" else "Lanjutkan",
+                                    text = "Cek Jawaban",
                                     backgroundColor = if (hasSelectedAnswer) LitecartesColor.Secondary else Color.Gray,
                                     textColor = if (hasSelectedAnswer) LitecartesColor.Surface else Color.White,
                                     onClick = {
                                         if (hasSelectedAnswer) {
-                                            if (isLastQuestion) {
-                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                                viewModel.audioManager.playSfx(SfxType.BTN_CLICK)
-                                                viewModel.audioManager.playSfx(SfxType.PRETEST_SUBMIT)
-                                                viewModel.submitPretest()
-                                            } else {
-                                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                                viewModel.audioManager.playSfx(SfxType.BTN_CLICK)
-                                                viewModel.nextQuestion()
-                                            }
+                                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                            viewModel.audioManager.playSfx(SfxType.BTN_CLICK)
+                                            viewModel.verifyCurrentAnswer()
                                         }
                                     }
                                 )
                             }
+                        }
+
+                        if (showDialog && verification != null) {
+                            AnswerFeedbackSheet(
+                                isCorrect = verification.correct,
+                                isLastQuestion = viewModel.isLastQuestion,
+                                onDismiss = { showDialog = false },
+                                onContinue = {
+                                    showDialog = false
+                                    if (viewModel.isLastQuestion) {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        viewModel.audioManager.playSfx(SfxType.BTN_CLICK)
+                                        viewModel.audioManager.playSfx(SfxType.PRETEST_SUBMIT)
+                                        viewModel.submitPretest()
+                                    } else {
+                                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                        viewModel.audioManager.playSfx(SfxType.BTN_CLICK)
+                                        viewModel.nextQuestion()
+                                    }
+                                }
+                            )
                         }
 
                         Spacer(modifier = Modifier.padding(10.dp))
