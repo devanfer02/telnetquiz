@@ -2,14 +2,9 @@ package com.example.telnetquiz.components
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -261,11 +256,6 @@ private fun MainNavHost(
         currentRoute in navbarRoutes ||
         currentRoute.startsWith(Screen.LevelScreen.route)
     )
-    val showProfileTopBar = currentRoute == Screen.HomeScreen.route ||
-        currentRoute?.startsWith(Screen.LevelScreen.route) == true
-    val profileTopBarBg = if (currentRoute?.startsWith(Screen.LevelScreen.route) == true)
-        androidx.compose.ui.graphics.Color(0xFFECC579) else LitecartesColor.Surface
-
     LaunchedEffect(currentRoute) {
         tutorialController.onRouteChanged(currentRoute)
         val seg = tutorialController.currentSegment ?: return@LaunchedEffect
@@ -281,17 +271,6 @@ private fun MainNavHost(
     Box(modifier = Modifier.fillMaxSize()) {
     Box(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            AnimatedVisibility(
-                visible = showProfileTopBar,
-                enter = expandVertically(animationSpec = tween(300)) +
-                    slideInVertically(animationSpec = tween(300)) { -it } +
-                    fadeIn(animationSpec = tween(300)),
-                exit = shrinkVertically(animationSpec = tween(300)) +
-                    slideOutVertically(animationSpec = tween(300)) { -it } +
-                    fadeOut(animationSpec = tween(300))
-            ) {
-                ProfileTopBar(backgroundColor = profileTopBarBg)
-            }
             NavHost(
                 navController = navController,
                 startDestination = startDestination,
@@ -409,11 +388,16 @@ private fun MainNavHost(
                 segmentId = TutorialSegmentId.MAIN,
                 controller = tutorialController,
                 prefs = tutorialPreferenceManager,
-                enabled = !profileState.isLoading && profileState.profile?.hasTakenPretest != false
+                enabled = profileState.profile?.hasTakenPretest == true
             )
 
-            if (!profileState.isLoading && profileState.profile?.hasTakenPretest != false) {
-                ChapterScreen(navController = navController)
+            if (profileState.profile?.hasTakenPretest == true) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    ProfileTopBar(backgroundColor = LitecartesColor.Surface)
+                    Box(modifier = Modifier.weight(1f).fillMaxSize()) {
+                        ChapterScreen(navController = navController)
+                    }
+                }
             }
         }
         composable(
@@ -426,10 +410,15 @@ private fun MainNavHost(
         ) {
             val id = it.arguments?.getInt("id") ?: 1
 
-            LevelScreen(
-                navController = navController,
-                chapterId = id
-            )
+            Column(modifier = Modifier.fillMaxSize()) {
+                ProfileTopBar(backgroundColor = androidx.compose.ui.graphics.Color(0xFFECC579))
+                Box(modifier = Modifier.weight(1f).fillMaxSize()) {
+                    LevelScreen(
+                        navController = navController,
+                        chapterId = id
+                    )
+                }
+            }
         }
         composable(
             route = "${Screen.QuestionScreen.route}/{quizId}?retry={retry}",
