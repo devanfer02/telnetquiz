@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -61,6 +62,7 @@ import com.example.telnetquiz.constants.Screen
 import com.example.telnetquiz.data.audio.AudioManager
 import com.example.telnetquiz.data.audio.SfxType
 import com.example.telnetquiz.data.remote.dto.QuizResultDto
+import com.example.telnetquiz.features.chapter.presentation.viewmodel.ChapterViewModel
 import com.example.telnetquiz.ui.theme.LitecartesColor
 import com.example.telnetquiz.ui.theme.LitecartesNativeTheme
 import com.example.telnetquiz.ui.theme.nunitosFontFamily
@@ -103,7 +105,8 @@ fun ResultScreen(
     chapterId: Int,
     level: Int = 0,
     quizResult: QuizResultDto? = null,
-    audioManager: AudioManager? = null
+    audioManager: AudioManager? = null,
+    chapterViewModel: ChapterViewModel = hiltViewModel()
 ) {
     val correctCount = quizResult?.correctAnswers ?: 0
     val wrongCount = (quizResult?.totalQuestions ?: 0) - correctCount
@@ -112,22 +115,33 @@ fun ResultScreen(
     val tutorialController = LocalTutorialController.current
     val copy = copyFor(passed, scorePercentage)
     val diamondReward = if (passed) scorePercentage.toInt() else 0
+    val chapterDetailState by chapterViewModel.detailState.collectAsState()
+    val nextQuiz = chapterDetailState.chapter?.quizzes
+        ?.sortedBy { it.level }
+        ?.firstOrNull { it.level > level }
+    val hasNextLevel = passed && nextQuiz != null
+
+    LaunchedEffect(chapterId) {
+        chapterViewModel.loadChapterById(chapterId)
+    }
 
     LaunchedEffect(Unit) {
         if (passed) audioManager?.playSfx(SfxType.RESULT_SUCCESS)
         else audioManager?.playSfx(SfxType.RESULT_FAIL)
     }
 
-    val onExit: () -> Unit = {
-        tutorialController?.notifyTargetClicked("result_continue_btn")
+    val onBackToLevelMap: () -> Unit = {
+        tutorialController?.notifyTargetClicked("result_back_to_map_btn")
         navController.navigate("${Screen.LevelScreen.route}/${chapterId}") {
             popUpTo("${Screen.LevelScreen.route}/${chapterId}") { inclusive = true }
         }
     }
 
-    val onBackToHome: () -> Unit = {
-        navController.navigate(Screen.HomeScreen.route) {
-            popUpTo(Screen.HomeScreen.route) { inclusive = true }
+    val onContinueToNextLevel: () -> Unit = {
+        nextQuiz?.let { quiz ->
+            navController.navigate("${Screen.QuestionScreen.route}/${quiz.id}") {
+                popUpTo("${Screen.LevelScreen.route}/${chapterId}") { inclusive = false }
+            }
         }
     }
 
@@ -220,38 +234,39 @@ fun ResultScreen(
                     .padding(top = 12.dp, bottom = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                if (hasNextLevel) {
+                    Button(
+                        text = "Lanjut ke level berikutnya",
+                        color = LitecartesColor.Surface,
+                        backgroundColor = LitecartesColor.Primary,
+                        borderColor = LitecartesColor.Primary,
+                        textModifier = Modifier.padding(vertical = 6.dp),
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        onClick = onContinueToNextLevel
+                    )
+                }
+
+                val backButtonIsPrimary = !hasNextLevel
                 Button(
-                    text = if (passed) "Lanjut ke level berikutnya" else "Kembali ke peta",
-                    color = LitecartesColor.Surface,
-                    backgroundColor = LitecartesColor.Primary,
+                    text = "Kembali ke peta level",
+                    color = if (backButtonIsPrimary) LitecartesColor.Surface else LitecartesColor.Primary,
+                    backgroundColor = if (backButtonIsPrimary) LitecartesColor.Primary else LitecartesColor.Surface,
                     borderColor = LitecartesColor.Primary,
-                    textModifier = Modifier.padding(vertical = 6.dp),
-                    fontSize = 14.sp,
+                    textModifier = Modifier.padding(vertical = if (backButtonIsPrimary) 6.dp else 4.dp),
+                    fontSize = if (backButtonIsPrimary) 14.sp else 13.sp,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp)
                         .then(
                             if (tutorialController != null) Modifier.onGloballyPositioned {
-                                tutorialController.registerTarget("result_continue_btn", it)
+                                tutorialController.registerTarget("result_back_to_map_btn", it)
                             } else Modifier
                         ),
-                    onClick = onExit
+                    onClick = onBackToLevelMap
                 )
-
-                if (passed) {
-                    Button(
-                        text = "Kembali ke beranda",
-                        color = LitecartesColor.Primary,
-                        backgroundColor = LitecartesColor.Surface,
-                        borderColor = LitecartesColor.Primary,
-                        textModifier = Modifier.padding(vertical = 4.dp),
-                        fontSize = 13.sp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
-                        onClick = onBackToHome
-                    )
-                }
             }
         }
     }

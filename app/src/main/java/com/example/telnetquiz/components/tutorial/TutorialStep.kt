@@ -283,9 +283,9 @@ private val mainSteps = listOf(
     ),
     TutorialStep(
         id = TutorialStepId.RESULT_CONTINUE,
-        title = "Lanjutkan",
-        description = "Tekan \"Lanjutkan\" untuk kembali ke peta level.",
-        targetKey = "result_continue_btn",
+        title = "Kembali ke Peta Level",
+        description = "Tekan \"Kembali ke peta level\" untuk balik ke daftar level dan memilih level berikutnya. Tombol \"Lanjut ke level berikutnya\" langsung membuka kuis level setelahnya jika kamu lulus.",
+        targetKey = "result_back_to_map_btn",
         tooltipPosition = TooltipPosition.ABOVE_TARGET,
         route = Screen.ResultScreen.route,
         requiresInteraction = true
