@@ -151,8 +151,7 @@ fun ChapterCardFromApi(
                         lineHeight = 16.sp,
                         maxLines = if (expanded) Int.MAX_VALUE else 3,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .fillMaxWidth(if (expanded) 1f else 0.78f)
+                        modifier = Modifier.fillMaxWidth(0.78f)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(

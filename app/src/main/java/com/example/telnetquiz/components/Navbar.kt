@@ -17,6 +17,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -90,7 +91,8 @@ fun Navbar(
                             painter = painterResource(
                                 id = icon
                             ),
-                            contentDescription = item.label
+                            contentDescription = item.label,
+                            colorFilter = if (isSelected) ColorFilter.tint(Color.White) else null
                         )
                     },
                     modifier = Modifier

@@ -49,7 +49,7 @@ fun ChapterScreen(
     ) {
         when {
             state.isLoading -> {
-                LazyColumn(contentPadding = PaddingValues(top = 8.dp, bottom = 64.dp)) {
+                LazyColumn(contentPadding = PaddingValues(top = 2.dp, bottom = 64.dp)) {
                     items(3) {
                         Spacer(modifier = Modifier.padding(5.dp))
                         Box(modifier = Modifier.padding(horizontal = 10.dp)) {
@@ -66,7 +66,7 @@ fun ChapterScreen(
             }
             state.chapters.isNotEmpty() -> {
                 LazyColumn(
-                    contentPadding = PaddingValues(top = 8.dp, bottom = 64.dp)
+                    contentPadding = PaddingValues(top = 2.dp, bottom = 64.dp)
                 ) {
                     itemsIndexed(
                         state.chapters,

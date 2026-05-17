@@ -89,7 +89,7 @@ fun ProfileTopBar(
         modifier = modifier
             .fillMaxWidth()
             .background(backgroundColor)
-            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 4.dp)
             .then(
                 if (tutorialController != null) Modifier.onGloballyPositioned {
                     tutorialController.registerTarget("profile_top_bar", it)
@@ -149,20 +149,16 @@ fun ProfileTopBar(
                     } else {
                         val score = profileState.profile?.stats?.totalScore ?: 0
                         val streak = profileState.profile?.stats?.dailyStreak ?: 0
-                        if (score > 0) {
-                            ColoredPill(
-                                iconRes = R.drawable.diamond,
-                                value = "$score",
-                                background = Color(0xFFFFC93C)
-                            )
-                        }
-                        if (streak > 0) {
-                            ColoredPill(
-                                iconRes = R.drawable.lightning,
-                                value = "$streak",
-                                background = Color(0xFFFF6F3C)
-                            )
-                        }
+                        ColoredPill(
+                            iconRes = R.drawable.diamond,
+                            value = "$score",
+                            background = Color(0xFFFFC93C)
+                        )
+                        ColoredPill(
+                            iconRes = R.drawable.lightning,
+                            value = "$streak",
+                            background = Color(0xFFFF6F3C)
+                        )
                     }
                 }
             }
