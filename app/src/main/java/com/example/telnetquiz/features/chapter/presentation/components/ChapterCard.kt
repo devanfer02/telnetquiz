@@ -151,7 +151,26 @@ fun ChapterCardFromApi(
                         modifier = Modifier
                             .fillMaxWidth(if (expanded) 1f else 0.78f)
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        FlatProgressBar(
+                            progress = percent / 100f,
+                            color = theme.accent,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(8.dp)
+                        )
+                        ActionPillButton(
+                            text = if (isCompleted) "ULANG" else "YUK MAIN",
+                            color = theme.accent,
+                            onClick = onClick
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -170,25 +189,6 @@ fun ChapterCardFromApi(
                             fontFamily = nunitosFontFamily,
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 11.sp
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        FlatProgressBar(
-                            progress = percent / 100f,
-                            color = theme.accent,
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(8.dp)
-                        )
-                        ActionPillButton(
-                            text = if (isCompleted) "ULANG" else "YUK MAIN",
-                            color = theme.accent,
-                            onClick = onClick
                         )
                     }
                 }

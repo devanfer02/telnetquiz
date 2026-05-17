@@ -36,38 +36,30 @@ fun BoxPoints(
 ) {
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(14.dp))
             .shadow(
-                elevation = 8.dp,
+                elevation = 6.dp,
                 clip = false,
-                shape = RoundedCornerShape(20.dp)
+                shape = RoundedCornerShape(14.dp)
             )
             .background(LitecartesColor.Surface)
-            .padding(
-                horizontal = 8.dp,
-                vertical = 2.dp
-            )
-,
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Start
     ) {
         Image(
             painter = painterResource(id = imageId),
-            contentDescription = "diamond",
-            modifier = Modifier
-                .size(18.dp)
+            contentDescription = null,
+            modifier = Modifier.size(14.dp)
         )
-        Spacer(
-            modifier = Modifier
-                .padding(3.dp)
-        )
+        Spacer(modifier = Modifier.padding(horizontal = 2.dp))
         AutoSizeText(
-            text = "$points",
+            text = points,
             fontFamily = nunitosFontFamily,
             color = LitecartesColor.Secondary,
-            fontWeight = FontWeight.SemiBold,
-            maxFontSize = 10.sp,
-            minFontSize = 6.sp,
+            fontWeight = FontWeight.ExtraBold,
+            maxFontSize = 12.sp,
+            minFontSize = 8.sp,
             maxLines = 1
         )
     }

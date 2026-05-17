@@ -89,19 +89,19 @@ fun ProfileTopBar(
                     tutorialController.registerTarget("profile_top_bar", it)
                 } else Modifier
             ),
-        cornerRadius = 24.dp,
+        cornerRadius = 22.dp,
         backgroundColor = LitecartesColor.Secondary
     ) {
         TopBarSparkleLayer()
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(vertical = 20.dp, horizontal = 18.dp)
+            modifier = Modifier.padding(vertical = 12.dp, horizontal = 14.dp)
         ) {
             if (profileState.isLoading) {
                 SkeletonBox(
-                    height = 55.dp,
-                    width = 55.dp,
-                    cornerRadius = 18.dp,
+                    height = 44.dp,
+                    width = 44.dp,
+                    cornerRadius = 14.dp,
                     onPrimary = true
                 )
             } else {
@@ -110,13 +110,13 @@ fun ProfileTopBar(
                     localAvatarResId = AvatarConstants.getAvatarResId(selectedAvatarIndex),
                     gender = profileState.profile?.gender,
                     nameSeed = profileState.profile?.fullname ?: "",
-                    shape = RoundedCornerShape(18.dp),
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier
-                        .height(55.dp)
+                        .height(44.dp)
                         .aspectRatio(1f)
                 )
             }
-            Spacer(modifier = Modifier.padding(4.dp))
+            Spacer(modifier = Modifier.padding(3.dp))
             if (profileState.isLoading) {
                 Column(
                     verticalArrangement = Arrangement.Center
@@ -134,14 +134,16 @@ fun ProfileTopBar(
                         fontFamily = nunitosFontFamily,
                         color = LitecartesColor.Surface,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                        fontSize = 15.sp,
+                        maxLines = 1
                     )
                     Text(
                         text = profileState.profile?.school?.name ?: "",
                         fontFamily = nunitosFontFamily,
-                        color = LitecartesColor.Surface,
+                        color = LitecartesColor.Surface.copy(alpha = 0.8f),
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 10.sp
+                        fontSize = 9.sp,
+                        maxLines = 1
                     )
                 }
             }

@@ -58,13 +58,7 @@ fun ChapterCardSkeleton(modifier: Modifier = Modifier) {
                 SkeletonBox(height = 12.dp, modifier = Modifier.fillMaxWidth(0.85f))
                 Spacer(modifier = Modifier.height(4.dp))
                 SkeletonBox(height = 12.dp, modifier = Modifier.fillMaxWidth(0.6f))
-                Spacer(modifier = Modifier.height(14.dp))
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    SkeletonBox(height = 10.dp, width = 90.dp)
-                    Spacer(modifier = Modifier.weight(1f))
-                    SkeletonBox(height = 10.dp, width = 28.dp)
-                }
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -76,6 +70,12 @@ fun ChapterCardSkeleton(modifier: Modifier = Modifier) {
                         modifier = Modifier.weight(1f)
                     )
                     SkeletonBox(height = 32.dp, width = 100.dp, cornerRadius = 50.dp)
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    SkeletonBox(height = 10.dp, width = 90.dp)
+                    Spacer(modifier = Modifier.weight(1f))
+                    SkeletonBox(height = 10.dp, width = 28.dp)
                 }
             }
         }
