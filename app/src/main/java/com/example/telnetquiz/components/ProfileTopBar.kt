@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.animation.AnimatedVisibility
@@ -294,16 +293,14 @@ fun ProfileTopBar(
 }
 
 @Composable
-private fun TopBarSparkleLayer() {
-    Box(modifier = Modifier.fillMaxSize()) {
-        SoftGlow(LitecartesColor.Primary.copy(alpha = 0.35f), 110.dp, (-30).dp, (-40).dp, Alignment.TopStart)
-        SoftGlow(Color.White.copy(alpha = 0.16f), 130.dp, 40.dp, (-50).dp, Alignment.TopEnd)
-        SoftGlow(LitecartesColor.Primary.copy(alpha = 0.22f), 90.dp, (-20).dp, 30.dp, Alignment.BottomStart)
-        Sparkle(Alignment.TopStart, 90.dp, 14.dp, 11.dp)
-        Sparkle(Alignment.TopEnd, (-40).dp, 28.dp, 8.dp)
-        Sparkle(Alignment.BottomStart, 60.dp, (-18).dp, 9.dp)
-        Sparkle(Alignment.BottomEnd, (-30).dp, (-10).dp, 12.dp)
-    }
+private fun BoxScope.TopBarSparkleLayer() {
+    SoftGlow(LitecartesColor.Primary.copy(alpha = 0.35f), 110.dp, (-30).dp, (-40).dp, Alignment.TopStart)
+    SoftGlow(Color.White.copy(alpha = 0.16f), 130.dp, 40.dp, (-50).dp, Alignment.TopEnd)
+    SoftGlow(LitecartesColor.Primary.copy(alpha = 0.22f), 90.dp, (-20).dp, 30.dp, Alignment.BottomStart)
+    Sparkle(Alignment.TopStart, 90.dp, 14.dp, 11.dp)
+    Sparkle(Alignment.TopEnd, (-40).dp, 28.dp, 8.dp)
+    Sparkle(Alignment.BottomStart, 60.dp, (-18).dp, 9.dp)
+    Sparkle(Alignment.BottomEnd, (-30).dp, (-10).dp, 12.dp)
 }
 
 @Composable
