@@ -303,7 +303,8 @@ fun QuestionScreen(
                                         )
                                 ) {
                                     VerifyButton(
-                                        isVisible = selectedOptionId != null && !viewModel.isCurrentQuestionVerified,
+                                        hasSelectedAnswer = selectedOptionId != null,
+                                        isVerified = viewModel.isCurrentQuestionVerified,
                                         isVerifying = state.isVerifying,
                                         isSubmitting = state.isSubmitting,
                                         isLastQuestion = viewModel.isLastQuestion,

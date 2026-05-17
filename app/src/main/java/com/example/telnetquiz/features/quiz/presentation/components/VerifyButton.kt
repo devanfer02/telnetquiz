@@ -13,6 +13,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,44 +23,14 @@ import com.example.telnetquiz.ui.theme.nunitosFontFamily
 
 @Composable
 fun VerifyButton(
-    isVisible: Boolean,
+    hasSelectedAnswer: Boolean,
+    isVerified: Boolean,
     isVerifying: Boolean,
     isSubmitting: Boolean,
     isLastQuestion: Boolean,
     onVerify: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (isVisible) {
-        OutlinedButton(
-            modifier = modifier
-                .padding(5.dp)
-                .fillMaxWidth(),
-            onClick = onVerify,
-            enabled = !isVerifying,
-            shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, LitecartesColor.DarkBrown),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = LitecartesColor.DarkBrown
-            ),
-            elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 8.dp)
-        ) {
-            if (isVerifying) {
-                CircularProgressIndicator(
-                    color = LitecartesColor.Surface,
-                    modifier = Modifier.size(20.dp)
-                )
-            } else {
-                Text(
-                    text = if (isLastQuestion) "Selesai" else "Lanjutkan",
-                    color = LitecartesColor.Surface,
-                    fontFamily = nunitosFontFamily,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
-            }
-        }
-    }
-
     if (isSubmitting) {
         Box(
             modifier = Modifier
@@ -72,6 +43,56 @@ fun VerifyButton(
                 modifier = Modifier.size(24.dp)
             )
         }
+        return
+    }
+
+    if (isVerified) return
+
+    val enabled = hasSelectedAnswer && !isVerifying
+    val containerColor = if (enabled) LitecartesColor.DarkBrown else Color.Gray
+    OutlinedButton(
+        modifier = modifier
+            .padding(5.dp)
+            .fillMaxWidth(),
+        onClick = onVerify,
+        enabled = enabled,
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, containerColor),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            disabledContainerColor = containerColor
+        ),
+        elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 8.dp)
+    ) {
+        if (isVerifying) {
+            CircularProgressIndicator(
+                color = LitecartesColor.Surface,
+                modifier = Modifier.size(20.dp)
+            )
+        } else {
+            Text(
+                text = if (isLastQuestion) "Selesai" else "Lanjutkan",
+                color = if (enabled) LitecartesColor.Surface else Color.White,
+                fontFamily = nunitosFontFamily,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewVerifyButtonPlaceholder() {
+    LitecartesNativeTheme {
+        VerifyButton(
+            hasSelectedAnswer = false,
+            isVerified = false,
+            isVerifying = false,
+            isSubmitting = false,
+            isLastQuestion = false,
+            onVerify = {}
+        )
     }
 }
 
@@ -80,7 +101,8 @@ fun VerifyButton(
 private fun PreviewVerifyButton() {
     LitecartesNativeTheme {
         VerifyButton(
-            isVisible = true,
+            hasSelectedAnswer = true,
+            isVerified = false,
             isVerifying = false,
             isSubmitting = false,
             isLastQuestion = false,
@@ -94,7 +116,8 @@ private fun PreviewVerifyButton() {
 private fun PreviewVerifyButtonLast() {
     LitecartesNativeTheme {
         VerifyButton(
-            isVisible = true,
+            hasSelectedAnswer = true,
+            isVerified = false,
             isVerifying = false,
             isSubmitting = false,
             isLastQuestion = true,
