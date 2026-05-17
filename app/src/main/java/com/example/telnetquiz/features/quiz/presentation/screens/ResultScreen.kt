@@ -117,9 +117,11 @@ fun ResultScreen(
     val copy = copyFor(passed, scorePercentage)
     val diamondReward = if (passed) scorePercentage.toInt() else 0
     val chapterDetailState by chapterViewModel.detailState.collectAsState()
-    val nextQuiz = chapterDetailState.chapter?.quizzes
-        ?.sortedBy { it.level }
-        ?.firstOrNull { it.level > level }
+    val nextQuiz = remember(chapterDetailState.chapter, level) {
+        chapterDetailState.chapter?.quizzes
+            ?.sortedBy { it.level }
+            ?.firstOrNull { it.level > level }
+    }
     val hasNextLevel = passed && nextQuiz != null
 
     LaunchedEffect(chapterId) {
