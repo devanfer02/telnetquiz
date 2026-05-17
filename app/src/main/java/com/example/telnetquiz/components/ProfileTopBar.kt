@@ -1,10 +1,5 @@
 package com.example.telnetquiz.components
 
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,7 +20,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.filled.MilitaryTech
+import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,25 +41,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.telnetquiz.R
 import com.example.telnetquiz.constants.AvatarConstants
@@ -82,8 +72,8 @@ fun ProfileTopBar(
 
     val profileState by profileViewModel.state.collectAsState()
     val selectedAvatarIndex by profileViewModel.selectedAvatarIndex.collectAsState()
+    val tag by profileViewModel.tag.collectAsState()
     val tutorialController = LocalTutorialController.current
-    var showTooltip by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -162,29 +152,50 @@ fun ProfileTopBar(
                 }
             }
             Spacer(modifier = Modifier.width(8.dp))
-            Box {
-                LegendaButton(onClick = { showTooltip = !showTooltip })
-                androidx.compose.animation.AnimatedVisibility(
-                    visible = showTooltip,
-                    enter = scaleIn(
-                        animationSpec = tween(250),
-                        transformOrigin = TransformOrigin(0.5f, 0f)
-                    ) + fadeIn(tween(200)),
-                    exit = scaleOut(
-                        animationSpec = tween(150),
-                        transformOrigin = TransformOrigin(0.5f, 0f)
-                    ) + fadeOut(tween(100))
-                ) {
-                    Popup(
-                        alignment = Alignment.BottomCenter,
-                        onDismissRequest = { showTooltip = false },
-                        properties = PopupProperties(focusable = true)
-                    ) {
-                        LegendaTooltip()
-                    }
-                }
-            }
+            TagBadge(tag = tag)
         }
+    }
+}
+
+@Composable
+private fun TagBadge(tag: String) {
+    val icon: ImageVector = when (tag) {
+        "Legenda" -> Icons.Filled.WorkspacePremium
+        "Veteran" -> Icons.Filled.MilitaryTech
+        "Amatir" -> Icons.Filled.EmojiEvents
+        else -> Icons.Filled.Explore
+    }
+    Column(
+        modifier = Modifier
+            .clip(RoundedCornerShape(14.dp))
+            .background(Color.White.copy(alpha = 0.12f))
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(3.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(22.dp)
+                .clip(CircleShape)
+                .background(Color.White),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = LitecartesColor.Secondary,
+                modifier = Modifier.size(15.dp)
+            )
+        }
+        Text(
+            text = tag.uppercase(),
+            color = Color.White,
+            fontFamily = nunitosFontFamily,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 9.sp,
+            letterSpacing = 1.sp,
+            maxLines = 1
+        )
     }
 }
 
@@ -276,101 +287,6 @@ private fun ColoredPill(iconRes: Int, value: String, background: Color) {
 }
 
 @Composable
-private fun LegendaButton(onClick: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .clip(RoundedCornerShape(14.dp))
-            .background(Color.White.copy(alpha = 0.12f))
-            .clickable { onClick() }
-            .padding(horizontal = 14.dp, vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(3.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(18.dp)
-                .clip(CircleShape)
-                .background(Color.White),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Info,
-                contentDescription = null,
-                tint = LitecartesColor.Secondary,
-                modifier = Modifier.size(14.dp)
-            )
-        }
-        Text(
-            text = "LEGENDA",
-            color = Color.White,
-            fontFamily = nunitosFontFamily,
-            fontWeight = FontWeight.ExtraBold,
-            fontSize = 10.sp,
-            letterSpacing = 1.sp
-        )
-    }
-}
-
-@Composable
-private fun LegendaTooltip() {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(
-            modifier = Modifier
-                .size(16.dp, 10.dp)
-                .background(color = LitecartesColor.Secondary, shape = TriangleUpShape)
-        )
-        Row(
-            modifier = Modifier
-                .shadow(12.dp, RoundedCornerShape(14.dp))
-                .clip(RoundedCornerShape(14.dp))
-                .background(LitecartesColor.Secondary)
-                .padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.quickcheck),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(10.dp)),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.diamond),
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(
-                        text = "Skor total dari semua quiz",
-                        fontFamily = nunitosFontFamily,
-                        fontSize = 11.sp,
-                        color = LitecartesColor.Surface
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.lightning),
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(
-                        text = "Streak bermain harian",
-                        fontFamily = nunitosFontFamily,
-                        fontSize = 11.sp,
-                        color = LitecartesColor.Surface
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun BoxScope.TopBarSparkleLayer() {
     SoftGlow(LitecartesColor.Primary.copy(alpha = 0.35f), 110.dp, (-30).dp, (-40).dp, Alignment.TopStart)
     SoftGlow(Color.White.copy(alpha = 0.16f), 130.dp, 40.dp, (-50).dp, Alignment.TopEnd)
@@ -417,18 +333,6 @@ private fun BoxScope.Sparkle(
             .offset(x = offsetX, y = offsetY)
             .size(size)
     )
-}
-
-private val TriangleUpShape = object : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-        val path = Path().apply {
-            moveTo(size.width / 2f, 0f)
-            lineTo(size.width, size.height)
-            lineTo(0f, size.height)
-            close()
-        }
-        return Outline.Generic(path)
-    }
 }
 
 @Preview
