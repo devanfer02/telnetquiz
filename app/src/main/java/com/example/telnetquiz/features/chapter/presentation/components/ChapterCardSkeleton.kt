@@ -25,11 +25,12 @@ import com.example.telnetquiz.ui.theme.LitecartesColor
 fun ChapterCardSkeleton(modifier: Modifier = Modifier) {
     CardWithShadow(
         modifier = modifier.fillMaxWidth(),
-        elevation = 10.dp,
+        elevation = 8.dp,
         cornerRadius = 18.dp,
-        ambientColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f),
-        spotColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f),
-        borderStroke = BorderStroke(1.dp, LitecartesColor.Secondary.copy(alpha = 0.15f))
+        backgroundColor = androidx.compose.ui.graphics.Color.White,
+        ambientColor = LitecartesColor.DarkBrown.copy(alpha = 0.25f),
+        spotColor = LitecartesColor.DarkBrown.copy(alpha = 0.25f),
+        borderStroke = BorderStroke(1.dp, LitecartesColor.Secondary.copy(alpha = 0.12f))
     ) {
         Row(
             modifier = Modifier
@@ -59,23 +60,23 @@ fun ChapterCardSkeleton(modifier: Modifier = Modifier) {
                 Spacer(modifier = Modifier.height(4.dp))
                 SkeletonBox(height = 12.dp, modifier = Modifier.fillMaxWidth(0.6f))
                 Spacer(modifier = Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    SkeletonBox(
-                        height = 8.dp,
-                        cornerRadius = 50.dp,
-                        modifier = Modifier.weight(1f)
-                    )
-                    SkeletonBox(height = 32.dp, width = 100.dp, cornerRadius = 50.dp)
-                }
-                Spacer(modifier = Modifier.height(6.dp))
                 Row(modifier = Modifier.fillMaxWidth()) {
                     SkeletonBox(height = 10.dp, width = 90.dp)
                     Spacer(modifier = Modifier.weight(1f))
                     SkeletonBox(height = 10.dp, width = 28.dp)
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                SkeletonBox(
+                    height = 6.dp,
+                    cornerRadius = 50.dp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    SkeletonBox(height = 28.dp, width = 90.dp, cornerRadius = 50.dp)
                 }
             }
         }

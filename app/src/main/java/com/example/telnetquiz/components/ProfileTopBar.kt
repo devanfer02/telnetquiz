@@ -147,16 +147,22 @@ fun ProfileTopBar(
                         SkeletonBox(height = 22.dp, width = 70.dp, cornerRadius = 12.dp, onPrimary = true)
                         SkeletonBox(height = 22.dp, width = 56.dp, cornerRadius = 12.dp, onPrimary = true)
                     } else {
-                        ColoredPill(
-                            iconRes = R.drawable.diamond,
-                            value = "${profileState.profile?.stats?.totalScore ?: 0}",
-                            background = Color(0xFFFFC93C)
-                        )
-                        ColoredPill(
-                            iconRes = R.drawable.lightning,
-                            value = "${profileState.profile?.stats?.dailyStreak ?: 0}",
-                            background = Color(0xFFFF6F3C)
-                        )
+                        val score = profileState.profile?.stats?.totalScore ?: 0
+                        val streak = profileState.profile?.stats?.dailyStreak ?: 0
+                        if (score > 0) {
+                            ColoredPill(
+                                iconRes = R.drawable.diamond,
+                                value = "$score",
+                                background = Color(0xFFFFC93C)
+                            )
+                        }
+                        if (streak > 0) {
+                            ColoredPill(
+                                iconRes = R.drawable.lightning,
+                                value = "$streak",
+                                background = Color(0xFFFF6F3C)
+                            )
+                        }
                     }
                 }
             }
@@ -229,7 +235,7 @@ private fun DashedAvatar(
                     .size(size)
                     .shadow(elevation = 6.dp, shape = CircleShape)
                     .clip(CircleShape)
-                    .background(Color.White)
+                    .background(LitecartesColor.Surface)
                     .padding(3.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -239,7 +245,10 @@ private fun DashedAvatar(
                     gender = gender,
                     nameSeed = nameSeed,
                     shape = CircleShape,
-                    modifier = Modifier.size(size - 6.dp)
+                    modifier = Modifier
+                        .size(size - 6.dp)
+                        .clip(CircleShape)
+                        .background(LitecartesColor.Surface)
                 )
             }
         }

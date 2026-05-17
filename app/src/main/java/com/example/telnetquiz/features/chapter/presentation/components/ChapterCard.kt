@@ -64,15 +64,18 @@ fun ChapterCardFromApi(
     val percent = if (total > 0) (completed * 100) / total else 0
     var expanded by remember { mutableStateOf(false) }
 
+    val barColor = if (isCompleted) LitecartesColor.GreenCactus else theme.accent
+
     CardWithShadow(
         modifier = modifier
             .fillMaxWidth()
             .animateContentSize(),
-        elevation = 10.dp,
+        elevation = 8.dp,
         cornerRadius = 18.dp,
-        ambientColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f),
-        spotColor = LitecartesColor.DarkBrown.copy(alpha = 0.3f),
-        borderStroke = BorderStroke(1.dp, LitecartesColor.Secondary.copy(alpha = 0.15f))
+        backgroundColor = Color.White,
+        ambientColor = LitecartesColor.DarkBrown.copy(alpha = 0.25f),
+        spotColor = LitecartesColor.DarkBrown.copy(alpha = 0.25f),
+        borderStroke = BorderStroke(1.dp, LitecartesColor.Secondary.copy(alpha = 0.12f))
     ) {
         Row(
             modifier = Modifier
@@ -151,26 +154,7 @@ fun ChapterCardFromApi(
                         modifier = Modifier
                             .fillMaxWidth(if (expanded) 1f else 0.78f)
                     )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        FlatProgressBar(
-                            progress = percent / 100f,
-                            color = theme.accent,
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(8.dp)
-                        )
-                        ActionPillButton(
-                            text = if (isCompleted) "ULANG" else "YUK MAIN",
-                            color = theme.accent,
-                            onClick = onClick
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -185,10 +169,29 @@ fun ChapterCardFromApi(
                         Spacer(modifier = Modifier.weight(1f))
                         Text(
                             text = "$percent%",
-                            color = theme.accent,
+                            color = barColor,
                             fontFamily = nunitosFontFamily,
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 11.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    FlatProgressBar(
+                        progress = percent / 100f,
+                        color = barColor,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(6.dp)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        ActionPillButton(
+                            text = if (isCompleted) "ULANG" else "YUK MAIN",
+                            color = theme.accent,
+                            onClick = onClick
                         )
                     }
                 }
@@ -255,7 +258,7 @@ private fun ActionPillButton(
             .clip(RoundedCornerShape(50))
             .background(color)
             .clickable { onClick() }
-            .padding(horizontal = 14.dp, vertical = 8.dp),
+            .padding(horizontal = 12.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
@@ -264,13 +267,13 @@ private fun ActionPillButton(
             color = Color.White,
             fontFamily = nunitosFontFamily,
             fontWeight = FontWeight.ExtraBold,
-            fontSize = 12.sp
+            fontSize = 11.sp
         )
         Icon(
             imageVector = Icons.Filled.ArrowForward,
             contentDescription = null,
             tint = Color.White,
-            modifier = Modifier.size(14.dp)
+            modifier = Modifier.size(12.dp)
         )
     }
 }
