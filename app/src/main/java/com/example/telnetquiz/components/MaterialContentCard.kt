@@ -80,7 +80,7 @@ fun MaterialContentCard(
             audioButtonModifier = audioButtonModifier
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         var featureIndex = 0
         blocks.forEachIndexed { i, block ->
@@ -96,7 +96,7 @@ fun MaterialContentCard(
                     block.items.forEachIndexed { j, item ->
                         FeatureCard(index = featureIndex, item = item)
                         if (j != block.items.lastIndex) {
-                            Spacer(modifier = Modifier.height(6.dp))
+                            Spacer(modifier = Modifier.height(4.dp))
                         }
                         featureIndex++
                     }
@@ -106,7 +106,7 @@ fun MaterialContentCard(
                 }
             }
             if (!isLast) {
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(4.dp))
             }
         }
 
@@ -134,7 +134,7 @@ private fun IntroHero(
             .fillMaxWidth()
             .clip(RoundedCornerShape(18.dp))
             .background(LitecartesColor.Primary)
-            .padding(horizontal = 14.dp, vertical = 12.dp)
+            .padding(start = 14.dp, end = 14.dp, top = 10.dp, bottom = 8.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
@@ -178,7 +178,7 @@ private fun IntroHero(
                 }
             }
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
