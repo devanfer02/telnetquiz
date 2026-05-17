@@ -259,7 +259,7 @@ private fun MainNavHost(
     val showProfileTopBar = currentRoute == Screen.HomeScreen.route ||
         currentRoute?.startsWith(Screen.LevelScreen.route) == true
     val profileTopBarBg = if (currentRoute?.startsWith(Screen.LevelScreen.route) == true)
-        LitecartesColor.DarkerSurface else LitecartesColor.Surface
+        androidx.compose.ui.graphics.Color(0xFFECC579) else LitecartesColor.Surface
 
     LaunchedEffect(currentRoute) {
         tutorialController.onRouteChanged(currentRoute)
