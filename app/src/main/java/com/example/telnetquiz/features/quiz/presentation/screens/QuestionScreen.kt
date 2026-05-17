@@ -21,12 +21,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -155,8 +153,7 @@ fun QuestionScreen(
             if (state.quiz != null) {
                 QuizProgressHeader(
                     current = state.currentQuestionIndex + 1,
-                    total = state.quiz!!.questions.size,
-                    onBack = { showExitConfirm = true }
+                    total = state.quiz!!.questions.size
                 )
             }
         },
@@ -361,8 +358,7 @@ fun QuestionScreen(
 @Composable
 private fun QuizProgressHeader(
     current: Int,
-    total: Int,
-    onBack: () -> Unit
+    total: Int
 ) {
     Column(
         modifier = Modifier
@@ -372,24 +368,10 @@ private fun QuizProgressHeader(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 10.dp),
+                .padding(horizontal = 14.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(CircleShape)
-                    .background(LitecartesColor.DarkerSurface)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Kembali",
-                    tint = LitecartesColor.Secondary,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
             Box(modifier = Modifier.weight(1f)) {
                 ProgressBarFromApi(
                     current = current,
