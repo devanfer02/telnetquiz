@@ -191,7 +191,7 @@ fun ProfileScreen(
                             label = "Total Skor",
                             value = "${stats.totalScore}",
                             icon = Icons.Filled.Bolt,
-                            iconTint = Color(0xFFFFC107),
+                            iconTint = Color(0xFF1565C0),
                             modifier = Modifier.weight(1f)
                         )
                         StatCard(
