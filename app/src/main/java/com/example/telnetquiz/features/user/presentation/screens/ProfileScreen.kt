@@ -191,7 +191,7 @@ fun ProfileScreen(
                             label = "Total Skor",
                             value = "${stats.totalScore}",
                             icon = Icons.Filled.Bolt,
-                            iconTint = LitecartesColor.ScoreYellow,
+                            iconTint = Color(0xFFFFC107),
                             modifier = Modifier.weight(1f)
                         )
                         StatCard(
@@ -220,15 +220,21 @@ fun ProfileScreen(
                 PencapaianHeader(
                     unlocked = unlockedAch,
                     total = totalAch,
-                    modifier = if (tutorialController != null) Modifier.onGloballyPositioned {
-                        tutorialController.registerTarget("profile_achievements", it)
-                    } else Modifier
+                    modifier = Modifier
+                        .padding(horizontal = 14.dp)
+                        .then(
+                            if (tutorialController != null) Modifier.onGloballyPositioned {
+                                tutorialController.registerTarget("profile_achievements", it)
+                            } else Modifier
+                        )
                 )
                 Spacer(modifier = Modifier.height(6.dp))
             }
             when {
                 achievementState.isLoading -> {
-                    items(4) { AchievementCardSkeleton() }
+                    items(4) {
+                        AchievementCardSkeleton(modifier = Modifier.padding(horizontal = 14.dp))
+                    }
                 }
                 achievementState.error != null -> {
                     item {
@@ -246,7 +252,9 @@ fun ProfileScreen(
                             fontFamily = nunitosFontFamily,
                             fontSize = 14.sp,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp)
                         )
                     }
                 }
@@ -259,7 +267,8 @@ fun ProfileScreen(
                             title = achievement.title,
                             description = achievement.description,
                             unlocked = achievement.unlocked,
-                            unlockedAt = achievement.unlockedAt
+                            unlockedAt = achievement.unlockedAt,
+                            modifier = Modifier.padding(horizontal = 14.dp)
                         )
                     }
                 }
