@@ -61,6 +61,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun loadProfile() {
+        if (_state.value.isLoading) return
         viewModelScope.launch {
             val hasCached = _state.value.profile != null
             if (!hasCached) {

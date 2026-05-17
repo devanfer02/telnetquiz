@@ -376,8 +376,8 @@ private fun MainNavHost(
                 profileViewModel.loadProfile()
             }
 
-            LaunchedEffect(profileState.isLoading, profileState.profile?.hasTakenPretest) {
-                if (!profileState.isLoading && profileState.profile?.hasTakenPretest == false) {
+            LaunchedEffect(profileState.profile?.hasTakenPretest) {
+                if (profileState.profile?.hasTakenPretest == false) {
                     navController.navigate(Screen.PanduanUmumScreen.route) {
                         popUpTo(Screen.HomeScreen.route) { inclusive = true }
                     }
